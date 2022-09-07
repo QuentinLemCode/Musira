@@ -7,7 +7,7 @@ import {
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
 import { env } from 'process';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { UserRole } from '../users/user.entity';
 import { hashPassword } from '../utils/hash';
 import { RefreshTokenPayload, TokenPayload, UserLogin } from './auth.interface';

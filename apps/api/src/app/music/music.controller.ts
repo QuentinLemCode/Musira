@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { JwtGuard } from 'src/auth/jwt.guard';
+import { JwtGuard } from '../auth/jwt.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { UserRole } from '../users/user.entity';
