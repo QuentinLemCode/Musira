@@ -1,0 +1,67 @@
+@import "../../../colors.scss";
+:host {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+form {
+  margin: auto;
+  width: 60%;
+  p {
+    text-align: center;
+    #birthYear {
+      width: 100%;
+      -webkit-appearance: none;
+      .ng-invalid {
+        border-color: red;
+      }
+
+
+    }
+  }
+  .radio {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px 5px;
+    label {
+      // border: solid 2px red;
+      background: var(--bg-secondary);
+      border-radius: 33px;
+      text-align: center;
+      margin: 0 20px;
+      padding: 10px;
+    }
+    input[type="radio"] {
+        display:none;   
+    }
+    input[type="radio"]:checked + label {
+        // border: solid 2px green;
+        background: var(--primary);
+    }
+  }
+  p.submit button {
+    width: 60%;
+    margin: auto;
+    text-align: center;
+  }
+  @media only screen and (max-width : 800px) {
+    p.submit button {
+      width: 80%;
+     }
+  }
+}
+@media only screen and (max-width : 800px) {
+  form {
+    width: 100%;
+   }
+}

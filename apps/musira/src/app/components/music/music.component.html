@@ -1,0 +1,51 @@
+<ng-container *ngIf="music">
+  <div class="cover">
+    <img [src]="music.cover" alt="album cover" />
+  </div>
+  <div class="info">
+    <div class="title">{{ music.title }}</div>
+    <div class="artist">{{ music.artist }}</div>
+    <div *ngIf="username" class="adder">
+      Ajouté par {{ username | titlecase }}
+    </div>
+    <div *ngIf="backlog" class="adder">
+      Musique selectionné sur le formulaire
+    </div>
+  </div>
+  <div class="vote" *ngIf="config?.votable">
+    <button (click)="vote.emit(updateStatusDelete)">
+      <fa-icon [icon]="iconForward"></fa-icon>
+      <div
+        class="vote-count"
+        *ngIf="voteCount > 0"
+        [ngClass]="loadingDelete ? ['fa-beat-fade'] : []"
+      >
+        {{ voteCount }}
+      </div>
+    </button>
+  </div>
+  <div class="remove" *ngIf="config?.deletable">
+    <button (click)="delete.emit(updateStatusForward)">
+      <fa-icon
+        [icon]="iconDelete"
+        [ngClass]="loadingForward ? ['fa-beat-fade'] : []"
+      ></fa-icon>
+    </button>
+  </div>
+  <div class="add-to-queue" *ngIf="config?.queueable">
+    <button (click)="addToQueue.emit(updateStatusAdd)">
+      <fa-icon
+        [icon]="iconAdd"
+        [ngClass]="loadingAdd ? ['fa-beat-fade'] : []"
+      ></fa-icon>
+    </button>
+  </div>
+  <div class="add-to-backlog" *ngIf="config?.backlog">
+    <button (click)="addToBacklog.emit(updateStatusBacklog)">
+      <fa-icon
+        [icon]="iconBacklog"
+        [ngClass]="loadingBacklog ? ['fa-beat-fade'] : []"
+      ></fa-icon>
+    </button>
+  </div>
+</ng-container>

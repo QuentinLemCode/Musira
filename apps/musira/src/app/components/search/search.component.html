@@ -1,0 +1,28 @@
+<input
+  type="text"
+  (focus)="showResults()"
+  [formControl]="search"
+  placeholder="Rechercher une musique"
+/>
+<span class="search-icon"
+  ><fa-icon
+    [icon]="iconSearch"
+    [ngClass]="loading ? 'fa-beat-fade' : ''"
+  ></fa-icon
+></span>
+
+<p *ngIf="error">{{ error }}</p>
+
+<div
+  *ngIf="!hideResults"
+  id="search-results"
+  [ngClass]="hideResults || results === null ? 'hide' : 'show'"
+>
+  <app-music
+    *ngFor="let music of results"
+    [music]="music"
+    [config]="musicConfig"
+    (addToQueue)="addToQueue(music, $event)"
+    (addToBacklog)="addToBacklog(music, $event)"
+  ></app-music>
+</div>

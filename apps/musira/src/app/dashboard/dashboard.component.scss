@@ -1,0 +1,20 @@
+::ng-deep body {
+  display: block;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  >* {
+    margin: 50px;
+  }
+  .edito {
+    text-align: center;
+    p {
+      font-size: 20px;
+    }
+    img {
+      width: 70%;
+    }
+  }
+}

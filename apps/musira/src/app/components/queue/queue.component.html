@@ -1,0 +1,28 @@
+<p *ngIf="loading">Chargement ...</p>
+<p *ngIf="error">{{ error }}</p>
+
+<ng-container *ngIf="queues !== null">
+  <ng-container *ngIf="playing">
+    <h3>En cours de lecture</h3>
+    <app-music
+      [music]="playing.music"
+      [username]="playing.user.name"
+    ></app-music>
+    <hr />
+  </ng-container>
+  <h3>File d'attente</h3>
+  <app-music
+    *ngFor="let queue of queues"
+    [music]="queue.music"
+    [username]="queue.user.name"
+    [config]="getMusicConfig(queue)"
+    (delete)="delete(queue.id, $event)"
+    (vote)="vote(queue.id, $event)"
+    [voteCount]="queue.forward_votes"
+  ></app-music>
+  <app-music
+    *ngIf="backlog"
+    [music]="backlog.music"
+    [backlog]="true"
+  ></app-music>
+</ng-container>

@@ -1,9 +1,40 @@
-<div style="text-align: center">
-  <h1>Welcome to musira!</h1>
-  <img
-    width="450"
-    src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png"
-    alt="Nx - Smart, Fast and Extensible Build System"
-  />
-</div>
-<div>Message: {{ hello$ | async | json }}</div>
+<header>
+  <nav *ngIf="isLoggedIn && isAdmin">
+    <ul>
+      <li>
+        <a routerLink="/admin/spotify-device">Gestion Spotify</a>
+      </li>
+      <li>
+        <a routerLink="/admin">Administration</a>
+      </li>
+      <li>
+        <a routerLink="/">Accueil</a>
+      </li>
+      <li>
+        <a routerLink="/dashboard">Dashboard</a>
+      </li>
+    </ul>
+  </nav>
+</header>
+<main>
+  <router-outlet></router-outlet>
+</main>
+<footer>
+  <p>
+    Développé avec ❤️ par QuentinLemCode
+    <a class="icon-link" href="https://twitter.com/QuentinLemCode"
+      ><fa-icon [icon]="faTwitter"></fa-icon
+    ></a>
+    <a class="icon-link" href="https://github.com/QuentinLemCode">
+      <fa-icon [icon]="faGithub"></fa-icon>
+    </a>
+    <br />
+    Un très grand merci à Théo Charlot pour le design ✏️
+    <br />
+    <ng-container *ngIf="isLoggedIn"
+      >Connecté en tant que {{ username | titlecase }}</ng-container
+    >
+    <br />
+    <a *ngIf="isLoggedIn" [routerLink]="" (click)="logout()">Se déconnecter</a>
+  </p>
+</footer>
