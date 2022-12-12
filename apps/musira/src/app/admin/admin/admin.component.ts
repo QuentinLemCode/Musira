@@ -5,7 +5,7 @@ import { UserService } from '../../services/user.service';
 import { SettingsService } from '../../services/settings.service';
 
 @Component({
-  selector: 'app-admin',
+  selector: 'musira-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
 })

@@ -24,7 +24,7 @@ export interface IconUpdateStatus {
 }
 
 @Component({
-  selector: 'app-music',
+  selector: 'musira-music',
   templateUrl: './music.component.html',
   styleUrls: ['./music.component.scss'],
 })

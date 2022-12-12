@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 
 @Component({
-  selector: 'app-challenge',
+  selector: 'musira-challenge',
   templateUrl: './challenge.component.html',
   styleUrls: ['./challenge.component.scss'],
 })

@@ -4,7 +4,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 @Component({
-  selector: 'app-login',
+  selector: 'musira-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })

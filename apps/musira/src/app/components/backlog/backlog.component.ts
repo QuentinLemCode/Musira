@@ -6,7 +6,7 @@ import { UnsubscribableComponent } from '../../utils/unsubscribable-component';
 import { MusicComponentConfiguration } from '../music/music.component';
 
 @Component({
-  selector: 'app-backlog',
+  selector: 'musira-backlog',
   templateUrl: './backlog.component.html',
   styleUrls: ['./backlog.component.scss'],
 })

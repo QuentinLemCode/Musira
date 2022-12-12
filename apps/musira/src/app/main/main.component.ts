@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { UserService } from '../services/user.service';
 
 @Component({
-  selector: 'app-main',
+  selector: 'musira-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
 })

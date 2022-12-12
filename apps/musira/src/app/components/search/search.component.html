@@ -18,11 +18,11 @@
   id="search-results"
   [ngClass]="hideResults || results === null ? 'hide' : 'show'"
 >
-  <app-music
+  <musira-music
     *ngFor="let music of results"
     [music]="music"
     [config]="musicConfig"
     (addToQueue)="addToQueue(music, $event)"
     (addToBacklog)="addToBacklog(music, $event)"
-  ></app-music>
+  ></musira-music>
 </div>

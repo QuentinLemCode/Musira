@@ -5,7 +5,7 @@ import { CurrentMusic } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 
 @Component({
-  selector: 'app-spotify-device',
+  selector: 'musira-spotify-device',
   templateUrl: './spotify-device.component.html',
   styleUrls: ['./spotify-device.component.scss'],
 })
