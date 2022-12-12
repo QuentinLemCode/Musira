@@ -11,7 +11,7 @@ import {
 } from '../music/music.component';
 
 @Component({
-  selector: 'app-queue',
+  selector: 'musira-queue',
   templateUrl: './queue.component.html',
   styleUrls: ['./queue.component.scss'],
 })

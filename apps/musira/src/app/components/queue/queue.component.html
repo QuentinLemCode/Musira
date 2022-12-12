@@ -4,14 +4,14 @@
 <ng-container *ngIf="queues !== null">
   <ng-container *ngIf="playing">
     <h3>En cours de lecture</h3>
-    <app-music
+    <musira-music
       [music]="playing.music"
       [username]="playing.user.name"
-    ></app-music>
+    ></musira-music>
     <hr />
   </ng-container>
   <h3>File d'attente</h3>
-  <app-music
+  <musira-music
     *ngFor="let queue of queues"
     [music]="queue.music"
     [username]="queue.user.name"
@@ -19,10 +19,10 @@
     (delete)="delete(queue.id, $event)"
     (vote)="vote(queue.id, $event)"
     [voteCount]="queue.forward_votes"
-  ></app-music>
-  <app-music
+  ></musira-music>
+  <musira-music
     *ngIf="backlog"
     [music]="backlog.music"
     [backlog]="true"
-  ></app-music>
+  ></musira-music>
 </ng-container>

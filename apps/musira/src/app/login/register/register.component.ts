@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 
 @Component({
-  selector: 'app-register',
+  selector: 'musira-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })

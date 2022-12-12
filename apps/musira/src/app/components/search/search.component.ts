@@ -27,7 +27,7 @@ import {
 } from '../music/music.component';
 
 @Component({
-  selector: 'app-search',
+  selector: 'musira-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
 })

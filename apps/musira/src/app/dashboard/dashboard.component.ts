@@ -9,7 +9,7 @@ import {
 import * as QRCode from 'qrcode';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'musira-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })

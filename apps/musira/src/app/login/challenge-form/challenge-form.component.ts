@@ -9,7 +9,7 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-challenge-form',
+  selector: 'musira-challenge-form',
   templateUrl: './challenge-form.component.html',
   styleUrls: ['./challenge-form.component.scss'],
 })

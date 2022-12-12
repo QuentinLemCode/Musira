@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 
 @Component({
-  selector: 'app-password',
+  selector: 'musira-password',
   templateUrl: './password.component.html',
   styleUrls: ['./password.component.scss'],
 })
