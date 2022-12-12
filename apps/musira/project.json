@@ -1,4 +1,5 @@
 {
+  "name": "musira",
   "projectType": "application",
   "sourceRoot": "apps/musira/src",
   "prefix": "musira",
@@ -79,7 +80,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/musira"],
+      "outputs": ["{workspaceRoot}/coverage/apps/musira"],
       "options": {
         "jestConfig": "apps/musira/jest.config.ts",
         "passWithNoTests": true
