@@ -7,8 +7,7 @@ import {
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import type { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { setupCache } from 'axios-cache-adapter';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { env } from 'process';
 import { catchError, firstValueFrom, map, of, pipe, retry } from 'rxjs';
 import { Repository } from 'typeorm';
@@ -50,14 +49,11 @@ export class SpotifyApiService implements OnModuleInit {
     private http: HttpService,
     @InjectRepository(SpotifyAccount)
     private spotifyAccount: Repository<SpotifyAccount>,
-    private readonly schedulerRegistry: SchedulerRegistry,
+    private readonly schedulerRegistry: SchedulerRegistry
   ) {}
 
   private currentRegisteredAccount: SpotifyAccount;
   private readonly logger = new Logger('SpotifyAPI');
-  private readonly cache = setupCache({
-    maxAge: 10000,
-  });
 
   private static readonly INTERVAL_RENEW_TOKEN_TIME = 1000 * 1000; // 1000 seconds
   private static readonly INTERVAL_RENEW_TOKEN_NAME = 'renew-token';
@@ -108,13 +104,13 @@ export class SpotifyApiService implements OnModuleInit {
               Authorization:
                 'Basic ' +
                 Buffer.from(
-                  env.SPOTIFY_CLIENT_ID + ':' + env.SPOTIFY_CLIENT_KEY,
+                  env.SPOTIFY_CLIENT_ID + ':' + env.SPOTIFY_CLIENT_KEY
                 ).toString('base64'),
               ...this.formUrlContentTypeHeader,
             },
-          },
+          }
         )
-        .pipe(this.pipeResponse()),
+        .pipe(this.pipeResponse())
     );
 
     const account = {
@@ -127,8 +123,9 @@ export class SpotifyApiService implements OnModuleInit {
     this.startTokenRenewInterval();
   }
 
+  // TODO: Add caching
   async getPlaybackState(
-    noCache = false,
+    noCache = false
   ): Promise<APIResult<PlaybackState | void>> {
     if (!this.isAccountRegistered) {
       return this.success({
@@ -142,16 +139,11 @@ export class SpotifyApiService implements OnModuleInit {
       },
     };
 
-    if (!noCache) {
-      // I don't want a 418
-      options.adapter = this.cache.adapter;
-    }
-
     return firstValueFrom(
       this.http
         .get<CurrentPlaybackResponse>(
           'https://api.spotify.com/v1/me/player',
-          options,
+          options
         )
         .pipe(
           retry({ count: 5, delay: 1000 }),
@@ -164,8 +156,8 @@ export class SpotifyApiService implements OnModuleInit {
           catchError((err) => {
             this.logError(err);
             return of(this.error('unknown'));
-          }),
-        ),
+          })
+        )
     );
   }
 
@@ -180,9 +172,9 @@ export class SpotifyApiService implements OnModuleInit {
           {},
           {
             headers: this.getAuthorizationHeaderForCurrentPlayer(),
-          },
+          }
         )
-        .pipe(retry({ count: 5, delay: 1000 }), this.pipeResponse()),
+        .pipe(retry({ count: 5, delay: 1000 }), this.pipeResponse())
     );
   }
 
@@ -200,9 +192,9 @@ export class SpotifyApiService implements OnModuleInit {
             params: {
               uri,
             },
-          },
+          }
         )
-        .pipe(retry({ count: 5, delay: 1000 }), this.pipeResponse()),
+        .pipe(retry({ count: 5, delay: 1000 }), this.pipeResponse())
     );
   }
 
@@ -219,7 +211,7 @@ export class SpotifyApiService implements OnModuleInit {
           },
           {
             headers: this.getAuthorizationHeaderForCurrentPlayer(),
-          },
+          }
         )
         .pipe(
           retry({ count: 5, delay: 1000 }),
@@ -227,8 +219,8 @@ export class SpotifyApiService implements OnModuleInit {
             if (status === 404) {
               return this.error('no-device');
             }
-          }),
-        ),
+          })
+        )
     );
   }
 
@@ -251,7 +243,7 @@ export class SpotifyApiService implements OnModuleInit {
           if (error) return of(error);
         }
         return of(this.error('unknown'));
-      }),
+      })
     );
   }
 
@@ -287,7 +279,14 @@ export class SpotifyApiService implements OnModuleInit {
     };
   }
 
-  private logError(err: any) {
+  private logError(err: {
+    message?: string;
+    response: {
+      data?: {
+        error?: { message: string };
+      };
+    };
+  }) {
     const message = [err?.message, err?.response?.data?.error?.message]
       .filter((a) => !!a)
       .join(' - ');
@@ -311,13 +310,13 @@ export class SpotifyApiService implements OnModuleInit {
               Authorization:
                 'Basic ' +
                 Buffer.from(
-                  env.SPOTIFY_CLIENT_ID + ':' + env.SPOTIFY_CLIENT_KEY,
+                  env.SPOTIFY_CLIENT_ID + ':' + env.SPOTIFY_CLIENT_KEY
                 ).toString('base64'),
               ...this.formUrlContentTypeHeader,
             },
-          },
+          }
         )
-        .pipe(this.pipeResponse()),
+        .pipe(this.pipeResponse())
     );
     if (response.status === 'error') {
       return;
@@ -337,7 +336,7 @@ export class SpotifyApiService implements OnModuleInit {
     if (
       this.schedulerRegistry.doesExist(
         'interval',
-        SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME,
+        SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME
       )
     ) {
       return;
@@ -348,17 +347,17 @@ export class SpotifyApiService implements OnModuleInit {
 
     const interval = setInterval(
       callback,
-      SpotifyApiService.INTERVAL_RENEW_TOKEN_TIME,
+      SpotifyApiService.INTERVAL_RENEW_TOKEN_TIME
     );
     this.schedulerRegistry.addInterval(
       SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME,
-      interval,
+      interval
     );
   }
 
   private stopTokenRenewInterval() {
     this.schedulerRegistry.deleteInterval(
-      SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME,
+      SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME
     );
   }
 }
