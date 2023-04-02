@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  main:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,3 +19,21 @@ jobs:
       - run: npx nx affected -t lint --parallel=3
       - run: npx nx affected -t test --parallel=3 --configuration=ci
       - run: npx nx affected -t build --parallel=3
+  docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [api, musira]
+    steps:
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ secrets.APP_NAME }}:latest
