@@ -1,4 +1,4 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoreModule } from '../core/core.module';
 import { MusicController } from './music.controller';
@@ -15,7 +15,6 @@ import { SpotifyModule } from './spotify/spotify.module';
     SpotifyModule,
     TypeOrmModule.forFeature([Music, Queue, Backlog]),
     CoreModule,
-    CacheModule.register(),
   ],
   controllers: [MusicController, QueueController],
   providers: [QueueService, QueueEngineService],
