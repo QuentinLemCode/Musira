@@ -32,6 +32,11 @@ import {
   styleUrls: ['./search.component.scss'],
 })
 export class SearchComponent extends UnsubscribableComponent implements OnInit {
+  static readonly ERROR_MESSAGE = "Une erreur s'est produite, désolé 😫";
+  static readonly ALREADY_IN_QUEUE =
+    "Cette musique est déjà dans la file d'attente";
+  static readonly ALREADY_IN_BACKLOG = 'Cette musique est déjà dans le backlog';
+
   search = new FormControl<string>('');
   results: Music[] | null = null;
   hideResults = false;
@@ -44,10 +49,6 @@ export class SearchComponent extends UnsubscribableComponent implements OnInit {
     backlog: this.user.isAdmin(),
   };
   iconSearch = faSearch;
-  static readonly ERROR_MESSAGE = "Une erreur s'est produite, désolé 😫";
-  static readonly ALREADY_IN_QUEUE =
-    "Cette musique est déjà dans la file d'attente";
-  static readonly ALREADY_IN_BACKLOG = 'Cette musique est déjà dans le backlog';
 
   @HostListener('window:popstate', ['$event'])
   onPopState() {

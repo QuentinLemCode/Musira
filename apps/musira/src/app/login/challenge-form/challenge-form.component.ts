@@ -14,9 +14,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./challenge-form.component.scss'],
 })
 export class ChallengeFormComponent implements OnInit {
-  @Output()
-  challengeSubmit = new EventEmitter<string>();
-
   private static readonly EMOJIS = [
     { emoji: '😂', description: 'Face with tears of joy' },
     { emoji: '❤️', description: 'Red heart' },
@@ -31,6 +28,9 @@ export class ChallengeFormComponent implements OnInit {
     { emoji: '🏨', description: 'Hotel' },
     { emoji: '🍔', description: 'Hamburger' },
   ];
+
+  @Output()
+  challengeSubmit = new EventEmitter<string>();
 
   emojis = this.shuffleEmoji(ChallengeFormComponent.EMOJIS);
 
