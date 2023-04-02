@@ -14,10 +14,10 @@ export class RegisterComponent implements OnInit {
     private router: Router
   ) {}
   name = '';
+  error = '';
   ngOnInit(): void {
     this.name = this.route.snapshot.queryParams['name'];
   }
-  error = '';
 
   submit(challenge: string) {
     this.user.register(this.name, challenge).subscribe({

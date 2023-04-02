@@ -29,6 +29,33 @@ export interface IconUpdateStatus {
   styleUrls: ['./music.component.scss'],
 })
 export class MusicComponent implements OnInit {
+  @Input()
+  username?: string;
+
+  @Input()
+  music?: Music;
+
+  @Input()
+  voteCount = 0;
+
+  @Input()
+  config?: MusicComponentConfiguration;
+
+  @Input()
+  backlog = false;
+
+  @Output()
+  vote = new EventEmitter<IconUpdateStatus>();
+
+  @Output()
+  delete = new EventEmitter<IconUpdateStatus>();
+
+  @Output()
+  addToQueue = new EventEmitter<IconUpdateStatus>();
+
+  @Output()
+  addToBacklog = new EventEmitter<IconUpdateStatus>();
+
   iconDelete = faTrashCan;
   iconForward = faForwardFast;
   iconAdd = faPlus;
@@ -70,30 +97,5 @@ export class MusicComponent implements OnInit {
       };
     }
   }
-  @Input()
-  username?: string;
 
-  @Input()
-  music?: Music;
-
-  @Input()
-  voteCount = 0;
-
-  @Input()
-  config?: MusicComponentConfiguration;
-
-  @Input()
-  backlog = false;
-
-  @Output()
-  vote = new EventEmitter<IconUpdateStatus>();
-
-  @Output()
-  delete = new EventEmitter<IconUpdateStatus>();
-
-  @Output()
-  addToQueue = new EventEmitter<IconUpdateStatus>();
-
-  @Output()
-  addToBacklog = new EventEmitter<IconUpdateStatus>();
 }
