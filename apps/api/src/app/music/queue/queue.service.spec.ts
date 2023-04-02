@@ -55,6 +55,7 @@ describe('QueueService', () => {
           provide: getRepositoryToken(Queue),
           useValue: {
             save: (obj: Queue) => obj,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             find: (conditions: any) => {
               if (conditions?.where?.status._value === "'1'") {
                 return [];
