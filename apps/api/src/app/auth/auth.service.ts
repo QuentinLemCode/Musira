@@ -61,16 +61,17 @@ export class AuthService {
     throw new ForbiddenException({ cause: 'challenge' });
   }
 
-  async login(user: any, refreshToken?: string): Promise<UserLogin> {
+  async login(user: unknown, refreshToken?: string): Promise<UserLogin> {
+    if (!this.isUser(user)) throw new UnauthorizedException('Bad request');
     const payload: TokenPayload = {
       username: user.name,
       sub: user.id,
       role: user.role,
     };
     const token = this.jwt.sign(payload);
-    const expirationTimestamp = (
-      this.jwt.decode(token, { complete: true }) as any
-    )?.payload?.exp;
+    const expirationTimestamp = this.jwt.decode(token, { complete: true })?.[
+      'payload'
+    ]?.exp;
     return {
       access_token: token,
       id: user.id,
@@ -115,5 +116,21 @@ export class AuthService {
       userId,
     };
     return this.jwt.sign(payload, this.refreshTokenOptions);
+  }
+
+  private isUser(
+    user: unknown,
+  ): user is { name: string; id: number; role: UserRole } {
+    if (typeof user !== 'object' || user === null) return false;
+    if (!('name' in user && 'id' in user && 'role' in user)) return false;
+    if (
+      typeof user.name !== 'string' ||
+      typeof user.id !== 'number' ||
+      typeof user.role !== 'number'
+    )
+      return false;
+    if (!Object.values(UserRole).find((role) => user.role === role))
+      return false;
+    return true;
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Reusage of the Spotify API types
  * Thanks to contributors
