@@ -10,7 +10,7 @@ describe('SpotifySearchService', () => {
   const tokenResponse: AxiosResponse = {
     status: 200,
     config: {
-      headers: new AxiosHeaders()
+      headers: new AxiosHeaders(),
     },
     data: { access_token: 'valid' },
     headers: {},
@@ -38,7 +38,7 @@ describe('SpotifySearchService', () => {
       data: '',
       statusText: 'Unauthorized',
       config: {
-        headers: new AxiosHeaders()
+        headers: new AxiosHeaders(),
       },
       headers: {},
     };
@@ -48,7 +48,7 @@ describe('SpotifySearchService', () => {
       data: {},
       statusText: 'Unauthorized',
       config: {
-        headers: new AxiosHeaders()
+        headers: new AxiosHeaders(),
       },
       headers: {},
     };
