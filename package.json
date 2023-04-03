@@ -9,7 +9,7 @@
     "build": "nx run-many --projects=api,musira -t build",
     "test:front": "nx test",
     "test:api": "nx test api",
-    "test:e2e": "nx run-many --target=e2e --projects=api,musira --parallel=2"
+    "e2e": "nx e2e musira-e2e --watch"
   },
   "private": true,
   "dependencies": {
