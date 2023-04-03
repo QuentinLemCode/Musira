@@ -1,0 +1,12 @@
+import { Module } from '@nestjs/common';
+import { MusicSessionController } from './music-session.controller';
+import { MusicSessionService } from './music-session.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MusicSession } from './entities/music-session.entity';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([MusicSession])],
+  controllers: [MusicSessionController],
+  providers: [MusicSessionService],
+})
+export class MusicSessionModule {}
