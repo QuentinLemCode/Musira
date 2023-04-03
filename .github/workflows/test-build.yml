@@ -20,6 +20,7 @@ jobs:
       - run: npx nx affected -t test --parallel=3 --configuration=ci
       - run: npx nx affected -t build --parallel=3
   docker:
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,5 +34,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
+          context: apps/${{ matrix.app }}
           push: true
-          tags: ${{ secrets.APP_NAME }}:latest
+          tags: ${{ secrets.APP_NAME }}-${{ matrix.app }}:latest
