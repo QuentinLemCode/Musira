@@ -2,7 +2,6 @@
 
 # Use official nginx image as the base image
 FROM nginx:alpine
-FROM --platform=linux/arm32v6 arm32v6/nginx:alpine
 
 ENV TZ=Europe/Paris
 
