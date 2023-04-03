@@ -1,5 +1,7 @@
 FROM node:19-alpine
 
+RUN apk add --no-cache dumb-init
+
 ENV NODE_ENV production
 ENV TZ=Europe/Paris
 
@@ -9,4 +11,4 @@ COPY dist/apps/api .
 
 USER node
 EXPOSE 80
-CMD ["node", "dist/main.js"]
+CMD ["dumb-init", "node", "dist/main.js"]
