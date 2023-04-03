@@ -20,7 +20,7 @@ describe('SpotifyApiService', () => {
           },
         },
         { provide: SchedulerRegistry, useValue: {} },
-        { provide: CACHE_MANAGER, useValue: {}}
+        { provide: CACHE_MANAGER, useValue: {} },
       ],
       imports: [HttpModule],
     }).compile();
