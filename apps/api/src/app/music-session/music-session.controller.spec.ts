@@ -8,7 +8,14 @@ describe('MusicSessionController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MusicSessionController],
-      providers: [MusicSessionService],
+      providers: [
+        {
+          provide: MusicSessionService,
+          useValue: {
+            get: () => undefined,
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<MusicSessionController>(MusicSessionController);
