@@ -41,3 +41,5 @@ Thumbs.db
 
 .angular
 .env
+
+apps/musira-e2e/cypress/downloads
