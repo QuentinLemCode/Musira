@@ -65,7 +65,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ github.actor }}/${{ github.event.repository.name }}-${{ matrix.app }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ matrix.app }}
           tags: |
             type=schedule
             type=ref,event=branch
