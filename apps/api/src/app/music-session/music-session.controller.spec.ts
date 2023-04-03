@@ -1,0 +1,20 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { MusicSessionController } from './music-session.controller';
+import { MusicSessionService } from './music-session.service';
+
+describe('MusicSessionController', () => {
+  let controller: MusicSessionController;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [MusicSessionController],
+      providers: [MusicSessionService],
+    }).compile();
+
+    controller = module.get<MusicSessionController>(MusicSessionController);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+});

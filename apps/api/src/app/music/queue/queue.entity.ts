@@ -11,6 +11,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { User } from '../../users/user.entity';
 import { Music } from '../music.entity';
 
@@ -81,6 +82,12 @@ export class Queue {
   })
   @JoinTable()
   forward_vote_users: User[];
+
+  @ManyToOne(() => MusicSession, (session) => session.queued_musics, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'musicSessionId' })
+  music_session: MusicSession;
 
   @Column({ type: 'int', nullable: false, default: 0 })
   priority: number;

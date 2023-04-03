@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Queue } from '../music/queue/queue.entity';
+import { MusicSession } from '../music-session/entities/music-session.entity';
 
 export enum UserRole {
   ADMIN = 1,
@@ -95,6 +96,14 @@ export class User {
   @OneToMany(() => Queue, (queue) => queue.user)
   queued_musics: Queue[];
 
-  @ManyToMany(() => Queue, (queue) => queue.forward_vote_users)
+  @ManyToMany(() => Queue, (queue) => queue.forward_vote_users, {
+    cascade: true,
+  })
   forward_votes_music: Queue[];
+
+  @ManyToMany(() => MusicSession, (session) => session.participants)
+  session_participation: MusicSession[];
+
+  @OneToMany(() => MusicSession, (session) => session.creator)
+  session_created: MusicSession[];
 }
