@@ -42,7 +42,8 @@ jobs:
       - run: npx nx -t build --parallel=3
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-        platforms: 'arm,arm64'
+        with:
+          platforms: arm,arm64
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v2
