@@ -1,32 +1,13 @@
-FROM node:19-alpine3.16 as builder
-
-ENV NODE_ENV build
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm --prefix api --omit=dev -f install
-COPY . /app
-RUN npm run build \
-    && npm prune --production
-
-# ---
-
-FROM arm32v6/node:16-alpine3.14
+FROM node:19-alpine
+FROM --platform=linux/arm32v6 arm32v6/node:19-alpine
 
 ENV NODE_ENV production
 ENV TZ=Europe/Paris
 
-USER node
 WORKDIR /app
-RUN addgroup --system api && \
-          adduser --system -G api api
 
-COPY --from=builder /app/package*.json /app/
-COPY --from=builder /app/node_modules/ /app/node_modules/
-COPY --from=builder /app/dist/ /app/dist/
+COPY dist/apps/api .
 
-RUN chown -R api:api .
-
-CMD ["node", "dist/main.js"]
+USER node
 EXPOSE 80
+CMD ["node", "dist/main.js"]
