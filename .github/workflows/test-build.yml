@@ -25,7 +25,6 @@ jobs:
       - run: npx nx affected -t lint --parallel=3
       - run: npx nx affected -t test --parallel=3 --configuration=ci
       - run: npx nx affected -t build --parallel=3
-      - run: npx nx affected -t docker-build --parallel=3
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -72,6 +71,6 @@ jobs:
         with:
           context: '{{defaultContext}}:apps/${{ matrix.app }}'
           push: true
-          platforms: linux/amd64,linux/arm32v6,linux/arm32v7,linux/arm64v8
+          platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm/v8
           tags: ${{ vars.APP_NAME }}-${{ matrix.app }}:latest
           labels: ${{ steps.meta.outputs.labels }}
