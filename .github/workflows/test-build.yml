@@ -39,7 +39,7 @@ jobs:
           cache: 'npm'
           node-version-file: '.nvmrc'
       - run: npm i
-      - run: npx nx -t build --parallel=3
+      - run: npm run build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
