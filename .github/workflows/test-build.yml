@@ -44,6 +44,8 @@ jobs:
         with:
           name: prod
           path: dist
+      - name: CWD
+        run: pwd
       - name: Display structure of downloaded files
         run: ls -R
       - name: Set up QEMU
