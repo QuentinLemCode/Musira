@@ -34,18 +34,18 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - uses: nrwl/nx-set-shas@v3
       - uses: actions/setup-node@v3
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
       - run: npm i
-      - run: npx nx affected -t build --parallel=3
+      - run: npx nx -t build --parallel=3
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
+        platforms: 'arm,arm64'
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
@@ -68,9 +68,11 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: '{{defaultContext}}:apps/${{ matrix.app }}'
+          # context: '{{defaultContext}}:apps/${{ matrix.app }}'
+          context: .
+          file: ./apps/${{ matrix.app }}/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm/v8
+          platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm/v8,linux/arm64
           tags: ${{ vars.APP_NAME }}-${{ matrix.app }}:latest
           labels: ${{ steps.meta.outputs.labels }}
       - name: Archive production artifacts
