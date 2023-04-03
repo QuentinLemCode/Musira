@@ -9,7 +9,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,34 +20,27 @@ jobs:
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
-      - run: npm ci
+      - run: npm i
       - run: npx nx format:check
       - run: npx nx affected -t lint --parallel=3
       - run: npx nx affected -t test --parallel=3 --configuration=ci
-      - run: npx nx affected -t build --parallel=3
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          if-no-files-found: error
-          name: prod
-          path: |
-            dist/
-  docker:
-    needs: build
+  build:
+    needs: test
     runs-on: ubuntu-latest
     strategy:
       matrix:
         app: [api, musira]
     steps:
-      - name: Download production artifact
-        uses: actions/download-artifact@v3
+      - uses: actions/checkout@v2
         with:
-          name: prod
-          path: dist
-      - name: CWD
-        run: pwd
-      - name: Display structure of downloaded files
-        run: ls -R
+          fetch-depth: 0
+      - uses: nrwl/nx-set-shas@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - run: npm i
+      - run: npx nx affected -t build --parallel=3
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -80,3 +73,10 @@ jobs:
           platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm/v8
           tags: ${{ vars.APP_NAME }}-${{ matrix.app }}:latest
           labels: ${{ steps.meta.outputs.labels }}
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          if-no-files-found: error
+          name: prod
+          path: |
+            dist/
