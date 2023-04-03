@@ -10,6 +10,7 @@ import DatabaseLogger from './database.logger';
 import { SettingsController } from './settings/settings.controller';
 import { Settings } from './settings/settings.entity';
 import { SettingsService } from './settings/settings.service';
+import { HealthController } from './health/health.controller';
 
 @Global()
 @Module({
@@ -36,7 +37,7 @@ import { SettingsService } from './settings/settings.service';
     UsersModule,
   ],
   providers: [SettingsService],
-  controllers: [SettingsController],
+  controllers: [SettingsController, HealthController],
   exports: [
     JwtModule,
     HttpModule,
