@@ -45,7 +45,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: { { matrix.app } }
+          images: |
+            ${{ matrix.app }}
           tags: |
             type=schedule
             type=ref,event=branch
