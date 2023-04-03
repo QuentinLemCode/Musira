@@ -34,6 +34,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: /apps/${{ matrix.app }}
+          context: "{{defaultContext}}:apps/${{ matrix.app }}"
           push: true
           tags: ${{ vars.APP_NAME }}-${{ matrix.app }}:latest
