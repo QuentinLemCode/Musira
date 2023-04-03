@@ -36,4 +36,4 @@ jobs:
         with:
           context: /apps/${{ matrix.app }}
           push: true
-          tags: $APP_NAME-${{ matrix.app }}:latest
+          tags: ${{ vars.APP_NAME }}-${{ matrix.app }}:latest
