@@ -1,5 +1,6 @@
 {
     "javascript.preferences.importModuleSpecifier": "relative",
     "typescript.preferences.importModuleSpecifier": "relative",
-    "vsicons.presets.angular": true
+    "vsicons.presets.angular": true,
+    "editor.indentSize": 2
 }
