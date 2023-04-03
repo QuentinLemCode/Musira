@@ -21,12 +21,17 @@ jobs:
           cache: 'npm'
           node-version-file: '.nvmrc'
       - run: npm ci
-
       - run: npx nx format:check
       - run: npx nx affected -t lint --parallel=3
       - run: npx nx affected -t test --parallel=3 --configuration=ci
       - run: npx nx affected -t build --parallel=3
       - run: npx nx affected -t docker-build --parallel=3
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: prod
+          path: |
+            dist
   docker:
     needs: build
     runs-on: ubuntu-latest
@@ -34,6 +39,10 @@ jobs:
       matrix:
         app: [api, musira]
     steps:
+      - name: Download production artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: prod
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
