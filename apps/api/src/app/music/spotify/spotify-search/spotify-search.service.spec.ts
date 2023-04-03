@@ -1,6 +1,6 @@
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosResponse } from 'axios';
+import { AxiosHeaders, AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 import { SpotifySearchService } from './spotify-search.service';
 
@@ -9,7 +9,9 @@ describe('SpotifySearchService', () => {
   let httpService: HttpService;
   const tokenResponse: AxiosResponse = {
     status: 200,
-    config: {},
+    config: {
+      headers: new AxiosHeaders()
+    },
     data: { access_token: 'valid' },
     headers: {},
     statusText: 'OK',
@@ -35,7 +37,9 @@ describe('SpotifySearchService', () => {
       status: 401,
       data: '',
       statusText: 'Unauthorized',
-      config: {},
+      config: {
+        headers: new AxiosHeaders()
+      },
       headers: {},
     };
 
@@ -43,7 +47,9 @@ describe('SpotifySearchService', () => {
       status: 200,
       data: {},
       statusText: 'Unauthorized',
-      config: {},
+      config: {
+        headers: new AxiosHeaders()
+      },
       headers: {},
     };
 

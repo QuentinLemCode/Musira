@@ -45,7 +45,6 @@ describe('QueueService', () => {
 
   beforeEach(async () => {
     spySpotifyApiService.isAccountRegistered = jest.fn(() => true);
-    jest.useFakeTimers();
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [ScheduleModule.forRoot()],
