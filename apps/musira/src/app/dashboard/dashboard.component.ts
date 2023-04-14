@@ -6,7 +6,7 @@ import {
   Inject,
   ViewChild,
 } from '@angular/core';
-import * as QRCode from 'qrcode';
+import { toCanvas } from 'qrcode';
 
 @Component({
   selector: 'musira-dashboard',
@@ -24,7 +24,7 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    QRCode.toCanvas(this.qrcode.nativeElement, 'https://' + this.serverUrl, {
+    toCanvas(this.qrcode.nativeElement, 'https://' + this.serverUrl, {
       errorCorrectionLevel: 'H',
       scale: 12,
     });
