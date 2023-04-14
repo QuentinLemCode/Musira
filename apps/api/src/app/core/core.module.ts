@@ -7,10 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { env } from 'process';
 import { UsersModule } from '../users/users.module';
 import DatabaseLogger from './database.logger';
+import { HealthController } from './health/health.controller';
 import { SettingsController } from './settings/settings.controller';
 import { Settings } from './settings/settings.entity';
 import { SettingsService } from './settings/settings.service';
-import { HealthController } from './health/health.controller';
 
 @Global()
 @Module({
@@ -22,16 +22,24 @@ import { HealthController } from './health/health.controller';
     }),
     HttpModule,
     TypeOrmModule.forRoot({
-      type: 'mysql',
+      type: 'postgres',
       host: env.DATABASE_HOST || 'localhost',
-      port: env.DATABASE_PORT ? Number.parseInt(env.DATABASE_PORT, 10) : 3306,
-      username: env.DATABASE_USER || 'admin',
-      password: env.DATABASE_PASSWORD || 'password',
-      database: env.DATABASE_NAME || 'party-anniversary',
+      port: env.DATABASE_PORT ? Number.parseInt(env.DATABASE_PORT, 10) : 5432,
       autoLoadEntities: true,
       synchronize: true,
       logger: new DatabaseLogger(),
     }),
+    // TypeOrmModule.forRoot({
+    //   type: 'mysql',
+    //   host: env.DATABASE_HOST || 'localhost',
+    //   port: env.DATABASE_PORT ? Number.parseInt(env.DATABASE_PORT, 10) : 3306,
+    //   username: env.DATABASE_USER || 'admin',
+    //   password: env.DATABASE_PASSWORD || 'password',
+    //   database: env.DATABASE_NAME || 'party-anniversary',
+    //   autoLoadEntities: true,
+    //   synchronize: true,
+    //   logger: new DatabaseLogger(),
+    // }),
     TypeOrmModule.forFeature([Settings]),
     ScheduleModule.forRoot(),
     UsersModule,
