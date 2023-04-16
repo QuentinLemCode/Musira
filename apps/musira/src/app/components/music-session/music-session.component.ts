@@ -5,14 +5,12 @@ import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-mu
 @Component({
   selector: 'musira-music-session',
   templateUrl: './music-session.component.html',
-  styleUrls: ['./music-session.component.scss']
+  styleUrls: ['./music-session.component.scss'],
 })
 export class MusicSessionComponent {
-
   public constructor(private readonly musicSession: MusicSessionsService) {}
 
   createSession(name: string) {
     this.musicSession.create(new CreateMusicSessionDto(name)).subscribe();
   }
-
 }

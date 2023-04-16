@@ -5,12 +5,11 @@ import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-mu
 import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MusicSessionsService {
-
   private readonly endpoint = environment.serverUrl + 'music-session';
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   public create(musicSessionDto: CreateMusicSessionDto) {
     return this.http.post(this.endpoint, musicSessionDto);
@@ -21,8 +20,6 @@ export class MusicSessionsService {
   }
 
   public get(id: number) {
-    return this.http.get(this.endpoint + `/${id}`)
+    return this.http.get(this.endpoint + `/${id}`);
   }
-
-
 }
