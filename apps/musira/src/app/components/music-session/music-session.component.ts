@@ -13,4 +13,8 @@ export class MusicSessionComponent {
   createSession(name: string) {
     this.musicSession.create(new CreateMusicSessionDto(name)).subscribe();
   }
+
+  joinSession(code: string) {
+    this.musicSession.get(code).subscribe();
+  }
 }

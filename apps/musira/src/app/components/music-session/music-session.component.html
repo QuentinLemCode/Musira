@@ -1,2 +1,5 @@
-<label>Nom de la session :<input type="text" #input /></label>
-<button (click)="createSession(input.value)"></button>
+<label>Rejoindre une session :<input type="text" #joinCode placeholder="Code de session"/></label>
+<button (click)="joinSession(joinCode.value)">Rejoindre une session</button>
+
+<label>Nom de la session :<input type="text" #sessionName /></label>
+<button (click)="createSession(sessionName.value)">Créer une session</button>

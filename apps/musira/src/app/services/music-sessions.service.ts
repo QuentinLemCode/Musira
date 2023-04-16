@@ -15,11 +15,11 @@ export class MusicSessionsService {
     return this.http.post(this.endpoint, musicSessionDto);
   }
 
-  public update(musicSessionDto: UpdateMusicSessionDto, id: number) {
-    return this.http.put(this.endpoint + `/${id}`, musicSessionDto);
+  public update(musicSessionDto: UpdateMusicSessionDto, code: string) {
+    return this.http.put(this.endpoint + `/${code}`, musicSessionDto);
   }
 
-  public get(id: number) {
-    return this.http.get(this.endpoint + `/${id}`);
+  public get(code: string) {
+    return this.http.get(this.endpoint + `/${code}`);
   }
 }
