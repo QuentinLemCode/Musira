@@ -15,14 +15,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
-import Hashids from 'hashids/cjs/hashids';
 
 @Controller('music-session')
 export class MusicSessionController {
-  private hashids: Hashids;
-  constructor(private readonly musicSessionService: MusicSessionService) {
-    this.hashids = new Hashids('musira', 8);
-  }
+  constructor(private readonly musicSessionService: MusicSessionService) {}
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
@@ -44,7 +40,7 @@ export class MusicSessionController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.musicSessionService.findOne(this.decodeId(id));
+    return this.musicSessionService.findOne(id);
   }
 
   @Patch(':id')
@@ -52,19 +48,11 @@ export class MusicSessionController {
     @Param('id') id: string,
     @Body() updateMusicSessionDto: UpdateMusicSessionDto,
   ) {
-    return this.musicSessionService.update(
-      this.decodeId(id),
-      updateMusicSessionDto,
-    );
+    return this.musicSessionService.update(id, updateMusicSessionDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.musicSessionService.remove(this.decodeId(id));
-  }
-
-  private decodeId(id: string) {
-    const [decodedId] = this.hashids.decode(id);
-    return Number(decodedId);
+    return this.musicSessionService.remove(id);
   }
 }
