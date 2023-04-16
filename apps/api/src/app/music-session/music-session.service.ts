@@ -1,5 +1,5 @@
-import { CreateMusicSessionDto } from '@musira/api-interfaces/dto/sessions/create-music-session.dto';
-import { UpdateMusicSessionDto } from '@musira/api-interfaces/dto/sessions/update-music-session.dto';
+import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
+import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';

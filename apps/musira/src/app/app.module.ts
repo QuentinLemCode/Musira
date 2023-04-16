@@ -20,6 +20,7 @@ import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { AdminComponent } from './admin/admin/admin.component';
 import { BacklogComponent } from './components/backlog/backlog.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { MusicSessionComponent } from './components/music-session/music-session.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     AdminComponent,
     BacklogComponent,
     DashboardComponent,
+    MusicSessionComponent,
   ],
   imports: [
     BrowserModule,

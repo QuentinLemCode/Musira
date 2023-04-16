@@ -1,5 +1,3 @@
-import { CreateMusicSessionDto } from '@musira/api-interfaces/dto/sessions/create-music-session.dto';
-import { UpdateMusicSessionDto } from '@musira/api-interfaces/dto/sessions/update-music-session.dto';
 import {
   Body,
   Controller,
@@ -15,6 +13,8 @@ import {
 import { MusicSessionService } from './music-session.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
+import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 
 @Controller('music-session')
 export class MusicSessionController {
