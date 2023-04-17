@@ -229,11 +229,7 @@ export class QueueEngineService {
 
   // Time related functions
 
-  private startTimeout(
-    timeout: number,
-    name: string,
-    func: (queue: Queue) => void,
-  ) {
+  private startTimeout(timeout: number, name: string, func: () => void) {
     if (this.schedulerRegistry.doesExist('timeout', name)) return;
     const timeoutFunction = setTimeout(func, timeout);
     this.schedulerRegistry.addTimeout(name, timeoutFunction);
