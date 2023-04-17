@@ -123,7 +123,9 @@ export class SpotifySearchService implements OnModuleInit {
             err,
             err?.response,
           );
-          throw new InternalServerErrorException(err);
+          throw new InternalServerErrorException('Error getting token', {
+            cause: err,
+          });
         }),
       );
   }

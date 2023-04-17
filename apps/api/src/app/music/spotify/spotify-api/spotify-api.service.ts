@@ -127,7 +127,6 @@ export class SpotifyApiService implements OnModuleInit {
     this.startTokenRenewInterval();
   }
 
-  // TODO: Add caching
   async getPlaybackState(
     noCache = false,
   ): Promise<APIResult<PlaybackState | void>> {
