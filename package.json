@@ -23,7 +23,7 @@
     "@angular/router": "16.0.0",
     "@fastify/cors": "^8.2.1",
     "@fastify/formbody": "^7.4.0",
-    "@fortawesome/angular-fontawesome": "^0.12.1",
+    "@fortawesome/angular-fontawesome": "^0.13.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-brands-svg-icons": "^6.4.0",
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
