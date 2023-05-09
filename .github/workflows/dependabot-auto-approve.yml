@@ -6,7 +6,12 @@ on:
 jobs:
   worker:
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      actions: read
+      checks: read
+      contents: write
+      pull-requests: read
+      statuses: read
     if: github.actor == 'dependabot[bot]'
     steps:
       - name: 'Wait for status checks'
