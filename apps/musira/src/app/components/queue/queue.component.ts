@@ -44,7 +44,7 @@ export class QueueComponent extends UnsubscribableComponent implements OnInit {
   constructor(
     private readonly queue: QueueService,
     private readonly user: UserService,
-    private readonly music: MusicApiService
+    private readonly music: MusicApiService,
   ) {
     super();
   }
@@ -54,7 +54,7 @@ export class QueueComponent extends UnsubscribableComponent implements OnInit {
       .get()
       .pipe(
         takeUntil(this.$destroy),
-        tap(() => (this.error = ''))
+        tap(() => (this.error = '')),
       )
       .subscribe({
         next: (queue) => {
@@ -72,7 +72,7 @@ export class QueueComponent extends UnsubscribableComponent implements OnInit {
       .getBacklog()
       .pipe(
         takeUntil(this.$destroy),
-        tap(() => (this.error = ''))
+        tap(() => (this.error = '')),
       )
       .subscribe({
         next: (backlog) => {

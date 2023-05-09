@@ -10,7 +10,7 @@
     <h1>Connecté à Spotify</h1>
     <h3>
       État du moteur de playlist :
-      {{ musicStatus.engineStarted ? "Démarré" : "Arreté" }}
+      {{ musicStatus.engineStarted ? 'Démarré' : 'Arreté' }}
     </h3>
     <button *ngIf="!musicStatus.engineStarted" (click)="startEngine()">
       Démarrer

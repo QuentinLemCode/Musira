@@ -6,7 +6,7 @@ import { UserService } from '../services/user.service';
 @Injectable({
   providedIn: 'root',
 })
-export class NotAuthGuard  {
+export class NotAuthGuard {
   constructor(private user: UserService, private router: Router) {}
   canActivate():
     | Observable<boolean | UrlTree>

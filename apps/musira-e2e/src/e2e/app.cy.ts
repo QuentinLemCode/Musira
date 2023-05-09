@@ -1,4 +1,3 @@
-
 describe('musira', () => {
   beforeEach(() => cy.visit('/'));
 
@@ -10,5 +9,5 @@ describe('musira', () => {
     cy.get('input').type('quentin');
     cy.contains("C'est parti !").click();
     cy.get('h1').contains('Choisis ton emoji');
-  })
+  });
 });

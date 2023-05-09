@@ -22,7 +22,7 @@ export class MusicApiService {
 
   constructor(
     private readonly http: HttpClient,
-    readonly visibility: VisibilityService
+    readonly visibility: VisibilityService,
   ) {
     visibility.change.subscribe({
       next: (status) => {

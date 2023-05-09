@@ -19,7 +19,7 @@ export class QueueService {
 
   constructor(
     private readonly http: HttpClient,
-    readonly visibility: VisibilityService
+    readonly visibility: VisibilityService,
   ) {
     this.visibility.change.subscribe({
       next: (status) => {
@@ -36,7 +36,7 @@ export class QueueService {
     return this.http.post(this.endpoint, music).pipe(
       tap(() => {
         this.loadQueue();
-      })
+      }),
     );
   }
 
@@ -60,7 +60,7 @@ export class QueueService {
     return this.http.post(this.endpoint + '/' + id + '/forward', {}).pipe(
       tap(() => {
         this.loadQueue();
-      })
+      }),
     );
   }
 
@@ -75,7 +75,7 @@ export class QueueService {
             }
           },
         });
-      })
+      }),
     );
   }
 

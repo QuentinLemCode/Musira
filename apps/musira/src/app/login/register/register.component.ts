@@ -11,7 +11,7 @@ export class RegisterComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private user: UserService,
-    private router: Router
+    private router: Router,
   ) {}
   name = '';
   error = '';
