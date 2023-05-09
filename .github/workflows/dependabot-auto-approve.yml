@@ -4,7 +4,8 @@ on:
   pull_request:
 
 jobs:
-  worker:
+  automerge:
+    name: "Automerge PR"
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -18,7 +19,7 @@ jobs:
         id: waitforstatuschecks
         uses: WyriHaximus/github-action-wait-for-status@v1.7.1
         with:
-          ignoreActions: WIP
+          ignoreActions: "Automerge PR"
           checkInterval: 300
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
