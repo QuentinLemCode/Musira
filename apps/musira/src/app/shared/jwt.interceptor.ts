@@ -16,7 +16,7 @@ export class JwtInterceptor implements HttpInterceptor {
 
   intercept(
     request: HttpRequest<unknown>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     const token = this.users.getToken();
     if (!token) {
@@ -34,7 +34,7 @@ export class JwtInterceptor implements HttpInterceptor {
           return this.refreshToken(request, next);
         }
         return throwError(error);
-      })
+      }),
     );
   }
 
@@ -43,7 +43,7 @@ export class JwtInterceptor implements HttpInterceptor {
       switchMap((userLogin) => {
         request = this.cloneRequest(request, userLogin.access_token);
         return next.handle(request);
-      })
+      }),
     );
   }
 

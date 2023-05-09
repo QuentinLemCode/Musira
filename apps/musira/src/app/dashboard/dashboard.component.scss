@@ -5,7 +5,7 @@
 .grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
-  >* {
+  > * {
     margin: 50px;
   }
   .edito {

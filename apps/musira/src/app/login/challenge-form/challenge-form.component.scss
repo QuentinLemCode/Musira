@@ -1,4 +1,4 @@
-@import "../../../colors.scss";
+@import '../../../colors.scss';
 :host {
   text-align: center;
   margin-top: 1rem;
@@ -10,7 +10,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 
@@ -25,8 +25,6 @@ form {
       .ng-invalid {
         border-color: red;
       }
-
-
     }
   }
   .radio {
@@ -41,12 +39,12 @@ form {
       margin: 0 20px;
       padding: 10px;
     }
-    input[type="radio"] {
-        display:none;   
+    input[type='radio'] {
+      display: none;
     }
-    input[type="radio"]:checked + label {
-        // border: solid 2px green;
-        background: var(--primary);
+    input[type='radio']:checked + label {
+      // border: solid 2px green;
+      background: var(--primary);
     }
   }
   p.submit button {
@@ -54,14 +52,14 @@ form {
     margin: auto;
     text-align: center;
   }
-  @media only screen and (max-width : 800px) {
+  @media only screen and (max-width: 800px) {
     p.submit button {
       width: 80%;
-     }
+    }
   }
 }
-@media only screen and (max-width : 800px) {
+@media only screen and (max-width: 800px) {
   form {
     width: 100%;
-   }
+  }
 }

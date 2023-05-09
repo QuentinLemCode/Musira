@@ -25,7 +25,7 @@ export class PasswordComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private user: UserService,
-    private router: Router
+    private router: Router,
   ) {}
   name = '';
   ngOnInit(): void {

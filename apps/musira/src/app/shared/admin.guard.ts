@@ -6,7 +6,7 @@ import { UserService } from '../services/user.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AdminGuard  {
+export class AdminGuard {
   constructor(private user: UserService, private router: Router) {}
   canActivate():
     | Observable<boolean | UrlTree>

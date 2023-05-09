@@ -34,7 +34,7 @@ export class UserService {
       .pipe(
         tap((token) => {
           this.saveLogin(token);
-        })
+        }),
       );
   }
 
@@ -72,7 +72,7 @@ export class UserService {
         finalize(() => {
           this.clearLocalStorage();
           this.router.navigate(['/login']);
-        })
+        }),
       );
   }
 
@@ -91,7 +91,7 @@ export class UserService {
   toggleIPVerification(id: number) {
     return this.http.post(
       this.userEndpoint + '/' + id + '/toggle-ip-verification',
-      {}
+      {},
     );
   }
 
@@ -105,7 +105,7 @@ export class UserService {
         this.clearLocalStorage();
         this.router.navigate(['/login']);
         return throwError(err);
-      })
+      }),
     );
   }
 
@@ -166,7 +166,7 @@ export class UserService {
       .pipe(
         tap((token) => {
           this.saveLogin(token);
-        })
+        }),
       );
   }
 }
