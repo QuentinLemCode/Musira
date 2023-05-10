@@ -68,7 +68,7 @@
     "@nestjs/schematics": "9.1.0",
     "@nestjs/testing": "9.4.0",
     "@nx/cypress": "16.1.3",
-    "@nx/eslint-plugin": "16.1.3",
+    "@nx/eslint-plugin": "16.1.4",
     "@nx/jest": "16.1.3",
     "@nx/linter": "16.1.3",
     "@nx/nest": "16.1.3",
