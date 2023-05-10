@@ -14,14 +14,14 @@ jobs:
       contents: write
       pull-requests: read
       statuses: read
-    if: ${{ github.actor == 'dependabot[bot]' }} && ${{ github.event.label.name == 'automerge' }}
+    if: ${{ (github.actor == 'dependabot[bot]') && (github.event.label.name == 'automerge') }}
     steps:
       - name: 'Wait for status checks'
         id: waitforstatuschecks
         uses: WyriHaximus/github-action-wait-for-status@v1.7.1
         with:
           ignoreActions: "Automerge PR"
-          checkInterval: 30
+          checkInterval: 25
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
