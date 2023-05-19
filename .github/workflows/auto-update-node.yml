@@ -1,0 +1,72 @@
+name: Update Node.js Version
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"  # Run every Sunday at midnight UTC
+
+jobs:
+  update-node-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+
+      - name: Get the latest Node.js version
+        id: latest-node-version
+        run: echo "::set-output name=version::$(curl -sL https://nodejs.org/dist/index.tab | awk 'NR>1 {print $1}' | sort -V | tail -n1)"
+
+      - name: Read current version from .nvmrc
+        id: current-node-version
+        run: echo "::set-output name=version::$(cat .nvmrc)"
+
+      - name: Compare versions
+        id: compare-versions
+        run: |
+          LATEST_VERSION=${{ steps.latest-node-version.outputs.version }}
+          CURRENT_VERSION=${{ steps.current-node-version.outputs.version }}
+
+          if [[ "$LATEST_VERSION" != "$CURRENT_VERSION" ]]; then
+            echo "::set-output name=update::true"
+          else
+            echo "::set-output name=update::false"
+          fi
+
+      - name: Update package.json
+        if: steps.compare-versions.outputs.update == 'true'
+        run: |
+          LATEST_VERSION=${{ steps.latest-node-version.outputs.version }}
+
+          sed -i "s/\"node\": \".*\"/\"node\": \"$LATEST_VERSION\"/g" package.json
+
+      - name: Create a branch
+        if: steps.compare-versions.outputs.update == 'true'
+        run: |
+          BRANCH_NAME="update-node-version-$GITHUB_RUN_NUMBER"
+          git checkout -b $BRANCH_NAME
+
+      - name: Commit and push changes
+        if: steps.compare-versions.outputs.update == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Update Node.js version"
+          git push origin $BRANCH_NAME
+
+      - name: Open a PR
+        if: steps.compare-versions.outputs.update == 'true'
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: $BRANCH_NAME
+          title: "Update Node.js version"
+          body: |
+            This PR updates the .nvmrc file with the latest Node.js version.
+            It also updates the package.json file with the Node engine set to the latest version.
+          labels: |
+            automation
+            update
