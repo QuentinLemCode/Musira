@@ -6,8 +6,11 @@ on:
 
 jobs:
   view-pr-author:
-    name: View PR author
-    run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."
+    name: 'View PR author'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'View PR author'
+        run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."
   automerge:
     name: 'Automerge PR'
     runs-on: ubuntu-latest
