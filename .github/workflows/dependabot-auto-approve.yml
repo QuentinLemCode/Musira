@@ -5,6 +5,9 @@ on:
     types: [labeled]
 
 jobs:
+  view-pr-author:
+    name: View PR author
+    run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."
   automerge:
     name: 'Automerge PR'
     runs-on: ubuntu-latest
@@ -14,7 +17,7 @@ jobs:
       contents: write
       pull-requests: read
       statuses: read
-    if: ${{ (github.actor == 'dependabot[bot]') && (github.event.label.name == 'automerge') }}
+    if: ${{ (github.event.pull_request.user.login == 'dependabot[bot]') && (github.event.label.name == 'automerge') }}
     steps:
       - name: 'Wait for status checks'
         id: waitforstatuschecks
