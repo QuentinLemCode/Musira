@@ -5,7 +5,8 @@ on:
     types: [labeled]
 
 jobs:
-  name: View PR author
+  view-pr-author:
+    name: View PR author
     run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."
   automerge:
     name: 'Automerge PR'
