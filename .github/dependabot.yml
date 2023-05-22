@@ -12,6 +12,16 @@ updates:
       interval: 'daily'
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "nx"
+      - dependency-name: "@nx/cypress"
+      - dependency-name: "@nx/eslint-plugin"
+      - dependency-name: "@nx/nest"
+      - dependency-name: "@nx/linter"
+      - dependency-name: "@nx/angular"
+      - dependency-name: "@nx/jest"
+      - dependency-name: "@nx/node"
+      - dependency-name: "@nx/workspace"
   - package-ecosystem: github-actions
     directory: '/'
     open-pull-requests-limit: 10
