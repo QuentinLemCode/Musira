@@ -68,7 +68,7 @@
     "@angular/cli": "~16.0.2",
     "@angular/compiler-cli": "16.0.0",
     "@angular/language-service": "16.0.2",
-    "@nestjs/schematics": "9.1.0",
+    "@nestjs/schematics": "9.2.0",
     "@nestjs/testing": "9.4.1",
     "@nx/cypress": "16.2.1",
     "@nx/eslint-plugin": "16.2.1",
