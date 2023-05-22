@@ -2,7 +2,7 @@ name: Update Node.js Version
 
 on:
   schedule:
-    - cron: "0 0 * * 0"  # Run every Sunday at midnight UTC
+    - cron: '0 0 * * 0' # Run every Sunday at midnight UTC
 
 jobs:
   update-node-version:
@@ -63,7 +63,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: $BRANCH_NAME
-          title: "Update Node.js version"
+          title: 'Update Node.js version'
           body: |
             This PR updates the .nvmrc file with the latest Node.js version.
             It also updates the package.json file with the Node engine set to the latest version.
