@@ -94,17 +94,18 @@ jobs:
           name: prod
           path: |
             dist/
-  comment:
+  automerge:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     needs: test
+    permissions:
+      contents: write
+      pull-requests: read
     steps:
-      - uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.issues.addLabels({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: ['automerge']
-            })
+      - name: 'Automerge'
+        uses: pascalgn/automerge-action@v0.15.6
+        env:
+          MERGE_LABELS: dependencies
+          MERGE_METHOD: squash
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_DELETE_BRANCH: true
