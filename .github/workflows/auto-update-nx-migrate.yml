@@ -1,0 +1,48 @@
+name: Update NX dependencies
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at midnight
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+
+      - name: Check for dependency updates
+        id: check-updates
+        run: |
+          npm install
+          npx nx migrate latest
+
+      - name: Create branch for updates
+        id: branch
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "<>"
+          git checkout -b dependency-updates
+
+      - name: Apply updates and migrations
+        run: |
+          nx migrate --run-migrations --create-commits
+
+      - name: Commit and push updates
+        if: ${{ steps.check-updates.outcome != 'neutral' }}
+        run: |
+          git add .
+          git commit -m "Update NX dependencies"
+          git push --set-upstream origin ${{ steps.branch.outputs.branch }}
+
+      - name: Open Pull Request
+        if: ${{ steps.check-updates.outcome != 'neutral' }}
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update NX dependencies"
+          branch: ${{ steps.branch.outputs.branch }}
+          title: "Update NX Dependencies"
+          body: "This PR updates the NX dependencies and applies migrations."
+
