@@ -24,7 +24,7 @@
     "@angular/platform-browser": "16.0.0",
     "@angular/platform-browser-dynamic": "16.0.0",
     "@angular/router": "16.0.0",
-    "@fastify/cors": "^8.2.1",
+    "@fastify/cors": "^8.3.0",
     "@fastify/formbody": "^7.4.0",
     "@fortawesome/angular-fontawesome": "^0.13.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
