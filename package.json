@@ -31,7 +31,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.4.0",
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
-    "@nestjs/axios": "^2.0.0",
+    "@nestjs/axios": "^3.0.0",
     "@nestjs/common": "9.4.3",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "9.4.3",
