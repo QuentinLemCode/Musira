@@ -39,7 +39,7 @@
     "@nestjs/mapped-types": "^2.0.0",
     "@nestjs/passport": "^10.0.0",
     "@nestjs/platform-fastify": "^9.4.3",
-    "@nestjs/schedule": "^2.2.3",
+    "@nestjs/schedule": "^3.0.1",
     "@nestjs/typeorm": "^10.0.0",
     "@nx/angular": "16.2.1",
     "@supercharge/request-ip": "^1.2.0",
