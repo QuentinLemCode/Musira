@@ -67,7 +67,7 @@
     "@angular-eslint/template-parser": "16.0.3",
     "@angular/cli": "~16.1.0",
     "@angular/compiler-cli": "16.0.0",
-    "@angular/language-service": "16.0.5",
+    "@angular/language-service": "16.1.1",
     "@nestjs/schematics": "9.2.0",
     "@nestjs/testing": "9.4.3",
     "@nx/cypress": "16.2.1",
