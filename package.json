@@ -65,7 +65,7 @@
     "@angular-eslint/eslint-plugin": "16.0.3",
     "@angular-eslint/eslint-plugin-template": "16.0.3",
     "@angular-eslint/template-parser": "16.0.3",
-    "@angular/cli": "~16.0.5",
+    "@angular/cli": "~16.1.0",
     "@angular/compiler-cli": "16.0.0",
     "@angular/language-service": "16.0.5",
     "@nestjs/schematics": "9.2.0",
