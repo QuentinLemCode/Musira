@@ -34,7 +34,7 @@ export class BacklogComponent
       .getFullBacklog()
       .pipe(
         takeUntil(this.$destroy),
-        tap(() => (this.error = ''))
+        tap(() => (this.error = '')),
       )
       .subscribe({
         next: (backlog) => {

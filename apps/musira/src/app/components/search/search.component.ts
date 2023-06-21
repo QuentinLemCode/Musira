@@ -58,7 +58,7 @@ export class SearchComponent extends UnsubscribableComponent implements OnInit {
   constructor(
     private readonly music: MusicApiService,
     private readonly queue: QueueService,
-    private readonly user: UserService
+    private readonly user: UserService,
   ) {
     super();
   }
@@ -68,7 +68,7 @@ export class SearchComponent extends UnsubscribableComponent implements OnInit {
       .pipe(
         takeUntil(this.$destroy),
         filter<string | null, string>(
-          (query): query is string => typeof query === 'string'
+          (query): query is string => typeof query === 'string',
         ),
         distinctUntilChanged(),
         tap(() => (this.loading = true)),
@@ -83,9 +83,9 @@ export class SearchComponent extends UnsubscribableComponent implements OnInit {
               this.error = SearchComponent.ERROR_MESSAGE;
               this.loading = false;
               return of(null);
-            })
+            }),
           );
-        })
+        }),
       )
       .subscribe({
         next: (results) => {

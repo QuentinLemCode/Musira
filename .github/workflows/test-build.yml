@@ -16,6 +16,8 @@ permissions:
   contents: read
   packages: write
   actions: read
+  issues: write
+  pull-requests: write
 
 jobs:
   test:
@@ -34,6 +36,7 @@ jobs:
       - run: npx nx affected -t lint --parallel=3
       - run: npx nx affected -t test --parallel=3 --configuration=ci
   build:
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs: test
     runs-on: ubuntu-latest
     strategy:
@@ -91,3 +94,18 @@ jobs:
           name: prod
           path: |
             dist/
+  automerge:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    needs: test
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: 'Automerge'
+        uses: pascalgn/automerge-action@v0.15.6
+        env:
+          MERGE_LABELS: dependencies
+          MERGE_METHOD: squash
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_DELETE_BRANCH: true

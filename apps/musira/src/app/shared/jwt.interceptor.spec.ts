@@ -15,7 +15,7 @@ describe('JwtInterceptor', () => {
           },
         },
       ],
-    })
+    }),
   );
 
   it('should be created', () => {

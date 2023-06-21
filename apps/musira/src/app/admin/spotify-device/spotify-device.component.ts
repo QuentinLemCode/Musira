@@ -31,7 +31,7 @@ export class SpotifyDeviceComponent implements OnInit {
   constructor(
     private music: MusicApiService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
