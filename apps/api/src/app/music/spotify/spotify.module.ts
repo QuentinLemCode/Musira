@@ -1,5 +1,6 @@
 import { HttpModule } from '@nestjs/axios';
-import { CacheModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SpotifyAccount } from './spotify-account.entity';
 import { SpotifyApiService } from './spotify-api/spotify-api.service';
