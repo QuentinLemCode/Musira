@@ -11,6 +11,7 @@
     "test:api": "nx test api",
     "e2e": "nx e2e musira-e2e --watch",
     "serve:api": "nx serve api",
+    "serve:front": "nx serve musira",
     "build:watch": "tsc -p apps/api/tsconfig.debug.json && (concurrently \"tsc -p apps/api/tsconfig.debug.json -w\" \"tsc-alias -p apps/api/tsconfig.debug.json -w\")",
     "tsc-alias": "tsc-alias -p apps/api/tsconfig.debug.json -w"
   },
