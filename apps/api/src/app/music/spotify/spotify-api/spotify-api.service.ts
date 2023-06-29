@@ -339,7 +339,7 @@ export class SpotifyApiService implements OnModuleInit {
       return;
     }
 
-    this.logger.log('Token renewed succecssfully ! Saving it to database ...');
+    this.logger.log('Token renewed successfully ! Saving it to database ...');
     const account = {
       ...(await this.getAccount()),
       ...response.data,
