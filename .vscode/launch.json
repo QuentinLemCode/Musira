@@ -17,6 +17,7 @@
       ],
       "sourceMaps": true,
       "smartStep": true,
+      "envFile": "${workspaceFolder}/apps/api/.serve.env"
     },
     {
       "type": "chrome",
