@@ -1,6 +1,5 @@
 import { HttpService } from '@nestjs/axios';
 import {
-  CACHE_MANAGER,
   Inject,
   Injectable,
   Logger,
@@ -53,7 +52,7 @@ export class SpotifyApiService implements OnModuleInit {
     @InjectRepository(SpotifyAccount)
     private readonly spotifyAccount: Repository<SpotifyAccount>,
     private readonly schedulerRegistry: SchedulerRegistry,
-    @Inject(CACHE_MANAGER) private readonly cache: Cache,
+    @Inject('CACHE_MANAGER') private readonly cache: Cache,
   ) {}
 
   private currentRegisteredAccount: SpotifyAccount;
