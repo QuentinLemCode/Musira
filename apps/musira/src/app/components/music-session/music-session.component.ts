@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { MusicSessionsService } from '../../services/music-sessions.service';
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
+import { MusicSessionsService } from '../../services/music-sessions.service';
 
 @Component({
   selector: 'musira-music-session',
@@ -17,4 +17,5 @@ export class MusicSessionComponent {
   joinSession(code: string) {
     this.musicSession.get(code).subscribe();
   }
+
 }

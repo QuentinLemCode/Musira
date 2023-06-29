@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, Subscription, timer } from 'rxjs';
+import { Observable, ReplaySubject, Subscription, combineLatest, timer } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { CurrentMusic, Music } from './music-api.interface';
 import { VisibilityService } from './visibility.service';
+import { MusicSessionsService } from './music-sessions.service';
 
 interface Control {
   start: boolean;
@@ -23,10 +24,15 @@ export class MusicApiService {
   constructor(
     private readonly http: HttpClient,
     readonly visibility: VisibilityService,
+    private readonly session: MusicSessionsService,
   ) {
-    visibility.change.subscribe({
-      next: (status) => {
-        if (status.visible) {
+    const pollingObservable = combineLatest([
+      this.visibility.change,
+      this.session.currentSession$,
+    ]);
+    pollingObservable.subscribe({
+      next: ([visibility, session]) => {
+        if (visibility.visible && session) {
           this.launchPolling();
         } else {
           this.stopPolling();

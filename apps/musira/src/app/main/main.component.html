@@ -1,3 +1,6 @@
-<musira-music-session></musira-music-session>
-<musira-search *ngIf="isLoggedIn"></musira-search>
-<musira-queue></musira-queue>
+<musira-music-session *ngIf="!currentSession"></musira-music-session>
+<ng-container *ngIf="currentSession">
+  <p>Vous êtes sur la session : {{ currentSession.name }}. <a (click)="exitSession()">Quitter la session</a></p>
+  <musira-search *ngIf="isLoggedIn"></musira-search>
+  <musira-queue></musira-queue>
+</ng-container>

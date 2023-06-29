@@ -44,6 +44,7 @@ const routes: Routes = [
     component: DashboardComponent,
   },
   { path: 'login', component: LoginComponent, canActivate: [NotAuthGuard] },
+  { path: ':sessionId', component: MainComponent, canActivate: [AuthGuard] },
   { path: '', component: MainComponent, canActivate: [AuthGuard] },
   { path: '**', component: NotFoundComponent },
 ];
