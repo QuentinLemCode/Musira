@@ -1,12 +1,12 @@
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
+import { MusicSessionDto } from '@musira/api-interfaces/sessions/music-session.dto';
 import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import Hashids from 'hashids/cjs/hashids';
 import { Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 import { MusicSession } from './entities/music-session.entity';
-import Hashids from 'hashids/cjs/hashids';
-import { MusicSessionDto } from '@musira/api-interfaces/sessions/music-session.dto';
 
 @Injectable()
 export class MusicSessionService {
@@ -14,6 +14,8 @@ export class MusicSessionService {
   constructor(
     @InjectRepository(MusicSession)
     private readonly musicSession: Repository<MusicSession>,
+    @InjectRepository(User)
+    private readonly user: Repository<User>,
   ) {
     this.hashids = new Hashids('musira', 8);
   }
@@ -23,13 +25,14 @@ export class MusicSessionService {
     creator_id: number,
   ): Promise<MusicSessionDto> {
     const session = new MusicSession();
-    session.creator = new User();
-    session.creator.id = creator_id;
+    const user = await this.user.findOneOrFail({ where: { id: creator_id } });
+    session.creator = user;
     session.name = createMusicSessionDto.name;
     const createdSession = await this.musicSession.save(session);
     return {
       name: createdSession.name,
       id: this.encodeId(createdSession.id),
+      creator: user.name,
     };
   }
 
@@ -38,12 +41,14 @@ export class MusicSessionService {
   }
 
   async findOne(id: string): Promise<MusicSessionDto> {
-    const session = await this.musicSession.findOneBy({
-      id: this.decodeId(id),
+    const session = await this.musicSession.findOne({
+      where: { id: this.decodeId(id) },
+      relations: ['creator'],
     });
     return {
       name: session.name,
       id: this.encodeId(session.id),
+      creator: session.creator.name,
     };
   }
 
@@ -51,14 +56,16 @@ export class MusicSessionService {
     id: string,
     updateMusicSessionDto: UpdateMusicSessionDto,
   ): Promise<MusicSessionDto> {
-    const session = await this.musicSession.findOneByOrFail({
-      id: this.decodeId(id),
+    const session = await this.musicSession.findOneOrFail({
+      where: { id: this.decodeId(id) },
+      relations: ['creator'],
     });
     session.name = updateMusicSessionDto.name;
     this.musicSession.save(session);
     return {
       name: session.name,
       id: this.encodeId(session.id),
+      creator: session.creator.name,
     };
   }
 
