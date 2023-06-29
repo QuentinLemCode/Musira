@@ -22,7 +22,7 @@ export class MusicSessionService {
     createMusicSessionDto: CreateMusicSessionDto,
     creator_id: number,
   ): Promise<MusicSessionDto> {
-    const session = this.musicSession.create();
+    const session = new MusicSession();
     session.creator = new User();
     session.creator.id = creator_id;
     session.name = createMusicSessionDto.name;

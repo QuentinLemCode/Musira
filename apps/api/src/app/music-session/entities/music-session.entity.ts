@@ -7,8 +7,8 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Queue } from '../../music/queue/queue.entity';
@@ -50,7 +50,7 @@ export class MusicSession {
   @Column()
   name: string;
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn()
   creator: User;
 
