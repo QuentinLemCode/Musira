@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Raw, Repository } from 'typeorm';
+import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { User, UserRole } from '../../users/user.entity';
 import { Music } from '../music.entity';
 import { Backlog } from './backlog.entity';
@@ -29,14 +30,23 @@ export class QueueService implements OnModuleInit {
 
   // queue basic functions
 
-  async push(music: Music, userId: number, isAdmin = false) {
-    const alreadyInQueue = await this.findInPendingQueue(music.uri);
+  async push(
+    music_session: MusicSession,
+    music: Music,
+    userId: number,
+    isAdmin = false,
+  ) {
+    const alreadyInQueue = await this.findInPendingQueue(
+      music_session,
+      music.uri,
+    );
     if (alreadyInQueue) {
       throw new BadRequestException({ cause: 'queue' });
     }
     const queue = new Queue();
     queue.music = music;
     queue.userId = userId;
+    queue.music_session = music_session;
     queue.priority = isAdmin
       ? 0
       : (await this.countQueuedItemForUser(userId)) + 1;
@@ -53,8 +63,8 @@ export class QueueService implements OnModuleInit {
     await this.backlog.save(backlog);
   }
 
-  async pop() {
-    const queue = await this.getPendingQueue(1);
+  async pop(music_session: MusicSession) {
+    const queue = await this.getPendingQueue(music_session, 1);
     if (queue.length === 0) {
       return null;
     }
@@ -173,11 +183,13 @@ export class QueueService implements OnModuleInit {
 
   // internal functions
 
-  private findInPendingQueue(uri: string) {
+  private findInPendingQueue(music_session: MusicSession, uri: string) {
     return this.queue
       .createQueryBuilder('queue')
       .leftJoinAndSelect('queue.music', 'music')
+      .leftJoinAndSelect('queue.music_session', 'session')
       .where('music.uri = :uri', { uri })
+      .andWhere('session.id = :id', { id: music_session.id })
       .andWhere('queue.status IN (:status)', { status: ['0', '1'] })
       .getOne();
   }
@@ -209,14 +221,14 @@ export class QueueService implements OnModuleInit {
       .getOne();
   }
 
-  private getPendingQueue(take = 50) {
+  private getPendingQueue(music_session: MusicSession, take = 50) {
     return this.queue.find({
       order: {
         priority: 'ASC',
         created_at: 'ASC',
       },
       take,
-      where: { status: Raw("'0'") },
+      where: { status: Raw("'0'"), music_session: { id: music_session.id } },
       relations: ['music'],
     });
   }

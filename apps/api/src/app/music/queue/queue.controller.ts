@@ -22,23 +22,28 @@ import { Backlog } from './backlog.entity';
 import { QueueEngineService } from './queue-engine/queue-engine.service';
 import { Queue } from './queue.entity';
 import { QueueService } from './queue.service';
+import { MusicSessionService } from '../../music-session/music-session.service';
 
 interface QueueResponse {
   queue: Queue[];
   backlog: Backlog | null;
 }
 
-@Controller('queue')
+@Controller('session/:sessionId/queue')
 export class QueueController {
   constructor(
     private readonly queue: QueueService,
     private readonly users: UsersService,
     private readonly queueEngine: QueueEngineService,
     private readonly settings: SettingsService,
+    private readonly session: MusicSessionService,
   ) {}
 
   @Get()
-  async getQueue(): Promise<QueueResponse> {
+  async getQueue(
+    @Param('sessionId') sessionId: string,
+  ): Promise<QueueResponse> {
+    const session = await this.session.findOne(+sessionId);
     const queue = await this.queue.get();
     const backlog = await this.queue.getNominatedBacklog();
     return {
@@ -49,7 +54,11 @@ export class QueueController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  async pushToQueue(@Body() music: Music, @Req() req: Request) {
+  async pushToQueue(
+    @Body() music: Music,
+    @Req() req: Request,
+    @Param('sessionId') sessionId: string,
+  ) {
     const user = this.getUser(req);
     if (user.role !== UserRole.ADMIN) {
       if (
@@ -62,12 +71,22 @@ export class QueueController {
         });
       }
     }
-    return this.queue.push(music, user.userId, user.role === UserRole.ADMIN);
+    const music_session = await this.session.findOne(+sessionId);
+    return this.queue.push(
+      music_session,
+      music,
+      user.userId,
+      user.role === UserRole.ADMIN,
+    );
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Delete(':id')
-  async deleteFromQueue(@Param('id') id: string, @Req() req: Request) {
+  async deleteFromQueue(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Param('sessionId') sessionId: string,
+  ) {
     const queuedMusics = await this.users.getQueuedMusicForUser(
       this.getUser(req).userId,
     );
@@ -87,27 +106,34 @@ export class QueueController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post('backlog')
-  pushToBacklog(@Body() music: Music) {
+  pushToBacklog(@Body() music: Music, @Param('sessionId') sessionId: string) {
     return this.queue.pushBacklog(music);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
   @Delete('backlog/:id')
-  deleteBacklog(@Param('id') id: string) {
+  deleteBacklog(
+    @Param('id') id: string,
+    @Param('sessionId') sessionId: string,
+  ) {
     return this.queue.deleteBacklog(id);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
   @Get('backlog')
-  getBackLog() {
+  getBackLog(@Param('sessionId') sessionId: string) {
     return this.queue.getBacklog();
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('/:id/forward')
-  async forwardQueue(@Param('id') id: string, @Req() req: Request) {
+  async forwardQueue(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Param('sessionId') sessionId: string,
+  ) {
     const user = await this.users.findById(this.getUser(req).userId);
     if (user === null) {
       throw new BadRequestException('User not found in database');

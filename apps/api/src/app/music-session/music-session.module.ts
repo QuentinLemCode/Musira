@@ -9,5 +9,6 @@ import { User } from '../users/user.entity';
   imports: [TypeOrmModule.forFeature([MusicSession, User])],
   controllers: [MusicSessionController],
   providers: [MusicSessionService],
+  exports: [MusicSessionService],
 })
 export class MusicSessionModule {}
