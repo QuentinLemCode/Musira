@@ -12,19 +12,18 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { Roles } from '../../auth/roles.decorator';
 import { RolesGuard } from '../../auth/roles.guard';
 import { SettingsService } from '../../core/settings/settings.service';
+import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { UserRole } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
+import { MusicSessionParam } from '../../utils/decorators/session-hash-id.decorator';
+import { Backlog } from '../backlog/backlog.entity';
+import { BacklogService } from '../backlog/backlog.service';
 import { Music } from '../music.entity';
-import { Backlog } from './backlog.entity';
 import { QueueEngineService } from './queue-engine/queue-engine.service';
 import { Queue } from './queue.entity';
 import { QueueService } from './queue.service';
-import { MusicSessionService } from '../../music-session/music-session.service';
-import { MusicSessionParam } from '../../utils/decorators/session-hash-id.decorator';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
 
 interface QueueResponse {
   queue: Queue[];
@@ -38,7 +37,7 @@ export class QueueController {
     private readonly users: UsersService,
     private readonly queueEngine: QueueEngineService,
     private readonly settings: SettingsService,
-    private readonly session: MusicSessionService,
+    private readonly backlog: BacklogService,
   ) {}
 
   @Get()
@@ -46,7 +45,7 @@ export class QueueController {
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<QueueResponse> {
     const queue = await this.queue.get(musicSession);
-    const backlog = await this.queue.getNominatedBacklog();
+    const backlog = await this.backlog.getNominatedBacklog(musicSession);
     return {
       queue,
       backlog,
@@ -87,11 +86,15 @@ export class QueueController {
     @Req() req: Request,
     @MusicSessionParam() musicSession: MusicSession,
   ) {
+    const user = this.getUser(req);
     const queuedMusics = await this.users.getQueuedMusicForUser(
-      this.getUser(req).userId,
+      musicSession,
+      user.userId,
     );
-    if (queuedMusics === null) {
-      throw new BadRequestException('User not found in database');
+    if (queuedMusics.length === 0) {
+      throw new BadRequestException(
+        'No queued music on this session for this user or user not found',
+      );
     }
     if (
       this.getUser(req).role !== UserRole.ADMIN &&
@@ -101,33 +104,6 @@ export class QueueController {
     }
 
     return this.queue.delete(id);
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Post('backlog')
-  pushToBacklog(
-    @Body() music: Music,
-    @MusicSessionParam() musicSession: MusicSession,
-  ) {
-    return this.queue.pushBacklog(music);
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Delete('backlog/:id')
-  deleteBacklog(
-    @Param('id') id: string,
-    @MusicSessionParam() musicSession: MusicSession,
-  ) {
-    return this.queue.deleteBacklog(id);
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Get('backlog')
-  getBackLog(@MusicSessionParam() musicSession: MusicSession) {
-    return this.queue.getBacklog();
   }
 
   @UseGuards(AuthGuard('jwt'))

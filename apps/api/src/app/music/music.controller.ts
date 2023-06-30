@@ -12,7 +12,9 @@ import { randomUUID } from 'crypto';
 import { JwtGuard } from '../auth/jwt.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
+import { MusicSession } from '../music-session/entities/music-session.entity';
 import { UserRole } from '../users/user.entity';
+import { MusicSessionParam } from '../utils/decorators/session-hash-id.decorator';
 import { CurrentMusic, Music, SpotifyOAuthDTO } from './music.interface';
 import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';
@@ -22,9 +24,6 @@ import {
   SearchResponse,
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
-import { MusicSessionService } from '../music-session/music-session.service';
-import { MusicSessionParam } from '../utils/decorators/session-hash-id.decorator';
-import { MusicSession } from '../music-session/entities/music-session.entity';
 
 interface Control {
   start: boolean;
@@ -37,7 +36,6 @@ export class MusicController {
     private readonly spotifySearch: SpotifySearchService,
     private readonly queue: QueueService,
     private readonly queueEngine: QueueEngineService,
-    private readonly musicSession: MusicSessionService,
   ) {}
 
   @UseGuards(JwtGuard)

@@ -10,7 +10,7 @@ export interface SettingsQuery {
   maxQueuableSongPerUser: number;
 }
 
-@Controller('settings')
+@Controller('session/:sessionHashId/settings')
 export class SettingsController {
   constructor(private readonly settings: SettingsService) {}
 

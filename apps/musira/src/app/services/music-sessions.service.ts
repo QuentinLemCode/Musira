@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { MusicSessionDto } from '@musira/api-interfaces/sessions/music-session.dto';
 import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
-import { first, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -52,9 +52,6 @@ export class MusicSessionsService {
   }
 
   private tapCurrentSession = tap<MusicSessionDto>((musicSession) => {
-    console.log('tapCurrentSession', musicSession);
     this.currentSession.set(musicSession);
-    console.log(this.currentSession());
-    this.currentSession$.pipe(first()).subscribe({ next: console.log});
   });
 }

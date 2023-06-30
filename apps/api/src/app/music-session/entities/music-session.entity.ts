@@ -14,6 +14,7 @@ import {
 import { Queue } from '../../music/queue/queue.entity';
 import { User } from '../../users/user.entity';
 import { hashIdEncode } from '../../utils/hashid';
+import { Backlog } from '../../music/backlog/backlog.entity';
 
 @Entity()
 export class MusicSession {
@@ -60,7 +61,13 @@ export class MusicSession {
   participants: User[];
 
   @OneToMany(() => Queue, (queue) => queue.music_session)
-  queued_musics: Queue[];
+  queued_musics: Promise<Queue[]>;
+
+  @OneToMany(() => Backlog, (backlog) => backlog.music_session)
+  backlog_musics: Promise<Backlog[]>;
+
+  @Column()
+  active: boolean;
 
   get hashId() {
     return hashIdEncode(this.id);

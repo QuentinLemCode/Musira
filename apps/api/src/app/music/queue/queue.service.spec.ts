@@ -10,7 +10,7 @@ import {
   CurrentPlaybackResponse,
   TrackObjectFull,
 } from '../spotify/types/spotify-interfaces';
-import { Backlog } from './backlog.entity';
+import { Backlog } from '../backlog/backlog.entity';
 import { Queue, Status } from './queue.entity';
 import { QueueService } from './queue.service';
 

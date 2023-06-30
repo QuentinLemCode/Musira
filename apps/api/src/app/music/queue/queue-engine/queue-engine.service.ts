@@ -10,10 +10,11 @@ import { SettingsService } from '../../../core/settings/settings.service';
 import { User, UserRole } from '../../../users/user.entity';
 import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service';
 import { CurrentPlaybackResponse } from '../../spotify/types/spotify-interfaces';
-import { Backlog } from '../backlog.entity';
+import { Backlog } from '../../backlog/backlog.entity';
 import { Queue } from '../queue.entity';
 import { QueueService } from '../queue.service';
 import { MusicSession } from '../../../music-session/entities/music-session.entity';
+import { BacklogService } from '../../backlog/backlog.service';
 
 export interface StartingStatus {
   started: boolean;
@@ -36,6 +37,7 @@ export class QueueEngineService {
     private readonly queues: QueueService,
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly settings: SettingsService,
+    private readonly backlog: BacklogService,
   ) {}
 
   private readonly logger = new Logger('QueueEngine');
@@ -174,7 +176,7 @@ export class QueueEngineService {
           nextQueue.music.toString(),
       );
     } else {
-      const poppedBacklog = await this.queues.popBacklog();
+      const poppedBacklog = await this.backlog.pop(musicSession);
       if (!poppedBacklog) return this.stop();
       backlog = poppedBacklog;
       this.logger.log('End of song : Retrieve music from backlog');

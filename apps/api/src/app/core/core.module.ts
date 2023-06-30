@@ -31,6 +31,7 @@ import { HealthController } from './health/health.controller';
       autoLoadEntities: true,
       synchronize: true,
       logger: new DatabaseLogger(),
+      logging: 'all',
     }),
     TypeOrmModule.forFeature([Settings]),
     ScheduleModule.forRoot(),

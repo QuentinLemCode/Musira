@@ -46,6 +46,12 @@ export class MusicSessionService {
     });
   }
 
+  getActiveSessions() {
+    return this.musicSession.find({
+      where: { active: true },
+    });
+  }
+
   async update(
     id: number,
     updateMusicSessionDto: UpdateMusicSessionDto,

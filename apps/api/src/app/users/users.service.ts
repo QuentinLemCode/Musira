@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes, randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
+import { MusicSession } from '../music-session/entities/music-session.entity';
 import { hashPassword } from '../utils/hash';
 import { User } from './user.entity';
 import { RegisterUserDTO } from './users.interface';
@@ -45,12 +46,9 @@ export class UsersService {
     });
   }
 
-  async getQueuedMusicForUser(id: number) {
-    const user = await this.users.findOne({
-      where: { id },
-      relations: ['queued_musics'],
-    });
-    return user?.queued_musics ?? null;
+  async getQueuedMusicForUser(musicSession: MusicSession, id: number) {
+    const queuedMusics = await musicSession.queued_musics;
+    return queuedMusics.filter((q) => q.userId === id);
   }
 
   async unlock(id: number) {
