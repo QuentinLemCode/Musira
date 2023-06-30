@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, computed } from '@angular/core';
 import { ReplaySubject, Subscription, combineLatest, timer } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -23,11 +23,13 @@ export class QueueService {
     readonly visibility: VisibilityService,
     private readonly session: MusicSessionsService,
   ) {
-    this.endpoint =
-      environment.serverUrl +
-      'session/' +
-      this.session.currentSession()?.id +
-      '/queue';
+    this.endpoint = computed(
+      () =>
+        environment.serverUrl +
+        'session/' +
+        this.session.currentSession()?.id +
+        '/queue',
+    );
     const pollingObservable = combineLatest([
       this.visibility.change,
       this.session.currentSession$,
@@ -37,6 +39,10 @@ export class QueueService {
         if (visibility.visible && session) {
           this.launchPolling();
         } else {
+          if (!session) {
+            this.$queue.next([]);
+            this.$backlog.next(null);
+          }
           this.stopPolling();
         }
       },
@@ -44,7 +50,7 @@ export class QueueService {
   }
 
   push(music: Music) {
-    return this.http.post(this.endpoint, music).pipe(
+    return this.http.post(this.endpoint(), music).pipe(
       tap(() => {
         this.loadQueue();
       }),
@@ -60,15 +66,15 @@ export class QueueService {
   }
 
   getFullBacklog() {
-    return this.http.get<Backlog[]>(this.endpoint + '/backlog');
+    return this.http.get<Backlog[]>(this.endpoint() + '/backlog');
   }
 
   pushBacklog(music: Music) {
-    return this.http.post(this.endpoint + '/backlog', music);
+    return this.http.post(this.endpoint() + '/backlog', music);
   }
 
   forward(id: string | number) {
-    return this.http.post(this.endpoint + '/' + id + '/forward', {}).pipe(
+    return this.http.post(this.endpoint() + '/' + id + '/forward', {}).pipe(
       tap(() => {
         this.loadQueue();
       }),
@@ -76,7 +82,7 @@ export class QueueService {
   }
 
   delete(id: string | number) {
-    return this.http.delete(this.endpoint + '/' + id).pipe(
+    return this.http.delete(this.endpoint() + '/' + id).pipe(
       tap(() => {
         this.$queue.pipe(first()).subscribe({
           next: (queue) => {
@@ -91,7 +97,7 @@ export class QueueService {
   }
 
   deleteBacklog(id: string | number) {
-    return this.http.delete(this.endpoint + '/backlog/' + id);
+    return this.http.delete(this.endpoint() + '/backlog/' + id);
   }
 
   private launchPolling() {
@@ -106,7 +112,7 @@ export class QueueService {
   }
 
   private loadQueue() {
-    this.http.get<QueueResponse>(this.endpoint).subscribe({
+    this.http.get<QueueResponse>(this.endpoint()).subscribe({
       next: (response) => {
         this.$queue.next(response.queue);
         this.$backlog.next(response.backlog);
