@@ -7,9 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { env } from 'process';
 import { UsersModule } from '../users/users.module';
 import DatabaseLogger from './database.logger';
-import { SettingsController } from './settings/settings.controller';
-import { Settings } from './settings/settings.entity';
-import { SettingsService } from './settings/settings.service';
 import { HealthController } from './health/health.controller';
 
 @Global()
@@ -33,12 +30,10 @@ import { HealthController } from './health/health.controller';
       logger: new DatabaseLogger(),
       logging: 'all',
     }),
-    TypeOrmModule.forFeature([Settings]),
     ScheduleModule.forRoot(),
     UsersModule,
   ],
-  providers: [SettingsService],
-  controllers: [SettingsController, HealthController],
+  controllers: [HealthController],
   exports: [
     JwtModule,
     HttpModule,
@@ -46,7 +41,6 @@ import { HealthController } from './health/health.controller';
     TypeOrmModule,
     ScheduleModule,
     UsersModule,
-    SettingsService,
   ],
 })
 export class CoreModule {}

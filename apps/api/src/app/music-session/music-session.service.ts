@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 import { MusicSession } from './entities/music-session.entity';
 import { hashIdDecode } from '../utils/hashid';
+import { Settings } from './settings/settings.entity';
 
 @Injectable()
 export class MusicSessionService {
@@ -25,6 +26,7 @@ export class MusicSessionService {
     const user = await this.user.findOneOrFail({ where: { id: creator_id } });
     session.creator = user;
     session.name = createMusicSessionDto.name;
+    session.settings = Promise.resolve(new Settings());
     return this.musicSession.save(session);
   }
 

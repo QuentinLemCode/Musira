@@ -1,7 +1,7 @@
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service';
-import { SettingsService } from '../../../core/settings/settings.service';
+import { SettingsService } from '../../../music-session/settings/settings.service';
 import { QueueService } from '../queue.service';
 import { QueueEngineService } from './queue-engine.service';
 

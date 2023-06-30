@@ -9,12 +9,14 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Queue } from '../../music/queue/queue.entity';
 import { User } from '../../users/user.entity';
 import { hashIdEncode } from '../../utils/hashid';
 import { Backlog } from '../../music/backlog/backlog.entity';
+import { Settings } from '../settings/settings.entity';
 
 @Entity()
 export class MusicSession {
@@ -65,6 +67,9 @@ export class MusicSession {
 
   @OneToMany(() => Backlog, (backlog) => backlog.music_session)
   backlog_musics: Promise<Backlog[]>;
+
+  @OneToOne(() => Settings, (settings) => settings.music_session)
+  settings: Promise<Settings>;
 
   @Column()
   active: boolean;

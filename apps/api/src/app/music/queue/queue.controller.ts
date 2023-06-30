@@ -13,7 +13,6 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { RolesGuard } from '../../auth/roles.guard';
-import { SettingsService } from '../../core/settings/settings.service';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { UserRole } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
@@ -36,7 +35,6 @@ export class QueueController {
     private readonly queue: QueueService,
     private readonly users: UsersService,
     private readonly queueEngine: QueueEngineService,
-    private readonly settings: SettingsService,
     private readonly backlog: BacklogService,
   ) {}
 
@@ -61,13 +59,14 @@ export class QueueController {
   ) {
     const user = this.getUser(req);
     if (user.role !== UserRole.ADMIN) {
+      const settings = await musicSession.settings;
       if (
         (await this.queue.countQueuedItemForUser(user.userId)) >=
-        this.settings.maxQueuableSongPerUser
+        settings.maxQueuableSongPerUser
       ) {
         throw new BadRequestException({
           cause: 'queue-limit',
-          limit: this.settings.maxQueuableSongPerUser,
+          limit: settings.maxQueuableSongPerUser,
         });
       }
     }

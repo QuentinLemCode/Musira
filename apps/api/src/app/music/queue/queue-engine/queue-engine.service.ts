@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { setTimeout } from 'timers';
-import { SettingsService } from '../../../core/settings/settings.service';
+import { SettingsService } from '../../../music-session/settings/settings.service';
 import { User, UserRole } from '../../../users/user.entity';
 import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service';
 import { CurrentPlaybackResponse } from '../../spotify/types/spotify-interfaces';
@@ -103,7 +103,7 @@ export class QueueEngineService {
     }
     const queue = await this.queues.vote(queueOrId, user);
     const voteCount = queue.forward_vote_users.length;
-    if (voteCount >= this.settings.maxVotes) {
+    if (voteCount >= (await musicSession.settings).maxVotes) {
       return this.next(musicSession, queue);
     }
   }

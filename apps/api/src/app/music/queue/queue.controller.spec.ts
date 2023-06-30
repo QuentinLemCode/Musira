@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SettingsService } from '../../core/settings/settings.service';
+import { SettingsService } from '../../music-session/settings/settings.service';
 import { UsersService } from '../../users/users.service';
 import { QueueEngineService } from './queue-engine/queue-engine.service';
 import { QueueController } from './queue.controller';
