@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, computed } from '@angular/core';
 import {
   Observable,
   ReplaySubject,
@@ -32,11 +32,13 @@ export class MusicApiService {
     readonly visibility: VisibilityService,
     private readonly session: MusicSessionsService,
   ) {
-    this.endpoint =
-      environment.serverUrl +
-      'session/' +
-      this.session.currentSession()?.id +
-      '/music';
+    this.endpoint = computed(
+      () =>
+        environment.serverUrl +
+        'session/' +
+        this.session.currentSession()?.id +
+        '/music',
+    );
     const pollingObservable = combineLatest([
       this.visibility.change,
       this.session.currentSession$,
@@ -53,21 +55,21 @@ export class MusicApiService {
   }
 
   search(query: string): Observable<Music[]> {
-    return this.http.get<Music[]>(this.endpoint + '/search', {
+    return this.http.get<Music[]>(this.endpoint() + '/search', {
       params: { query },
     });
   }
 
   getUrlLogin(): Observable<string> {
     return this.http
-      .get(this.endpoint + '/spotify-login', {
+      .get(this.endpoint() + '/spotify-login', {
         responseType: 'text',
       })
       .pipe(shareReplay(1));
   }
 
   authenticatePlayer(code: string) {
-    return this.http.post<CurrentMusic>(this.endpoint + '/register-player', {
+    return this.http.post<CurrentMusic>(this.endpoint() + '/register-player', {
       code,
     });
   }
@@ -80,7 +82,7 @@ export class MusicApiService {
     const body: Control = {
       start,
     };
-    return this.http.post<CurrentMusic>(this.endpoint, body);
+    return this.http.post<CurrentMusic>(this.endpoint(), body);
   }
 
   private launchPolling() {
@@ -95,7 +97,7 @@ export class MusicApiService {
   }
 
   private loadStatus() {
-    this.http.get<CurrentMusic>(this.endpoint).subscribe({
+    this.http.get<CurrentMusic>(this.endpoint()).subscribe({
       next: (status) => {
         this.$status.next(status);
       },
