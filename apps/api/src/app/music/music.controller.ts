@@ -22,18 +22,22 @@ import {
   SearchResponse,
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
+import { MusicSessionService } from '../music-session/music-session.service';
+import { MusicSessionParam } from '../utils/decorators/session-hash-id.decorator';
+import { MusicSession } from '../music-session/entities/music-session.entity';
 
 interface Control {
   start: boolean;
   logout?: boolean;
 }
-@Controller('music')
+@Controller('session/:sessionHashId/music')
 export class MusicController {
   constructor(
     private readonly spotify: SpotifyApiService,
     private readonly spotifySearch: SpotifySearchService,
     private readonly queue: QueueService,
     private readonly queueEngine: QueueEngineService,
+    private readonly musicSession: MusicSessionService,
   ) {}
 
   @UseGuards(JwtGuard)
@@ -75,29 +79,37 @@ export class MusicController {
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post()
-  async control(@Body() control: Control): Promise<CurrentMusic> {
+  async control(
+    @Body() control: Control,
+    @MusicSessionParam() musicSession: MusicSession,
+  ): Promise<CurrentMusic> {
     if (control.logout) {
       await this.spotify.unregisterPlayer();
       this.queueEngine.stop();
     } else if (control.start) {
-      const status = await this.queueEngine.start();
+      const status = await this.queueEngine.start(musicSession);
       await new Promise((r) => setTimeout(r, 2000));
-      return this.generateState(status.message);
+      return this.generateState(musicSession, status.message);
     } else if (control.start === false) {
       this.queueEngine.stop();
     }
-    return this.generateState();
+    return this.generateState(musicSession);
   }
 
   @Get()
-  async currentState(): Promise<CurrentMusic> {
-    return this.generateState();
+  async currentState(
+    @MusicSessionParam() musicSession: MusicSession,
+  ): Promise<CurrentMusic> {
+    return this.generateState(musicSession);
   }
 
   @Post('register-player')
   @UseGuards(JwtGuard)
   @Roles(UserRole.ADMIN)
-  async spotifyAuthentication(@Body() spotifyOAuth: SpotifyOAuthDTO) {
+  async spotifyAuthentication(
+    @Body() spotifyOAuth: SpotifyOAuthDTO,
+    @MusicSessionParam() musicSession: MusicSession,
+  ) {
     try {
       await this.spotify.registerPlayer(spotifyOAuth.code);
     } catch (error) {
@@ -109,7 +121,7 @@ export class MusicController {
         });
       }
     }
-    return this.currentState();
+    return this.currentState(musicSession);
   }
 
   private mapResults(results: SearchResponse): Music[] {
@@ -141,13 +153,16 @@ export class MusicController {
     return this.mapTrackItemToMusic(playback.currentPlayback.item);
   }
 
-  private async generateState(message?: string): Promise<CurrentMusic> {
+  private async generateState(
+    musicSession: MusicSession,
+    message?: string,
+  ): Promise<CurrentMusic> {
     const isSpotifyAccountRegistered = this.spotify.isAccountRegistered();
     const engineStarted = this.queueEngine.isRunning;
     if (!isSpotifyAccountRegistered) {
       return { isSpotifyAccountRegistered, engineStarted, message };
     }
-    const queue = await this.queue.get();
+    const queue = await this.queue.get(musicSession);
     const currentPlay = (await this.currentPlay()) || null;
     return {
       isSpotifyAccountRegistered,

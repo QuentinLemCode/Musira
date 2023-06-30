@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../services/user.service';
-import { MusicSessionsService } from '../services/music-sessions.service';
-import { first, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { MusicSessionDto } from '@musira/api-interfaces/sessions/music-session.dto';
+import { takeUntil } from 'rxjs';
+import { MusicSessionsService } from '../services/music-sessions.service';
+import { UserService } from '../services/user.service';
 import { UnsubscribableComponent } from '../utils/unsubscribable-component';
 
 @Component({
@@ -29,16 +29,15 @@ export class MainComponent extends UnsubscribableComponent implements OnInit {
       },
     });
 
-    this.route.params
-      .pipe(first())
-      .pipe(takeUntil(this.$destroy))
-      .subscribe({
-        next: (params) => {
-          if (params['sessionId']) {
-            this.sessions.get(params['sessionId']).subscribe();
-          }
-        },
-      });
+    this.route.params.pipe(takeUntil(this.$destroy)).subscribe({
+      next: (params) => {
+        if (params['sessionId']) {
+          this.sessions.joinSession(params['sessionId']).subscribe();
+        } else {
+          this.sessions.exitSession();
+        }
+      },
+    });
   }
   exitSession() {
     this.sessions.exitSession();

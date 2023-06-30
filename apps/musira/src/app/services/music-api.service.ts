@@ -15,7 +15,7 @@ interface Control {
   providedIn: 'root',
 })
 export class MusicApiService {
-  private readonly endpoint = environment.serverUrl + 'music';
+  private readonly endpoint;
 
   private readonly $status = new ReplaySubject<CurrentMusic>(1);
 
@@ -26,6 +26,7 @@ export class MusicApiService {
     readonly visibility: VisibilityService,
     private readonly session: MusicSessionsService,
   ) {
+    this.endpoint = environment.serverUrl + 'session/' + this.session.currentSession()?.id + '/music';
     const pollingObservable = combineLatest([
       this.visibility.change,
       this.session.currentSession$,

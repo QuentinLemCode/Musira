@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 import { MusicSession } from './entities/music-session.entity';
+import { hashIdDecode } from '../utils/hashid';
 
 @Injectable()
 export class MusicSessionService {
@@ -34,6 +35,13 @@ export class MusicSessionService {
   findOne(id: number): Promise<MusicSession> {
     return this.musicSession.findOne({
       where: { id },
+      relations: ['creator'],
+    });
+  }
+
+  findOneByHashid(hashid: string) {
+    return this.musicSession.findOne({
+      where: { id: hashIdDecode(hashid) },
       relations: ['creator'],
     });
   }

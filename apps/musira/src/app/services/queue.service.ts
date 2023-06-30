@@ -11,7 +11,7 @@ import { VisibilityService } from './visibility.service';
   providedIn: 'root',
 })
 export class QueueService {
-  private readonly endpoint = environment.serverUrl + 'queue';
+  private readonly endpoint;
 
   private readonly $queue = new ReplaySubject<Queue[]>(1);
   private readonly $backlog = new ReplaySubject<Backlog | null>(1);
@@ -23,6 +23,7 @@ export class QueueService {
     readonly visibility: VisibilityService,
     private readonly session: MusicSessionsService
   ) {
+    this.endpoint = environment.serverUrl + 'session/' + this.session.currentSession()?.id + '/queue';
     const pollingObservable = combineLatest([this.visibility.change, this.session.currentSession$])
     pollingObservable.subscribe({
       next: ([visibility, session]) => {

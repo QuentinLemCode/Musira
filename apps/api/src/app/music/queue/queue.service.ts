@@ -31,13 +31,13 @@ export class QueueService implements OnModuleInit {
   // queue basic functions
 
   async push(
-    music_session: MusicSession,
+    musicSession: MusicSession,
     music: Music,
     userId: number,
     isAdmin = false,
   ) {
     const alreadyInQueue = await this.findInPendingQueue(
-      music_session,
+      musicSession,
       music.uri,
     );
     if (alreadyInQueue) {
@@ -46,7 +46,7 @@ export class QueueService implements OnModuleInit {
     const queue = new Queue();
     queue.music = music;
     queue.userId = userId;
-    queue.music_session = music_session;
+    queue.music_session = musicSession;
     queue.priority = isAdmin
       ? 0
       : (await this.countQueuedItemForUser(userId)) + 1;
@@ -63,8 +63,8 @@ export class QueueService implements OnModuleInit {
     await this.backlog.save(backlog);
   }
 
-  async pop(music_session: MusicSession) {
-    const queue = await this.getPendingQueue(music_session, 1);
+  async pop(musicSession: MusicSession) {
+    const queue = await this.getPendingQueue(musicSession, 1);
     if (queue.length === 0) {
       return null;
     }
@@ -86,8 +86,8 @@ export class QueueService implements OnModuleInit {
     return backlog;
   }
 
-  get() {
-    return this.getQueueForStatus(Status.PENDING, Status.PLAYING);
+  get(musicSession: MusicSession) {
+    return this.getQueueForStatus(musicSession, Status.PENDING, Status.PLAYING);
   }
 
   async getBacklog() {
@@ -233,18 +233,23 @@ export class QueueService implements OnModuleInit {
     });
   }
 
-  private async getQueueForStatus(...status: Status[]) {
+  private async getQueueForStatus(
+    music_session: MusicSession,
+    ...status: Status[]
+  ) {
     const whereStatus = status.map((s) => '' + s);
     return this.queue
       .createQueryBuilder('queue')
       .leftJoinAndSelect('queue.music', 'music')
       .leftJoinAndSelect('queue.user', 'user')
+      .leftJoinAndSelect('queue.music_session', 'session')
       .loadRelationCountAndMap(
         'queue.forward_votes',
         'queue.forward_vote_users',
       )
       .select(['queue.status', 'music', 'user.name', 'user.id', 'queue.id'])
       .where('queue.status IN (:status)', { status: whereStatus })
+      .andWhere('session.id = :id', { id: music_session.id })
       .orderBy('queue.status', 'DESC')
       .addOrderBy('queue.priority', 'ASC')
       .addOrderBy('queue.created_at', 'ASC')

@@ -13,6 +13,7 @@ import { CurrentPlaybackResponse } from '../../spotify/types/spotify-interfaces'
 import { Backlog } from '../backlog.entity';
 import { Queue } from '../queue.entity';
 import { QueueService } from '../queue.service';
+import { MusicSession } from '../../../music-session/entities/music-session.entity';
 
 export interface StartingStatus {
   started: boolean;
@@ -47,9 +48,9 @@ export class QueueEngineService {
   private static readonly FAIL_PLAY = 'Unable to play song';
   private static readonly FAIL_NO_DEVICES = 'No device found';
 
-  async start(): Promise<StartingStatus> {
+  async start(musicSession: MusicSession): Promise<StartingStatus> {
     await this.refreshPlayingQueue();
-    const queue = await this.queues.pop();
+    const queue = await this.queues.pop(musicSession);
     if (!queue || !this.spotify.isAccountRegistered()) {
       const message = QueueEngineService.START_ENGINE_FAIL;
       this.logger.warn(message);
@@ -69,7 +70,7 @@ export class QueueEngineService {
     await this.queues.setPlaying(queue);
     // we wait a bit for the music launch
     setTimeout(() => {
-      this.launchEngine(queue);
+      this.launchEngine(musicSession, queue);
     }, 5000);
     return {
       started: true,
@@ -87,23 +88,27 @@ export class QueueEngineService {
     this.queues.setFinished(queue);
   }
 
-  async forward(queueOrId: Queue | string | number, user: User) {
+  async forward(
+    musicSession: MusicSession,
+    queueOrId: Queue | string | number,
+    user: User,
+  ) {
     if (!this.isRunning) {
       throw new GoneException({ cause: 'engine-not-running' });
     }
     if (user.role === UserRole.ADMIN) {
-      return this.next(await this.queues.getQueue(queueOrId));
+      return this.next(musicSession, await this.queues.getQueue(queueOrId));
     }
     const queue = await this.queues.vote(queueOrId, user);
     const voteCount = queue.forward_vote_users.length;
     if (voteCount >= this.settings.maxVotes) {
-      return this.next(queue);
+      return this.next(musicSession, queue);
     }
   }
 
-  async next(queue?: Queue | null) {
+  async next(musicSession: MusicSession, queue?: Queue | null) {
     if (!queue) {
-      queue = await this.queues.pop();
+      queue = await this.queues.pop(musicSession);
       if (queue === null) {
         this.logger.warn('No queue found, stopping engine');
         this.stop();
@@ -120,12 +125,12 @@ export class QueueEngineService {
     }
     await this.spotify.play(queue.music.uri);
     await this.queues.setPlaying(queue);
-    this.launchEngine(queue);
+    this.launchEngine(musicSession, queue);
   }
 
   // Engines related functions
 
-  private async launchEngine(queue: Queue) {
+  private async launchEngine(musicSession: MusicSession, queue: Queue) {
     const playState = await this.getPlayState();
     if (!playState) return;
 
@@ -137,7 +142,7 @@ export class QueueEngineService {
 
     this.deleteTimeouts();
     this.startTimeout(timeoutEndOfSong, this.SONG_END_SCHEDULER_NAME, () =>
-      this.endOfSongEvent(queue),
+      this.endOfSongEvent(musicSession, queue),
     );
   }
 
@@ -145,7 +150,10 @@ export class QueueEngineService {
   // we add the next song to the queue
   // we put the song state as finished
   // we then program the start of song event timeout
-  private async endOfSongEvent(queue: Queue | Backlog) {
+  private async endOfSongEvent(
+    musicSession: MusicSession,
+    queue: Queue | Backlog,
+  ) {
     const playState = await this.getPlayState();
     if (!playState) return;
 
@@ -157,7 +165,7 @@ export class QueueEngineService {
       );
       return this.stop();
     }
-    const nextQueue = await this.queues.pop();
+    const nextQueue = await this.queues.pop(musicSession);
     let backlog: Backlog;
     if (nextQueue !== null) {
       await this.spotify.addToQueue(nextQueue.music.uri);
@@ -178,7 +186,7 @@ export class QueueEngineService {
     this.startTimeout(
       timeoutBeginNextSong,
       this.SONG_START_SCHEDULER_NAME,
-      () => this.startOfSongEvent(nextQueue ?? backlog),
+      () => this.startOfSongEvent(musicSession, nextQueue ?? backlog),
     );
     this.stopTimeout(this.SONG_END_SCHEDULER_NAME);
   }
@@ -187,7 +195,10 @@ export class QueueEngineService {
   // we check the song has been started
   // we put the song state as playing
   // we then program the end of song event timeout
-  private async startOfSongEvent(queue: Queue | Backlog) {
+  private async startOfSongEvent(
+    musicSession: MusicSession,
+    queue: Queue | Backlog,
+  ) {
     const playState = await this.getPlayState();
     if (!playState) return;
 
@@ -204,7 +215,7 @@ export class QueueEngineService {
       playState.currentPlayback,
     );
     this.startTimeout(timeoutEndOfSong, this.SONG_END_SCHEDULER_NAME, () =>
-      this.endOfSongEvent(queue),
+      this.endOfSongEvent(musicSession, queue),
     );
     this.logger.log(`Start of song : ${queue.music.toString()}`);
     this.stopTimeout(this.SONG_START_SCHEDULER_NAME);

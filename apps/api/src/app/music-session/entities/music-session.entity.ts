@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Queue } from '../../music/queue/queue.entity';
 import { User } from '../../users/user.entity';
+import { hashIdEncode } from '../../utils/hashid';
 
 @Entity()
 export class MusicSession {
@@ -60,4 +61,8 @@ export class MusicSession {
 
   @OneToMany(() => Queue, (queue) => queue.music_session)
   queued_musics: Queue[];
+
+  get hashId() {
+    return hashIdEncode(this.id);
+  }
 }
