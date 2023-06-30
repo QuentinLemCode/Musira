@@ -1,6 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, Subscription, combineLatest, timer } from 'rxjs';
+import {
+  Observable,
+  ReplaySubject,
+  Subscription,
+  combineLatest,
+  timer,
+} from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { CurrentMusic, Music } from './music-api.interface';
@@ -26,7 +32,11 @@ export class MusicApiService {
     readonly visibility: VisibilityService,
     private readonly session: MusicSessionsService,
   ) {
-    this.endpoint = environment.serverUrl + 'session/' + this.session.currentSession()?.id + '/music';
+    this.endpoint =
+      environment.serverUrl +
+      'session/' +
+      this.session.currentSession()?.id +
+      '/music';
     const pollingObservable = combineLatest([
       this.visibility.change,
       this.session.currentSession$,

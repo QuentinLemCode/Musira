@@ -1,5 +1,5 @@
 export interface MusicSessionDto {
-  name: string,
-  id: string,
-  creator: string
+  name: string;
+  id: string;
+  creator: string;
 }

@@ -17,5 +17,4 @@ export class MusicSessionComponent {
   joinSession(code: string) {
     this.musicSession.joinSession(code).subscribe();
   }
-
 }

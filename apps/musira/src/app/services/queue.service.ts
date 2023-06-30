@@ -21,10 +21,17 @@ export class QueueService {
   constructor(
     private readonly http: HttpClient,
     readonly visibility: VisibilityService,
-    private readonly session: MusicSessionsService
+    private readonly session: MusicSessionsService,
   ) {
-    this.endpoint = environment.serverUrl + 'session/' + this.session.currentSession()?.id + '/queue';
-    const pollingObservable = combineLatest([this.visibility.change, this.session.currentSession$])
+    this.endpoint =
+      environment.serverUrl +
+      'session/' +
+      this.session.currentSession()?.id +
+      '/queue';
+    const pollingObservable = combineLatest([
+      this.visibility.change,
+      this.session.currentSession$,
+    ]);
     pollingObservable.subscribe({
       next: ([visibility, session]) => {
         if (visibility.visible && session) {
@@ -32,8 +39,8 @@ export class QueueService {
         } else {
           this.stopPolling();
         }
-      }
-    })
+      },
+    });
   }
 
   push(music: Music) {
