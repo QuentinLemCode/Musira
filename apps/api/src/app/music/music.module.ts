@@ -11,6 +11,8 @@ import { QueueService } from './queue/queue.service';
 import { SpotifyModule } from './spotify/spotify.module';
 import { MusicSessionModule } from '../music-session/music-session.module';
 import { BacklogService } from './backlog/backlog.service';
+import { BacklogController } from './backlog/backlog.controller';
+import { SpotifyLoginController } from './spotify/spotify-login.controller';
 
 @Module({
   imports: [
@@ -19,7 +21,12 @@ import { BacklogService } from './backlog/backlog.service';
     CoreModule,
     MusicSessionModule,
   ],
-  controllers: [MusicController, QueueController],
+  controllers: [
+    MusicController,
+    QueueController,
+    BacklogController,
+    SpotifyLoginController,
+  ],
   providers: [QueueService, QueueEngineService, BacklogService],
 })
 export class MusicModule {}

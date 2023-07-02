@@ -21,6 +21,8 @@ import {
   SpotifyTrackCategory,
   SpotifyURI,
 } from '../types/spotify-interfaces';
+import { MusicSession } from '../../../music-session/entities/music-session.entity';
+import { MusicSessionService } from '../../../music-session/music-session.service';
 
 export type PlaybackState =
   | {
@@ -52,10 +54,10 @@ export class SpotifyApiService implements OnModuleInit {
     @InjectRepository(SpotifyAccount)
     private readonly spotifyAccount: Repository<SpotifyAccount>,
     private readonly schedulerRegistry: SchedulerRegistry,
+    private readonly sessions: MusicSessionService,
     @Inject('CACHE_MANAGER') private readonly cache: Cache,
   ) {}
 
-  private currentRegisteredAccount: SpotifyAccount;
   private readonly logger = new Logger('SpotifyAPI');
 
   private static readonly INTERVAL_RENEW_TOKEN_TIME = 1000 * 1000; // 1000 seconds
@@ -66,31 +68,29 @@ export class SpotifyApiService implements OnModuleInit {
   };
 
   async onModuleInit() {
-    this.currentRegisteredAccount = await this.getAccount();
-    if (this.isAccountRegistered()) {
-      await this.renewToken();
-      this.startTokenRenewInterval();
+    const sessions = await this.sessions.getActiveSessions();
+    for (const session of sessions) {
+      const account = await session.spotify_account;
+      if (!account) continue;
+      await this.renewToken(account);
+      this.startTokenRenewInterval(account);
     }
   }
 
-  isAccountRegistered(): boolean {
+  async isAccountRegistered(musicSession: MusicSession): Promise<boolean> {
+    const account = await musicSession.spotify_account;
     return (
-      this.currentRegisteredAccount.expires_at !== null &&
-      this.currentRegisteredAccount.expires_at >= Date.now()
+      account && account.expires_at !== null && account.expires_at >= Date.now()
     );
   }
 
-  async unregisterPlayer() {
-    this.currentRegisteredAccount.access_token = '';
-    this.currentRegisteredAccount.expires_at = new Date().getTime() - 1;
-    this.currentRegisteredAccount.refresh_token = '';
-    this.currentRegisteredAccount.token_type = '';
-    this.currentRegisteredAccount.scope = '';
-    this.spotifyAccount.save(this.currentRegisteredAccount);
+  async unregisterPlayer(musicSession: MusicSession) {
+    const currentAccount = await musicSession.spotify_account;
+    this.spotifyAccount.remove(currentAccount);
     this.stopTokenRenewInterval();
   }
 
-  async registerPlayer(code: string) {
+  async registerPlayer(musicSession: MusicSession, code: string) {
     const form = {
       code: code,
       redirect_uri: this.redirectUrl,
@@ -116,17 +116,20 @@ export class SpotifyApiService implements OnModuleInit {
         .pipe(this.pipeResponse()),
     );
 
-    const account = {
-      ...(await this.getAccount()),
+    const account: SpotifyAccount = {
+      ...(await musicSession.spotify_account),
       ...response.data,
       expires_at: Date.now() + (response.data.expires_in - 10) * 1000,
+      music_session: musicSession,
     };
+
     await this.spotifyAccount.save(account);
-    this.currentRegisteredAccount = account;
-    this.startTokenRenewInterval();
+    // await this.sessions.saveAccount(musicSession, account);
+    this.startTokenRenewInterval(account);
   }
 
   async getPlaybackState(
+    musicSession: MusicSession,
     noCache = false,
   ): Promise<APIResult<PlaybackState | void>> {
     if (!this.isAccountRegistered) {
@@ -149,7 +152,7 @@ export class SpotifyApiService implements OnModuleInit {
 
     const options: AxiosRequestConfig = {
       headers: {
-        ...this.getAuthorizationHeaderForCurrentPlayer(),
+        ...(await this.getAuthorizationHeaderForCurrentPlayer(musicSession)),
       },
     };
 
@@ -178,7 +181,7 @@ export class SpotifyApiService implements OnModuleInit {
     );
   }
 
-  async skipToNext() {
+  async skipToNext(musicSession: MusicSession) {
     if (!this.isAccountRegistered) {
       return this.error('unregistered');
     }
@@ -188,14 +191,19 @@ export class SpotifyApiService implements OnModuleInit {
           'https://api.spotify.com/v1/me/player/next',
           {},
           {
-            headers: this.getAuthorizationHeaderForCurrentPlayer(),
+            headers: await this.getAuthorizationHeaderForCurrentPlayer(
+              musicSession,
+            ),
           },
         )
         .pipe(retry({ count: 5, delay: 1000 }), this.pipeResponse()),
     );
   }
 
-  async addToQueue(uri: SpotifyURI<SpotifyTrackCategory>): Promise<APIResult> {
+  async addToQueue(
+    musicSession: MusicSession,
+    uri: SpotifyURI<SpotifyTrackCategory>,
+  ): Promise<APIResult> {
     if (!this.isAccountRegistered) {
       return this.error('unregistered');
     }
@@ -205,7 +213,9 @@ export class SpotifyApiService implements OnModuleInit {
           'https://api.spotify.com/v1/me/player/queue',
           {},
           {
-            headers: this.getAuthorizationHeaderForCurrentPlayer(),
+            headers: await this.getAuthorizationHeaderForCurrentPlayer(
+              musicSession,
+            ),
             params: {
               uri,
             },
@@ -215,7 +225,10 @@ export class SpotifyApiService implements OnModuleInit {
     );
   }
 
-  async play(uri: SpotifyURI<SpotifyTrackCategory>): Promise<APIResult> {
+  async play(
+    musicSession: MusicSession,
+    uri: SpotifyURI<SpotifyTrackCategory>,
+  ): Promise<APIResult> {
     if (!this.isAccountRegistered) {
       return this.error('unregistered');
     }
@@ -227,7 +240,9 @@ export class SpotifyApiService implements OnModuleInit {
             uris: [uri],
           },
           {
-            headers: this.getAuthorizationHeaderForCurrentPlayer(),
+            headers: await this.getAuthorizationHeaderForCurrentPlayer(
+              musicSession,
+            ),
           },
         )
         .pipe(
@@ -245,7 +260,7 @@ export class SpotifyApiService implements OnModuleInit {
     if (!process.env.REDIRECT_HOST) {
       throw new ServiceUnavailableException('Redirect host not set on server');
     }
-    return process.env.REDIRECT_HOST + '/admin/spotify-device';
+    return process.env.REDIRECT_HOST + '/spotify-auth';
   }
 
   private pipeResponse(errorCase?: (status: number) => APIResult | void) {
@@ -281,18 +296,12 @@ export class SpotifyApiService implements OnModuleInit {
     };
   }
 
-  private async getAccount(): Promise<SpotifyAccount> {
-    let account = await this.spotifyAccount.findOneBy({ id: 1 });
-    if (!account) {
-      account = this.spotifyAccount.create({ id: 1 });
-      this.spotifyAccount.save(account);
-    }
-    return account;
-  }
-
-  private getAuthorizationHeaderForCurrentPlayer() {
+  private async getAuthorizationHeaderForCurrentPlayer(
+    musicSession: MusicSession,
+  ) {
+    const account = await musicSession.spotify_account;
     return {
-      Authorization: `${this.currentRegisteredAccount.token_type} ${this.currentRegisteredAccount.access_token}`,
+      Authorization: `${account.token_type} ${account.access_token}`,
     };
   }
 
@@ -310,10 +319,11 @@ export class SpotifyApiService implements OnModuleInit {
     this.logger.error(message, err);
   }
 
-  private async renewToken() {
-    this.logger.log('Renewing token...');
+  private async renewToken(account: SpotifyAccount) {
+    const musicSession = await account.music_session;
+    this.logger.log(`Renewing token for session ${musicSession.id} ...`);
     const form = {
-      refresh_token: this.currentRegisteredAccount.refresh_token,
+      refresh_token: account.refresh_token,
       grant_type: 'refresh_token',
     };
 
@@ -340,16 +350,16 @@ export class SpotifyApiService implements OnModuleInit {
     }
 
     this.logger.log('Token renewed successfully ! Saving it to database ...');
-    const account = {
-      ...(await this.getAccount()),
+    const renewedAccount: SpotifyAccount = {
+      ...account,
       ...response.data,
+      music_session: account.music_session,
       expires_at: Date.now() + (response.data.expires_in - 10) * 1000,
     };
-    await this.spotifyAccount.save(account);
-    this.currentRegisteredAccount = account;
+    await this.spotifyAccount.save(renewedAccount);
   }
 
-  private startTokenRenewInterval() {
+  private startTokenRenewInterval(account: SpotifyAccount) {
     if (
       this.schedulerRegistry.doesExist(
         'interval',
@@ -359,7 +369,7 @@ export class SpotifyApiService implements OnModuleInit {
       return;
     }
     const callback = () => {
-      this.renewToken();
+      this.renewToken(account);
     };
 
     const interval = setInterval(

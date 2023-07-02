@@ -22,7 +22,7 @@ export class BacklogController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
-  @Post('backlog')
+  @Post()
   pushToBacklog(
     @Body() music: Music,
     @MusicSessionParam() musicSession: MusicSession,
@@ -32,14 +32,14 @@ export class BacklogController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
-  @Delete('backlog/:id')
+  @Delete(':id')
   deleteBacklog(@Param('id') id: string) {
     return this.backlog.delete(id);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
-  @Get('backlog')
+  @Get('')
   getBackLog(@MusicSessionParam() musicSession: MusicSession) {
     return this.backlog.get(musicSession);
   }

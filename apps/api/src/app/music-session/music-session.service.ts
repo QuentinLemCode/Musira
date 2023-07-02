@@ -2,11 +2,10 @@ import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-mu
 import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { Repository } from 'typeorm';
 import { User } from '../users/user.entity';
-import { MusicSession } from './entities/music-session.entity';
 import { hashIdDecode } from '../utils/hashid';
+import { MusicSession } from './entities/music-session.entity';
 import { Settings } from './settings/settings.entity';
 
 @Injectable()
@@ -22,10 +21,11 @@ export class MusicSessionService {
     createMusicSessionDto: CreateMusicSessionDto,
     creator_id: number,
   ): Promise<MusicSession> {
-    const session = new MusicSession();
     const user = await this.user.findOneOrFail({ where: { id: creator_id } });
+    const session = this.musicSession.create({
+      name: createMusicSessionDto.name,
+    });
     session.creator = user;
-    session.name = createMusicSessionDto.name;
     session.settings = Promise.resolve(new Settings());
     return this.musicSession.save(session);
   }
@@ -52,6 +52,11 @@ export class MusicSessionService {
     return this.musicSession.find({
       where: { active: true },
     });
+  }
+
+  async setSpotifyAuthUuid(musicSession: MusicSession, uuid: string) {
+    musicSession.spotifyAuthUuid = uuid;
+    return this.musicSession.save(musicSession);
   }
 
   async update(

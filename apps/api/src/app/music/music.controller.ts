@@ -8,14 +8,13 @@ import {
   ServiceUnavailableException,
   UseGuards,
 } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { JwtGuard } from '../auth/jwt.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { MusicSession } from '../music-session/entities/music-session.entity';
 import { UserRole } from '../users/user.entity';
 import { MusicSessionParam } from '../utils/decorators/session-hash-id.decorator';
-import { CurrentMusic, Music, SpotifyOAuthDTO } from './music.interface';
+import { CurrentMusic, Music } from './music.interface';
 import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';
 import { SpotifyApiService } from './spotify/spotify-api/spotify-api.service';
@@ -48,41 +47,13 @@ export class MusicController {
 
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @Get('spotify-login')
-  spotifyLogin() {
-    const state = randomUUID();
-    const scope =
-      'user-modify-playback-state user-read-playback-state user-read-currently-playing user-read-recently-played user-read-playback-state';
-
-    const url = new URL('https://accounts.spotify.com/authorize');
-    const client_id = process.env.SPOTIFY_CLIENT_ID;
-    if (!client_id)
-      throw new ServiceUnavailableException(
-        'Spotify client ID not set on server',
-      );
-
-    const params = {
-      response_type: 'code',
-      client_id: client_id,
-      scope: scope,
-      redirect_uri: this.spotify.redirectUrl,
-      state: state,
-    };
-    Object.entries(params).forEach(([key, value]) => {
-      url.searchParams.set(key, value);
-    });
-    return url.toString();
-  }
-
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
   @Post()
   async control(
     @Body() control: Control,
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<CurrentMusic> {
     if (control.logout) {
-      await this.spotify.unregisterPlayer();
+      await this.spotify.unregisterPlayer(musicSession);
       this.queueEngine.stop();
     } else if (control.start) {
       const status = await this.queueEngine.start(musicSession);
@@ -99,27 +70,6 @@ export class MusicController {
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<CurrentMusic> {
     return this.generateState(musicSession);
-  }
-
-  @Post('register-player')
-  @UseGuards(JwtGuard)
-  @Roles(UserRole.ADMIN)
-  async spotifyAuthentication(
-    @Body() spotifyOAuth: SpotifyOAuthDTO,
-    @MusicSessionParam() musicSession: MusicSession,
-  ) {
-    try {
-      await this.spotify.registerPlayer(spotifyOAuth.code);
-    } catch (error) {
-      if (error?.response?.status === 400) {
-        throw new BadRequestException({
-          spotifyMessage: error.response.data.error,
-          isSpotifyAccountRegistered: this.spotify.isAccountRegistered(),
-          message: 'Authentification Spotify invalide ou déjà utilisé',
-        });
-      }
-    }
-    return this.currentState(musicSession);
   }
 
   private mapResults(results: SearchResponse): Music[] {
@@ -140,8 +90,8 @@ export class MusicController {
     };
   }
 
-  private async currentPlay() {
-    const response = await this.spotify.getPlaybackState();
+  private async currentPlay(musicSession: MusicSession) {
+    const response = await this.spotify.getPlaybackState(musicSession);
     if (response.status === 'error' || !response.data) {
       throw new ServiceUnavailableException();
     }
@@ -155,13 +105,15 @@ export class MusicController {
     musicSession: MusicSession,
     message?: string,
   ): Promise<CurrentMusic> {
-    const isSpotifyAccountRegistered = this.spotify.isAccountRegistered();
+    const isSpotifyAccountRegistered = await this.spotify.isAccountRegistered(
+      musicSession,
+    );
     const engineStarted = this.queueEngine.isRunning;
     if (!isSpotifyAccountRegistered) {
       return { isSpotifyAccountRegistered, engineStarted, message };
     }
     const queue = await this.queue.get(musicSession);
-    const currentPlay = (await this.currentPlay()) || null;
+    const currentPlay = (await this.currentPlay(musicSession)) || null;
     return {
       isSpotifyAccountRegistered,
       queue,

@@ -1,9 +1,9 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { MusicSession } from '../entities/music-session.entity';
 
 @Entity()
 export class Settings {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ default: 3 })
@@ -12,9 +12,6 @@ export class Settings {
   @Column({ default: 5 })
   maxQueuableSongPerUser: number;
 
-  @OneToOne(() => MusicSession, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'musicSessionId' })
+  @OneToOne(() => MusicSession, (music_session) => music_session.settings)
   music_session: MusicSession;
 }

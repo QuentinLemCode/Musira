@@ -19,7 +19,7 @@
       Arrêter
     </button>
     <p *ngIf="musicStatus.message">{{ musicStatus.message }}</p>
-    <h3>Musique en cours de lecture :</h3>
+    <h3>Musique en cours de lecture sur Spotify :</h3>
     <musira-music
       *ngIf="musicStatus.currentPlay"
       [music]="musicStatus.currentPlay"
@@ -27,6 +27,7 @@
     <h3>File d'attente :</h3>
     <musira-queue></musira-queue>
     <h3>Backlog :</h3>
+    <musira-search></musira-search>
     <musira-backlog></musira-backlog>
   </ng-container>
 </div>

@@ -5,13 +5,13 @@ import {
   ReplaySubject,
   Subscription,
   combineLatest,
-  timer,
+  timer
 } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { CurrentMusic, Music } from './music-api.interface';
-import { VisibilityService } from './visibility.service';
 import { MusicSessionsService } from './music-sessions.service';
+import { VisibilityService } from './visibility.service';
 
 interface Control {
   start: boolean;
@@ -22,6 +22,7 @@ interface Control {
 })
 export class MusicApiService {
   private readonly endpoint;
+  private readonly spotifyEndpoint = environment.serverUrl + 'spotify/';
 
   private readonly $status = new ReplaySubject<CurrentMusic>(1);
 
@@ -62,16 +63,23 @@ export class MusicApiService {
 
   getUrlLogin(): Observable<string> {
     return this.http
-      .get(this.endpoint() + '/spotify-login', {
-        responseType: 'text',
-      })
+      .get(
+        this.spotifyEndpoint +
+          this.session.currentSession()?.id +
+          '/spotify-login',
+        {
+          responseType: 'text',
+        },
+      )
       .pipe(shareReplay(1));
   }
 
-  authenticatePlayer(code: string) {
-    return this.http.post<CurrentMusic>(this.endpoint() + '/register-player', {
-      code,
-    });
+  authenticatePlayer(code: string, state: string) {
+    return this.http
+      .post<{ connected?: boolean, sessionHashId: string }>(this.spotifyEndpoint + 'register-player', {
+        code,
+        state,
+      })
   }
 
   getStatus() {

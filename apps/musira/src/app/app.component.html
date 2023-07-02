@@ -2,16 +2,16 @@
   <nav *ngIf="isLoggedIn && isAdmin">
     <ul>
       <li>
-        <a routerLink="/admin/spotify-device">Gestion Spotify</a>
-      </li>
-      <li>
         <a routerLink="/admin">Administration</a>
       </li>
       <li>
-        <a routerLink="/">Accueil</a>
+        <a [routerLink]="'/' + currentSession ? currentSession?.id : ''">Accueil</a>
       </li>
       <li>
         <a routerLink="/dashboard">Dashboard</a>
+      </li>
+      <li *ngIf="currentSession">
+        <a [routerLink]="[currentSession.id, 'session-settings']">Session settings</a>
       </li>
     </ul>
   </nav>

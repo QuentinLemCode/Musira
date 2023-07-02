@@ -20,7 +20,8 @@ export class MusicSessionsService {
   constructor(
     private readonly http: HttpClient,
     private readonly router: Router,
-  ) {}
+  ) {
+  }
 
   public create(musicSessionDto: CreateMusicSessionDto) {
     return this.http.post<MusicSessionDto>(this.endpoint, musicSessionDto).pipe(
@@ -41,8 +42,10 @@ export class MusicSessionsService {
     return this.http.get<MusicSessionDto>(this.endpoint + `/${code}`);
   }
 
-  public joinSession(code: string) {
-    this.router.navigate([code]);
+  public joinSession(code: string, navigate_to = true) {
+    if (navigate_to) {
+      this.router.navigate([code]);
+    }
     return this.get(code).pipe(this.tapCurrentSession);
   }
 

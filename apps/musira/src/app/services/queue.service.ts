@@ -11,8 +11,8 @@ import { VisibilityService } from './visibility.service';
   providedIn: 'root',
 })
 export class QueueService {
-  private readonly endpoint;
-
+  private readonly queueEndpoint;
+  private readonly backlogEndpoint;
   private readonly $queue = new ReplaySubject<Queue[]>(1);
   private readonly $backlog = new ReplaySubject<Backlog | null>(1);
 
@@ -23,12 +23,20 @@ export class QueueService {
     readonly visibility: VisibilityService,
     private readonly session: MusicSessionsService,
   ) {
-    this.endpoint = computed(
+    console.log('init with ' + this.session.currentSession())
+    this.queueEndpoint = computed(
       () =>
         environment.serverUrl +
         'session/' +
         this.session.currentSession()?.id +
         '/queue',
+    );
+    this.backlogEndpoint = computed(
+      () =>
+        environment.serverUrl +
+        'session/' +
+        this.session.currentSession()?.id +
+        '/backlog',
     );
     const pollingObservable = combineLatest([
       this.visibility.change,
@@ -50,7 +58,7 @@ export class QueueService {
   }
 
   push(music: Music) {
-    return this.http.post(this.endpoint(), music).pipe(
+    return this.http.post(this.queueEndpoint(), music).pipe(
       tap(() => {
         this.loadQueue();
       }),
@@ -66,15 +74,15 @@ export class QueueService {
   }
 
   getFullBacklog() {
-    return this.http.get<Backlog[]>(this.endpoint() + '/backlog');
+    return this.http.get<Backlog[]>(this.backlogEndpoint());
   }
 
   pushBacklog(music: Music) {
-    return this.http.post(this.endpoint() + '/backlog', music);
+    return this.http.post(this.backlogEndpoint(), music);
   }
 
   forward(id: string | number) {
-    return this.http.post(this.endpoint() + '/' + id + '/forward', {}).pipe(
+    return this.http.post(this.queueEndpoint() + '/' + id + '/forward', {}).pipe(
       tap(() => {
         this.loadQueue();
       }),
@@ -82,7 +90,7 @@ export class QueueService {
   }
 
   delete(id: string | number) {
-    return this.http.delete(this.endpoint() + '/' + id).pipe(
+    return this.http.delete(this.queueEndpoint() + '/' + id).pipe(
       tap(() => {
         this.$queue.pipe(first()).subscribe({
           next: (queue) => {
@@ -97,7 +105,7 @@ export class QueueService {
   }
 
   deleteBacklog(id: string | number) {
-    return this.http.delete(this.endpoint() + '/backlog/' + id);
+    return this.http.delete(this.backlogEndpoint() + '/' + id);
   }
 
   private launchPolling() {
@@ -112,7 +120,7 @@ export class QueueService {
   }
 
   private loadQueue() {
-    this.http.get<QueueResponse>(this.endpoint()).subscribe({
+    this.http.get<QueueResponse>(this.queueEndpoint()).subscribe({
       next: (response) => {
         this.$queue.next(response.queue);
         this.$backlog.next(response.backlog);

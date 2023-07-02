@@ -53,7 +53,7 @@ export class QueueEngineService {
   async start(musicSession: MusicSession): Promise<StartingStatus> {
     await this.refreshPlayingQueue();
     const queue = await this.queues.pop(musicSession);
-    if (!queue || !this.spotify.isAccountRegistered()) {
+    if (!queue || !this.spotify.isAccountRegistered(musicSession)) {
       const message = QueueEngineService.START_ENGINE_FAIL;
       this.logger.warn(message);
       return {
@@ -62,7 +62,7 @@ export class QueueEngineService {
       };
     }
     this.isRunning = true;
-    const response = await this.spotify.play(queue.music.uri);
+    const response = await this.spotify.play(musicSession, queue.music.uri);
     if (response.status === 'error') {
       if (response.cause === 'no-device') {
         return { started: false, message: QueueEngineService.FAIL_NO_DEVICES };
@@ -125,7 +125,7 @@ export class QueueEngineService {
     if (playingQueue) {
       await this.queues.setFinished(playingQueue);
     }
-    await this.spotify.play(queue.music.uri);
+    await this.spotify.play(musicSession, queue.music.uri);
     await this.queues.setPlaying(queue);
     this.launchEngine(musicSession, queue);
   }
@@ -133,7 +133,7 @@ export class QueueEngineService {
   // Engines related functions
 
   private async launchEngine(musicSession: MusicSession, queue: Queue) {
-    const playState = await this.getPlayState();
+    const playState = await this.getPlayState(musicSession);
     if (!playState) return;
 
     this.logger.log('Engine started');
@@ -156,7 +156,7 @@ export class QueueEngineService {
     musicSession: MusicSession,
     queue: Queue | Backlog,
   ) {
-    const playState = await this.getPlayState();
+    const playState = await this.getPlayState(musicSession);
     if (!playState) return;
 
     if (queue instanceof Queue) await this.queues.setFinished(queue);
@@ -170,7 +170,7 @@ export class QueueEngineService {
     const nextQueue = await this.queues.pop(musicSession);
     let backlog: Backlog;
     if (nextQueue !== null) {
-      await this.spotify.addToQueue(nextQueue.music.uri);
+      await this.spotify.addToQueue(musicSession, nextQueue.music.uri);
       this.logger.log(
         'End of song : added music to spotify queue ' +
           nextQueue.music.toString(),
@@ -180,7 +180,7 @@ export class QueueEngineService {
       if (!poppedBacklog) return this.stop();
       backlog = poppedBacklog;
       this.logger.log('End of song : Retrieve music from backlog');
-      await this.spotify.addToQueue(backlog.music.uri);
+      await this.spotify.addToQueue(musicSession, backlog.music.uri);
     }
     const timeoutBeginNextSong = this.calculateWhenNextSongBegin(
       playState.currentPlayback,
@@ -201,7 +201,7 @@ export class QueueEngineService {
     musicSession: MusicSession,
     queue: Queue | Backlog,
   ) {
-    const playState = await this.getPlayState();
+    const playState = await this.getPlayState(musicSession);
     if (!playState) return;
 
     const currentMusic = playState.currentPlayback;
@@ -223,8 +223,8 @@ export class QueueEngineService {
     this.stopTimeout(this.SONG_START_SCHEDULER_NAME);
   }
 
-  private async getPlayState() {
-    const response = await this.spotify.getPlaybackState(true);
+  private async getPlayState(musicSession: MusicSession) {
+    const response = await this.spotify.getPlaybackState(musicSession, true);
     if (response.status === 'error' || !response.data) {
       throw new ServiceUnavailableException();
     }
