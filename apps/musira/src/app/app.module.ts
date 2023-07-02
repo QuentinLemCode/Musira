@@ -23,6 +23,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { MusicSessionComponent } from './components/music-session/music-session.component';
 import { SessionSettingsComponent } from './session-settings/session-settings.component';
 import { SpotifyAuthComponent } from './spotifyAuth/spotify-auth.component';
+import { CreateSessionComponent } from './create-session/create-session.component';
+import { SpotifyLoginComponent } from './components/spotify-login/spotify-login.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +45,9 @@ import { SpotifyAuthComponent } from './spotifyAuth/spotify-auth.component';
     DashboardComponent,
     MusicSessionComponent,
     SessionSettingsComponent,
-    SpotifyAuthComponent
+    SpotifyAuthComponent,
+    CreateSessionComponent,
+    SpotifyLoginComponent,
   ],
   imports: [
     BrowserModule,

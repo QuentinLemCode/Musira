@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MusicApiService } from '../services/music-api.service';
+import { StorageService } from '../services/storage.service';
+import { CONSTANTS } from '../constants';
 
 @Component({
   selector: 'musira-spotify-auth',
@@ -17,9 +19,10 @@ export class SpotifyAuthComponent implements OnInit {
   }
 
   constructor(
-    private music: MusicApiService,
-    private route: ActivatedRoute,
-    private router: Router,
+    private readonly music: MusicApiService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly storage: StorageService
   ) {}
 
   ngOnInit(): void {
@@ -30,7 +33,10 @@ export class SpotifyAuthComponent implements OnInit {
       this.music.authenticatePlayer(code, state).subscribe({
         next: (status) => {
           if (status.connected) {
-            this.router.navigate([status.sessionHashId, 'session-settings'], {
+            const navigate = [status.sessionHashId]
+            const redirect = this.storage.getSessionItem<string>(CONSTANTS.SPOTIFY_LOGIN_REDIRECT_SESSION_KEY)
+            if(redirect) navigate.push(redirect)
+            this.router.navigate(navigate, {
               relativeTo: null,
               queryParams: {},
             });

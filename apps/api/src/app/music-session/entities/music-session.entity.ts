@@ -69,22 +69,15 @@ export class MusicSession {
   @OneToMany(() => Backlog, (backlog) => backlog.music_session)
   backlog_musics: Promise<Backlog[]>;
 
-  @OneToOne(() => Settings, {
-    onDelete: 'CASCADE',
+  @OneToOne(() => Settings, (settings) => settings.music_session, {
     cascade: true,
   })
-  @JoinColumn()
   settings: Promise<Settings>;
 
-  @ManyToOne(
+  @OneToOne(
     () => SpotifyAccount,
     (spotify_account) => spotify_account.music_session,
-    {
-      nullable: true,
-      cascade: true,
-    },
   )
-  @JoinColumn()
   spotify_account: Promise<SpotifyAccount | null>;
 
   @Column({ default: true })

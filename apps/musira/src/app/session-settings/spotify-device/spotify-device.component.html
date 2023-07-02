@@ -8,6 +8,7 @@
     "
   >
     <h1>Connecté à Spotify</h1>
+    <button (click)="logoutPlayer()">Déconnecter de Spotify</button>
     <h3>
       État du moteur de playlist :
       {{ musicStatus.engineStarted ? 'Démarré' : 'Arreté' }}
@@ -33,7 +34,7 @@
 </div>
 
 <ng-template #notAuthenticated>
-  <button (click)="login()">Login to spotify</button>
+  <musira-spotify-login [redirect_to]="'music-session'"></musira-spotify-login>
 </ng-template>
 
 <ng-template #loading>

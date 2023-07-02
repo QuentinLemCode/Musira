@@ -1,9 +1,7 @@
 import {
   BadRequestException,
-  Body,
   Controller,
   Get,
-  Post,
   Query,
   ServiceUnavailableException,
   UseGuards,
@@ -24,10 +22,6 @@ import {
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
 
-interface Control {
-  start: boolean;
-  logout?: boolean;
-}
 @Controller('session/:sessionHashId/music')
 export class MusicController {
   constructor(
@@ -47,21 +41,22 @@ export class MusicController {
 
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @Post()
-  async control(
-    @Body() control: Control,
+  @Get('start')
+  async start(
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<CurrentMusic> {
-    if (control.logout) {
-      await this.spotify.unregisterPlayer(musicSession);
-      this.queueEngine.stop();
-    } else if (control.start) {
-      const status = await this.queueEngine.start(musicSession);
-      await new Promise((r) => setTimeout(r, 2000));
-      return this.generateState(musicSession, status.message);
-    } else if (control.start === false) {
-      this.queueEngine.stop();
-    }
+    const status = await this.queueEngine.start(musicSession);
+    await new Promise((r) => setTimeout(r, 2000));
+    return this.generateState(musicSession, status.message);
+  }
+
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Get('stop')
+  async stop(
+    @MusicSessionParam() musicSession: MusicSession,
+  ): Promise<CurrentMusic> {
+    this.queueEngine.stop();
     return this.generateState(musicSession);
   }
 

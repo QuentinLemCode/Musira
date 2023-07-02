@@ -5,7 +5,7 @@ import {
   ReplaySubject,
   Subscription,
   combineLatest,
-  timer
+  timer,
 } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -13,10 +13,6 @@ import { CurrentMusic, Music } from './music-api.interface';
 import { MusicSessionsService } from './music-sessions.service';
 import { VisibilityService } from './visibility.service';
 
-interface Control {
-  start: boolean;
-  logout?: boolean;
-}
 @Injectable({
   providedIn: 'root',
 })
@@ -75,22 +71,29 @@ export class MusicApiService {
   }
 
   authenticatePlayer(code: string, state: string) {
-    return this.http
-      .post<{ connected?: boolean, sessionHashId: string }>(this.spotifyEndpoint + 'register-player', {
+    return this.http.post<{ connected?: boolean; sessionHashId: string }>(
+      this.spotifyEndpoint + 'register-player',
+      {
         code,
         state,
-      })
+      },
+    );
+  }
+
+  logoutPlayer() {
+    return this.http.post(this.spotifyEndpoint + this.session.currentSession()?.id + '/logout-player', {});
   }
 
   getStatus() {
     return this.$status.asObservable();
   }
 
-  setEngine(start: boolean) {
-    const body: Control = {
-      start,
-    };
-    return this.http.post<CurrentMusic>(this.endpoint(), body);
+  startEngine() {
+    return this.http.get<CurrentMusic>(this.endpoint() + '/start');
+  }
+
+  stopEngine() {
+    return this.http.get<CurrentMusic>(this.endpoint() + '/stop');
   }
 
   private launchPolling() {

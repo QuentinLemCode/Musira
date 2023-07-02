@@ -124,7 +124,6 @@ export class SpotifyApiService implements OnModuleInit {
     };
 
     await this.spotifyAccount.save(account);
-    // await this.sessions.saveAccount(musicSession, account);
     this.startTokenRenewInterval(account);
   }
 

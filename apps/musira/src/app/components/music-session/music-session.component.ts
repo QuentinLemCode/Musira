@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { MusicSessionsService } from '../../services/music-sessions.service';
 
 @Component({
@@ -8,13 +7,13 @@ import { MusicSessionsService } from '../../services/music-sessions.service';
   styleUrls: ['./music-session.component.scss'],
 })
 export class MusicSessionComponent {
-  public constructor(private readonly musicSession: MusicSessionsService) {}
-
-  createSession(name: string) {
-    this.musicSession.create(new CreateMusicSessionDto(name)).subscribe();
-  }
+  public constructor(private readonly musicSessions: MusicSessionsService) {}
 
   joinSession(code: string) {
-    this.musicSession.joinSession(code).subscribe();
+    this.musicSessions.joinSession(code).subscribe();
+  }
+
+  get sessionHistory() {
+    return this.musicSessions.getSessionHistory();
   }
 }

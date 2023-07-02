@@ -17,12 +17,14 @@ import { MusicSessionParam } from '../../utils/decorators/session-hash-id.decora
 import { SpotifyOAuthDTO } from '../music.interface';
 import { SpotifyApiService } from './spotify-api/spotify-api.service';
 import { MusicSessionService } from '../../music-session/music-session.service';
+import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
 
 @Controller('spotify')
 export class SpotifyLoginController {
   constructor(
     private readonly spotify: SpotifyApiService,
     private readonly sessions: MusicSessionService,
+    private readonly queueEngine: QueueEngineService,
   ) {}
 
   @UseGuards(JwtGuard, RolesGuard)
@@ -77,5 +79,13 @@ export class SpotifyLoginController {
       }
     }
     return { connected: true, sessionHashId: musicSession.hashId };
+  }
+
+  @Post(':sessionHashId/logout-player')
+  @UseGuards(JwtGuard)
+  @Roles(UserRole.ADMIN)
+  async spotifyLogout(@MusicSessionParam() musicSession: MusicSession) {
+    await this.spotify.unregisterPlayer(musicSession);
+    this.queueEngine.stop();
   }
 }

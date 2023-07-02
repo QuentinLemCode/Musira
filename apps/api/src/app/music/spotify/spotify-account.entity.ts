@@ -1,4 +1,10 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 
 @Entity()
@@ -29,7 +35,9 @@ export class SpotifyAccount {
     (music_session) => music_session.spotify_account,
     {
       eager: true,
+      onDelete: 'CASCADE',
     },
   )
+  @JoinColumn()
   music_session: MusicSession;
 }

@@ -14,12 +14,17 @@ import { musicSessionGuard } from './shared/music-session.guard';
 import { NotAuthGuard } from './shared/not-auth.guard';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { SpotifyAuthComponent } from './spotifyAuth/spotify-auth.component';
+import { CreateSessionComponent } from './create-session/create-session.component';
 
 const routes: Routes = [
   {
     path: ':sessionId/session-settings',
     component: SessionSettingsComponent,
     canActivate: [musicSessionGuard, AuthGuard, AdminGuard],
+  },
+  {
+    path: 'create-session',
+    component: CreateSessionComponent
   },
   {
     path: 'spotify-auth',

@@ -31,16 +31,12 @@ export class SpotifyDeviceComponent implements OnInit {
     });
   }
 
-  login() {
-    this.music.getUrlLogin().subscribe({
-      next: (url) => {
-        window.location.href = url;
-      },
-    });
+  logoutPlayer(): void {
+    this.music.logoutPlayer().subscribe();
   }
 
   startEngine() {
-    this.music.setEngine(true).subscribe({
+    this.music.startEngine().subscribe({
       next: (status) => {
         this.musicStatus = status;
       },
@@ -48,7 +44,7 @@ export class SpotifyDeviceComponent implements OnInit {
   }
 
   stopEngine() {
-    this.music.setEngine(false).subscribe({
+    this.music.stopEngine().subscribe({
       next: (status) => {
         this.musicStatus = status;
       },
