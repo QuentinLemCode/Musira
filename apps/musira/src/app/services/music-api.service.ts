@@ -81,7 +81,12 @@ export class MusicApiService {
   }
 
   logoutPlayer() {
-    return this.http.post(this.spotifyEndpoint + this.session.currentSession()?.id + '/logout-player', {});
+    return this.http.post(
+      this.spotifyEndpoint +
+        this.session.currentSession()?.id +
+        '/logout-player',
+      {},
+    );
   }
 
   getStatus() {

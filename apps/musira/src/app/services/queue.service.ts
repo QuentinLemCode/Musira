@@ -23,7 +23,7 @@ export class QueueService {
     readonly visibility: VisibilityService,
     private readonly session: MusicSessionsService,
   ) {
-    console.log('init with ' + this.session.currentSession())
+    console.log('init with ' + this.session.currentSession());
     this.queueEndpoint = computed(
       () =>
         environment.serverUrl +
@@ -82,11 +82,13 @@ export class QueueService {
   }
 
   forward(id: string | number) {
-    return this.http.post(this.queueEndpoint() + '/' + id + '/forward', {}).pipe(
-      tap(() => {
-        this.loadQueue();
-      }),
-    );
+    return this.http
+      .post(this.queueEndpoint() + '/' + id + '/forward', {})
+      .pipe(
+        tap(() => {
+          this.loadQueue();
+        }),
+      );
   }
 
   delete(id: string | number) {

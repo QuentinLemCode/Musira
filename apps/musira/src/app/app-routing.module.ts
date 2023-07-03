@@ -24,7 +24,7 @@ const routes: Routes = [
   },
   {
     path: 'create-session',
-    component: CreateSessionComponent
+    component: CreateSessionComponent,
   },
   {
     path: 'spotify-auth',

@@ -70,9 +70,11 @@ export class MusicSessionsService {
   }
 
   public getSessionHistory() {
-    return this.storage.getLocalItem<SessionHistory[]>(
-      CONSTANTS.SESSION_HISTORY_KEY,
-    )?.reverse() || [];
+    return (
+      this.storage
+        .getLocalItem<SessionHistory[]>(CONSTANTS.SESSION_HISTORY_KEY)
+        ?.reverse() || []
+    );
   }
 
   private tapCurrentSession = tap<MusicSessionDto>((musicSession) => {

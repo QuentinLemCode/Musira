@@ -18,7 +18,11 @@ export class AppComponent {
   faGithub = faGithubSquare;
   faLinkedIn = faLinkedin;
 
-  constructor(private user: UserService, private router: Router, private session: MusicSessionsService) {}
+  constructor(
+    private user: UserService,
+    private router: Router,
+    private session: MusicSessionsService,
+  ) {}
 
   get currentSession() {
     return this.session.currentSession();

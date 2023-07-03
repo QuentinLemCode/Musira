@@ -20,7 +20,9 @@ export class CreateSessionComponent implements OnInit {
     });
   }
 
-  get name() { return this.createSessionForm.get('name') }
+  get name() {
+    return this.createSessionForm.get('name');
+  }
 
   createSession = (name: string) => async () => {
     await firstValueFrom(
