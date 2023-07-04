@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SpotifyAccount } from '../spotify-account.entity';
 import { SpotifyApiService } from './spotify-api.service';
+import { MusicSessionService } from '../../../music-session/music-session.service';
 
 describe('SpotifyApiService', () => {
   let service: SpotifyApiService;
@@ -20,6 +21,7 @@ describe('SpotifyApiService', () => {
         },
         { provide: SchedulerRegistry, useValue: {} },
         { provide: 'CACHE_MANAGER', useValue: {} },
+        { provide: MusicSessionService, useValue: {} },
       ],
       imports: [HttpModule],
     }).compile();

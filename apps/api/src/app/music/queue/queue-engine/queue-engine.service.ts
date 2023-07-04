@@ -6,15 +6,14 @@ import {
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { setTimeout } from 'timers';
-import { SettingsService } from '../../../music-session/settings/settings.service';
+import { MusicSession } from '../../../music-session/entities/music-session.entity';
 import { User, UserRole } from '../../../users/user.entity';
+import { Backlog } from '../../backlog/backlog.entity';
+import { BacklogService } from '../../backlog/backlog.service';
 import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service';
 import { CurrentPlaybackResponse } from '../../spotify/types/spotify-interfaces';
-import { Backlog } from '../../backlog/backlog.entity';
 import { Queue } from '../queue.entity';
 import { QueueService } from '../queue.service';
-import { MusicSession } from '../../../music-session/entities/music-session.entity';
-import { BacklogService } from '../../backlog/backlog.service';
 
 export interface StartingStatus {
   started: boolean;
@@ -36,7 +35,6 @@ export class QueueEngineService {
     private readonly spotify: SpotifyApiService,
     private readonly queues: QueueService,
     private readonly schedulerRegistry: SchedulerRegistry,
-    private readonly settings: SettingsService,
     private readonly backlog: BacklogService,
   ) {}
 

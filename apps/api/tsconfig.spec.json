@@ -10,6 +10,7 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/*.d.ts",
-    "../../libs/api-interfaces/src/*"
+    "../../libs/api-interfaces/src/*",
+    "setup-jest.js"
   ]
 }
