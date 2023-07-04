@@ -3,6 +3,7 @@ name: Update Node.js Version
 on:
   schedule:
     - cron: '0 0 * * 0' # Run every Sunday at midnight UTC
+  workflow_dispatch:
 
 jobs:
   update-node-version:
@@ -42,27 +43,18 @@ jobs:
 
           sed -i "s/\"node\": \".*\"/\"node\": \"$LATEST_VERSION\"/g" package.json
 
-      - name: Create a branch
+      - name: Update .nvmrc
         if: steps.compare-versions.outputs.update == 'true'
-        run: |
-          BRANCH_NAME="update-node-version-$GITHUB_RUN_NUMBER"
-          git checkout -b $BRANCH_NAME
-
-      - name: Commit and push changes
-        if: steps.compare-versions.outputs.update == 'true'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Update Node.js version"
-          git push origin $BRANCH_NAME
+        run: echo ${{ steps.latest-node-version.outputs.version }} > .nvmrc
 
       - name: Open a PR
         if: steps.compare-versions.outputs.update == 'true'
         uses: peter-evans/create-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: $BRANCH_NAME
+          token: ${{ secrets.REPO_SCOPED_TOKEN }}
+          branch: update-node-version-${{ github.run_number }}
           title: 'Update Node.js version'
           body: |
             This PR updates the .nvmrc file with the latest Node.js version.
