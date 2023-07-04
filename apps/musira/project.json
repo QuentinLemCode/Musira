@@ -64,7 +64,8 @@
       },
       "defaultConfiguration": "development",
       "options": {
-        "proxyConfig": "apps/musira/proxy.conf.json"
+        "proxyConfig": "apps/musira/proxy.conf.json",
+        "ssl": true
       }
     },
     "extract-i18n": {

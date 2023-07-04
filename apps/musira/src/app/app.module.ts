@@ -25,6 +25,7 @@ import { SessionSettingsComponent } from './session-settings/session-settings.co
 import { SpotifyAuthComponent } from './spotifyAuth/spotify-auth.component';
 import { CreateSessionComponent } from './create-session/create-session.component';
 import { SpotifyLoginComponent } from './components/spotify-login/spotify-login.component';
+import { UserModule } from './user/user.module';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { SpotifyLoginComponent } from './components/spotify-login/spotify-login.
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
+    UserModule,
   ],
   providers: [
     {
