@@ -54,7 +54,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.REPO_SCOPED_TOKEN }}
           branch: update-node-version-${{ github.run_number }}
           title: 'Update Node.js version'
           body: |
