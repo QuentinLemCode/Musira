@@ -53,7 +53,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update-node-version-$GITHUB_RUN_NUMBER
+          branch: update-node-version-${{ github.run_number }}
           title: 'Update Node.js version'
           body: |
             This PR updates the .nvmrc file with the latest Node.js version.
