@@ -6,6 +6,7 @@ import {
 
 export interface SpotifyOAuthDTO {
   code: string;
+  state: string;
 }
 
 export interface Music {

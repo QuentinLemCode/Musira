@@ -1,8 +1,15 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { MusicSession } from '../../music-session/entities/music-session.entity';
 
 @Entity()
 export class SpotifyAccount {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ nullable: true })
@@ -22,4 +29,15 @@ export class SpotifyAccount {
 
   @Column({ type: 'bigint', nullable: true })
   expires_at: number;
+
+  @OneToOne(
+    () => MusicSession,
+    (music_session) => music_session.spotify_account,
+    {
+      eager: true,
+      onDelete: 'CASCADE',
+    },
+  )
+  @JoinColumn()
+  music_session: MusicSession;
 }

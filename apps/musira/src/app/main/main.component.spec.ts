@@ -5,8 +5,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { QueueComponent } from '../components/queue/queue.component';
 import { SearchComponent } from '../components/search/search.component';
 import { UserService } from '../services/user.service';
-
 import { MainComponent } from './main.component';
+import { MusicSessionComponent } from '../components/music-session/music-session.component';
 
 describe('MainComponent', () => {
   let component: MainComponent;
@@ -20,7 +20,12 @@ describe('MainComponent', () => {
         ReactiveFormsModule,
         FontAwesomeModule,
       ],
-      declarations: [MainComponent, QueueComponent, SearchComponent],
+      declarations: [
+        MainComponent,
+        QueueComponent,
+        SearchComponent,
+        MusicSessionComponent,
+      ],
       providers: [
         {
           provide: UserService,

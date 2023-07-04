@@ -1,0 +1,16 @@
+<label
+  >Rejoindre une session :<input
+    type="text"
+    #joinCode
+    placeholder="Code de session"
+/></label>
+<button (click)="joinSession(joinCode.value)">Rejoindre une session</button>
+
+<h2>Historique des sessions</h2>
+<ul>
+  <li *ngFor="let session of this.sessionHistory">
+    <a [routerLink]="session.musicSession.id">{{ session.musicSession.id }}</a>
+  </li>
+</ul>
+
+<button routerLink="create-session">Créer une session</button>

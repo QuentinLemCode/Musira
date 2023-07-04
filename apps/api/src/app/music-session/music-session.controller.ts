@@ -1,5 +1,5 @@
-import { CreateMusicSessionDto } from '@musira/api-interfaces/dto/sessions/create-music-session.dto';
-import { UpdateMusicSessionDto } from '@musira/api-interfaces/dto/sessions/update-music-session.dto';
+import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
+import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 import {
   Body,
   Controller,
@@ -12,47 +12,71 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { MusicSessionService } from './music-session.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { hashIdDecode } from '../utils/hashid';
+import { MusicSessionService } from './music-session.service';
 
 @Controller('music-session')
 export class MusicSessionController {
-  constructor(private readonly musicSessionService: MusicSessionService) {}
+  constructor(private readonly session: MusicSessionService) {}
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  create(
+  async create(
     @Body() createMusicSessionDto: CreateMusicSessionDto,
     @Req() request: Request,
   ) {
     if (!request.user) throw new ForbiddenException('no jwt');
-    return this.musicSessionService.create(
+    const createdSession = await this.session.create(
       createMusicSessionDto,
       request.user.userId,
     );
+    return {
+      name: createdSession.name,
+      id: createdSession.hashId,
+      creator: createdSession.creator.name,
+    };
   }
 
   @Get()
-  findAll() {
-    return this.musicSessionService.findAll();
+  async findAll() {
+    const musicSessions = await this.session.findAll();
+    return musicSessions.map((musicSession) => ({
+      name: musicSession.name,
+      id: musicSession.hashId,
+      creator: musicSession.creator.name,
+    }));
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.musicSessionService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const musicSessions = await this.session.findOne(hashIdDecode(id));
+    return {
+      name: musicSessions.name,
+      id: musicSessions.hashId,
+      creator: musicSessions.creator.name,
+    };
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateMusicSessionDto: UpdateMusicSessionDto,
   ) {
-    return this.musicSessionService.update(+id, updateMusicSessionDto);
+    const musicSession = await this.session.update(
+      hashIdDecode(id),
+      updateMusicSessionDto,
+    );
+    return {
+      name: musicSession.name,
+      id: musicSession.hashId,
+      creator: musicSession.creator.name,
+    };
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.musicSessionService.remove(+id);
+    return this.session.remove(hashIdDecode(id));
   }
 }

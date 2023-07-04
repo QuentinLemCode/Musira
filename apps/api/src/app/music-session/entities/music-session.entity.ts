@@ -7,12 +7,17 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Queue } from '../../music/queue/queue.entity';
 import { User } from '../../users/user.entity';
+import { hashIdEncode } from '../../utils/hashid';
+import { Backlog } from '../../music/backlog/backlog.entity';
+import { Settings } from '../settings/settings.entity';
+import { SpotifyAccount } from '../../music/spotify/spotify-account.entity';
 
 @Entity()
 export class MusicSession {
@@ -50,7 +55,7 @@ export class MusicSession {
   @Column()
   name: string;
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn()
   creator: User;
 
@@ -59,5 +64,29 @@ export class MusicSession {
   participants: User[];
 
   @OneToMany(() => Queue, (queue) => queue.music_session)
-  queued_musics: Queue[];
+  queued_musics: Promise<Queue[]>;
+
+  @OneToMany(() => Backlog, (backlog) => backlog.music_session)
+  backlog_musics: Promise<Backlog[]>;
+
+  @OneToOne(() => Settings, (settings) => settings.music_session, {
+    cascade: true,
+  })
+  settings: Promise<Settings>;
+
+  @OneToOne(
+    () => SpotifyAccount,
+    (spotify_account) => spotify_account.music_session,
+  )
+  spotify_account: Promise<SpotifyAccount | null>;
+
+  @Column({ default: true })
+  active: boolean;
+
+  @Column({ default: null, nullable: true, type: 'uuid' })
+  spotifyAuthUuid: string | null;
+
+  get hashId() {
+    return hashIdEncode(this.id);
+  }
 }

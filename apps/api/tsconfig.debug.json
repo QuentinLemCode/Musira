@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist",
+    "module": "CommonJS",
+    "types": ["node"],
+    "emitDecoratorMetadata": true,
+    "target": "es2017",
+    "lib": ["ESNext"],
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@musira/api-interfaces/*": ["libs/api-interfaces/src/*"]
+    }
+  },
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "include": ["**/*.ts"]
+}

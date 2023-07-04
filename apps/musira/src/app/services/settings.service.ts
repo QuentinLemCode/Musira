@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, computed } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { MusicSessionsService } from './music-sessions.service';
 
 export interface SettingsQuery {
   maxVotes: number;
@@ -11,25 +12,36 @@ export interface SettingsQuery {
   providedIn: 'root',
 })
 export class SettingsService {
-  private endpoint = environment.serverUrl + 'settings';
+  private readonly endpoint;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly session: MusicSessionsService,
+  ) {
+    this.endpoint = computed(
+      () =>
+        environment.serverUrl +
+        'session/' +
+        this.session.currentSession()?.id +
+        '/settings',
+    );
+  }
 
   get() {
-    return this.http.get<SettingsQuery>(this.endpoint);
+    return this.http.get<SettingsQuery>(this.endpoint());
   }
 
   setMaxVote(value: number) {
     const body: Partial<SettingsQuery> = {
       maxVotes: value,
     };
-    return this.http.put<SettingsQuery>(this.endpoint, body);
+    return this.http.put<SettingsQuery>(this.endpoint(), body);
   }
 
   setMaxQueuableSongPerUser(value: number) {
     const body: Partial<SettingsQuery> = {
       maxQueuableSongPerUser: value,
     };
-    return this.http.put<SettingsQuery>(this.endpoint, body);
+    return this.http.put<SettingsQuery>(this.endpoint(), body);
   }
 }
