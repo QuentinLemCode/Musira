@@ -55,7 +55,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add .
           git commit -m "Update Node.js version"
-          git push origin $BRANCH_NAME
+          git push -u origin $BRANCH_NAME
 
       - name: Open a PR
         if: steps.compare-versions.outputs.update == 'true'
