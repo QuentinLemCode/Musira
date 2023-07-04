@@ -8,5 +8,5 @@
     "target": "es2021"
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "../../libs/api-interfaces/src/*", "setup-jest.js"]
 }

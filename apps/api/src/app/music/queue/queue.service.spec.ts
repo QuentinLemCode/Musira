@@ -1,6 +1,7 @@
 import { ScheduleModule } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { MusicSessionService } from '../../music-session/music-session.service';
 import { Music } from '../music.entity';
 import {
   APIResult,
@@ -10,7 +11,6 @@ import {
   CurrentPlaybackResponse,
   TrackObjectFull,
 } from '../spotify/types/spotify-interfaces';
-import { Backlog } from './backlog.entity';
 import { Queue, Status } from './queue.entity';
 import { QueueService } from './queue.service';
 
@@ -44,12 +44,18 @@ describe('QueueService', () => {
   };
 
   beforeEach(async () => {
-    spySpotifyApiService.isAccountRegistered = jest.fn(() => true);
+    spySpotifyApiService.isAccountRegistered = jest.fn(() =>
+      Promise.resolve(true),
+    );
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [ScheduleModule.forRoot()],
       providers: [
         QueueService,
+        {
+          provide: MusicSessionService,
+          useValue: {},
+        },
         {
           provide: getRepositoryToken(Queue),
           useValue: {
@@ -63,16 +69,6 @@ describe('QueueService', () => {
               }
             },
           },
-        },
-        {
-          provide: getRepositoryToken(Backlog),
-          useValue: {
-            createQueryBuilder: () => ({}),
-          },
-        },
-        {
-          provide: SpotifyApiService,
-          useValue: spySpotifyApiService,
         },
       ],
     }).compile();

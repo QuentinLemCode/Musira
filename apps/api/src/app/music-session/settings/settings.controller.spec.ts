@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MusicSessionService } from '../music-session.service';
 import { SettingsController } from './settings.controller';
 import { SettingsService } from './settings.service';
 
@@ -15,6 +16,10 @@ describe('SettingsController', () => {
             maxVotes: { id: 1, maxVotes: 3 },
             setMaxVotes: () => null,
           },
+        },
+        {
+          provide: MusicSessionService,
+          useValue: {},
         },
       ],
     }).compile();

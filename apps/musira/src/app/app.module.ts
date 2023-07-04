@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { SpotifyDeviceComponent } from './admin/spotify-device/spotify-device.component';
+import { SpotifyDeviceComponent } from './session-settings/spotify-device/spotify-device.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MusicComponent } from './components/music/music.component';
@@ -20,6 +20,11 @@ import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { AdminComponent } from './admin/admin/admin.component';
 import { BacklogComponent } from './components/backlog/backlog.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { MusicSessionComponent } from './components/music-session/music-session.component';
+import { SessionSettingsComponent } from './session-settings/session-settings.component';
+import { SpotifyAuthComponent } from './spotifyAuth/spotify-auth.component';
+import { CreateSessionComponent } from './create-session/create-session.component';
+import { SpotifyLoginComponent } from './components/spotify-login/spotify-login.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +43,11 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     AdminComponent,
     BacklogComponent,
     DashboardComponent,
+    MusicSessionComponent,
+    SessionSettingsComponent,
+    SpotifyAuthComponent,
+    CreateSessionComponent,
+    SpotifyLoginComponent,
   ],
   imports: [
     BrowserModule,

@@ -4,10 +4,12 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Music } from '../music.entity';
+import { MusicSession } from '../../music-session/entities/music-session.entity';
 
 export enum Status {
   PENDING,
@@ -55,4 +57,10 @@ export class Backlog {
 
   @Column({ type: 'int', default: 0 })
   play_count: number;
+
+  @ManyToOne(() => MusicSession, (session) => session.backlog_musics, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'musicSessionId' })
+  music_session: MusicSession;
 }

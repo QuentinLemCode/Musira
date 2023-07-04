@@ -9,7 +9,11 @@
     "build": "nx run-many --projects=api,musira -t build",
     "test:front": "nx test",
     "test:api": "nx test api",
-    "e2e": "nx e2e musira-e2e --watch"
+    "e2e": "nx e2e musira-e2e --watch",
+    "serve:api": "nx serve api",
+    "serve:front": "nx serve musira",
+    "build:watch": "tsc -p apps/api/tsconfig.debug.json && (concurrently \"tsc -p apps/api/tsconfig.debug.json -w\" \"tsc-alias -p apps/api/tsconfig.debug.json -w\")",
+    "tsc-alias": "tsc-alias -p apps/api/tsconfig.debug.json -w"
   },
   "private": true,
   "engines": {
@@ -47,6 +51,7 @@
     "axios": "^1.4.0",
     "axios-cache-interceptor": "^1.2.0",
     "cache-manager": "^5.2.3",
+    "hashids": "^2.3.0",
     "mysql2": "^3.4.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",

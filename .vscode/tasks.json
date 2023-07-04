@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "typescript",
+      "tsconfig": "apps/api/tsconfig.debug.json",
+      "option": "watch",
+      "problemMatcher": ["$tsc-watch"],
+      "group": "build",
+      "label": "tsc: watch - apps/api/tsconfig.debug.json",
+      "dependsOn": "process: tsc-alias"
+    },
+    {
+      "type": "npm",
+      "script": "tsc-alias",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: tsc-alias",
+      "isBackground": true
+    },
+    {
+      "type": "shell",
+      "command": "npx tsc-alias -p apps/api/tsconfig.debug.json -w",
+      "isBackground": true,
+      "label": "process: tsc-alias",
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": ".",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^.*Waiting for debug connection.*$",
+            "endsPattern": "."
+          }
+        }
+      ]
+    },
+    {
+      "type": "npm",
+      "script": "build:watch",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: build:watch",
+      "detail": "tsc -p apps/api/tsconfig.debug.json && (concurrently \"tsc -p apps/api/tsconfig.debug.json -w\" \"tsc-alias -p apps/api/tsconfig.debug.json -w\")"
+    }
+  ]
+}

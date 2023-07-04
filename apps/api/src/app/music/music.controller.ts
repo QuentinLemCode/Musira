@@ -1,19 +1,18 @@
 import {
   BadRequestException,
-  Body,
   Controller,
   Get,
-  Post,
   Query,
   ServiceUnavailableException,
   UseGuards,
 } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { JwtGuard } from '../auth/jwt.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
+import { MusicSession } from '../music-session/entities/music-session.entity';
 import { UserRole } from '../users/user.entity';
-import { CurrentMusic, Music, SpotifyOAuthDTO } from './music.interface';
+import { MusicSessionParam } from '../utils/decorators/session-hash-id.decorator';
+import { CurrentMusic, Music } from './music.interface';
 import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';
 import { SpotifyApiService } from './spotify/spotify-api/spotify-api.service';
@@ -23,11 +22,7 @@ import {
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
 
-interface Control {
-  start: boolean;
-  logout?: boolean;
-}
-@Controller('music')
+@Controller('session/:sessionHashId/music')
 export class MusicController {
   constructor(
     private readonly spotify: SpotifyApiService,
@@ -46,70 +41,30 @@ export class MusicController {
 
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @Get('spotify-login')
-  spotifyLogin() {
-    const state = randomUUID();
-    const scope =
-      'user-modify-playback-state user-read-playback-state user-read-currently-playing user-read-recently-played user-read-playback-state';
-
-    const url = new URL('https://accounts.spotify.com/authorize');
-    const client_id = process.env.SPOTIFY_CLIENT_ID;
-    if (!client_id)
-      throw new ServiceUnavailableException(
-        'Spotify client ID not set on server',
-      );
-
-    const params = {
-      response_type: 'code',
-      client_id: client_id,
-      scope: scope,
-      redirect_uri: this.spotify.redirectUrl,
-      state: state,
-    };
-    Object.entries(params).forEach(([key, value]) => {
-      url.searchParams.set(key, value);
-    });
-    return url.toString();
+  @Get('start')
+  async start(
+    @MusicSessionParam() musicSession: MusicSession,
+  ): Promise<CurrentMusic> {
+    const status = await this.queueEngine.start(musicSession);
+    await new Promise((r) => setTimeout(r, 2000));
+    return this.generateState(musicSession, status.message);
   }
 
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @Post()
-  async control(@Body() control: Control): Promise<CurrentMusic> {
-    if (control.logout) {
-      await this.spotify.unregisterPlayer();
-      this.queueEngine.stop();
-    } else if (control.start) {
-      const status = await this.queueEngine.start();
-      await new Promise((r) => setTimeout(r, 2000));
-      return this.generateState(status.message);
-    } else if (control.start === false) {
-      this.queueEngine.stop();
-    }
-    return this.generateState();
+  @Get('stop')
+  async stop(
+    @MusicSessionParam() musicSession: MusicSession,
+  ): Promise<CurrentMusic> {
+    this.queueEngine.stop();
+    return this.generateState(musicSession);
   }
 
   @Get()
-  async currentState(): Promise<CurrentMusic> {
-    return this.generateState();
-  }
-
-  @Post('register-player')
-  @UseGuards(JwtGuard)
-  @Roles(UserRole.ADMIN)
-  async spotifyAuthentication(@Body() spotifyOAuth: SpotifyOAuthDTO) {
-    try {
-      await this.spotify.registerPlayer(spotifyOAuth.code);
-    } catch (error) {
-      if (error?.response?.status === 400) {
-        throw new BadRequestException({
-          spotifyMessage: error.response.data.error,
-          isSpotifyAccountRegistered: this.spotify.isAccountRegistered(),
-          message: 'Authentification Spotify invalide ou déjà utilisé',
-        });
-      }
-    }
-    return this.currentState();
+  async currentState(
+    @MusicSessionParam() musicSession: MusicSession,
+  ): Promise<CurrentMusic> {
+    return this.generateState(musicSession);
   }
 
   private mapResults(results: SearchResponse): Music[] {
@@ -130,8 +85,8 @@ export class MusicController {
     };
   }
 
-  private async currentPlay() {
-    const response = await this.spotify.getPlaybackState();
+  private async currentPlay(musicSession: MusicSession) {
+    const response = await this.spotify.getPlaybackState(musicSession);
     if (response.status === 'error' || !response.data) {
       throw new ServiceUnavailableException();
     }
@@ -141,14 +96,19 @@ export class MusicController {
     return this.mapTrackItemToMusic(playback.currentPlayback.item);
   }
 
-  private async generateState(message?: string): Promise<CurrentMusic> {
-    const isSpotifyAccountRegistered = this.spotify.isAccountRegistered();
+  private async generateState(
+    musicSession: MusicSession,
+    message?: string,
+  ): Promise<CurrentMusic> {
+    const isSpotifyAccountRegistered = await this.spotify.isAccountRegistered(
+      musicSession,
+    );
     const engineStarted = this.queueEngine.isRunning;
     if (!isSpotifyAccountRegistered) {
       return { isSpotifyAccountRegistered, engineStarted, message };
     }
-    const queue = await this.queue.get();
-    const currentPlay = (await this.currentPlay()) || null;
+    const queue = await this.queue.get(musicSession);
+    const currentPlay = (await this.currentPlay(musicSession)) || null;
     return {
       isSpotifyAccountRegistered,
       queue,

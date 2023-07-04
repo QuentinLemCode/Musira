@@ -1,7 +1,7 @@
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BacklogService } from '../../backlog/backlog.service';
 import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service';
-import { SettingsService } from '../../../core/settings/settings.service';
 import { QueueService } from '../queue.service';
 import { QueueEngineService } from './queue-engine.service';
 
@@ -15,7 +15,7 @@ describe('QueueEngineService', () => {
         { provide: SpotifyApiService, useValue: {} },
         { provide: QueueService, useValue: {} },
         { provide: SchedulerRegistry, useValue: {} },
-        { provide: SettingsService, useValue: {} },
+        { provide: BacklogService, useValue: {} },
       ],
     }).compile();
 

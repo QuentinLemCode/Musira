@@ -6,6 +6,7 @@ import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';
 import { SpotifyApiService } from './spotify/spotify-api/spotify-api.service';
 import { SpotifySearchService } from './spotify/spotify-search/spotify-search.service';
+import { MusicSessionService } from '../music-session/music-session.service';
 
 describe('MusicController', () => {
   let controller: MusicController;
@@ -34,6 +35,10 @@ describe('MusicController', () => {
         },
         {
           provide: QueueEngineService,
+          useValue: {},
+        },
+        {
+          provide: MusicSessionService,
           useValue: {},
         },
       ],
