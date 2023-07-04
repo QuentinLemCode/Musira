@@ -46,14 +46,14 @@ jobs:
 
       - name: Update .nvmrc
         if: steps.compare-versions.outputs.update == 'true'
-        run: echo $LATEST_VERSION > .nvmrc
+        run: echo ${{ steps.latest-node-version.outputs.version }} > .nvmrc
 
       - name: Open a PR
         if: steps.compare-versions.outputs.update == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: $BRANCH_NAME
+          branch: update-node-version-$GITHUB_RUN_NUMBER
           title: 'Update Node.js version'
           body: |
             This PR updates the .nvmrc file with the latest Node.js version.
