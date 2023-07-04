@@ -49,6 +49,7 @@ jobs:
         run: |
           BRANCH_NAME="update-node-version-$GITHUB_RUN_NUMBER"
           git checkout -b $BRANCH_NAME
+          git push -u origin $BRANCH_NAME
 
       - name: Commit and push changes
         if: steps.compare-versions.outputs.update == 'true'
@@ -57,7 +58,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add .
           git commit -m "Update Node.js version"
-          git push --set-upstream origin $BRANCH_NAME
+          git push
 
       - name: Open a PR
         if: steps.compare-versions.outputs.update == 'true'
