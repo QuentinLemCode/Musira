@@ -51,6 +51,8 @@ jobs:
       - name: Open a PR
         if: steps.compare-versions.outputs.update == 'true'
         uses: peter-evans/create-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-node-version-${{ github.run_number }}
