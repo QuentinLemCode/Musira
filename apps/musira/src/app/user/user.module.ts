@@ -3,14 +3,16 @@ import {
   GoogleLoginProvider,
   SocialAuthServiceConfig,
   SocialLoginModule,
-  GoogleSigninButtonModule,
+  GoogleSigninButtonModule
 } from '@abacritt/angularx-social-login';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { LoginComponent } from './login/login.component';
 
 @NgModule({
-  declarations: [LoginComponent],
+  declarations: [
+    LoginComponent,
+  ],
   imports: [CommonModule, SocialLoginModule, GoogleSigninButtonModule],
   providers: [
     {
@@ -31,7 +33,7 @@ import { LoginComponent } from './login/login.component';
         ],
         onError: (err: unknown) => {
           console.error(err);
-        },
+        }
       } as SocialAuthServiceConfig,
     },
   ],
