@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './admin/admin/admin.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ChallengeComponent } from './login/challenge/challenge.component';
-
+import { LoginComponent } from './login/login.component';
 import { PasswordComponent } from './login/password/password.component';
 import { RegisterComponent } from './login/register/register.component';
 import { MainComponent } from './main/main.component';
@@ -15,7 +15,6 @@ import { NotAuthGuard } from './shared/not-auth.guard';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { SpotifyAuthComponent } from './spotifyAuth/spotify-auth.component';
 import { CreateSessionComponent } from './create-session/create-session.component';
-import { LoginComponent } from './user/login/login.component';
 
 const routes: Routes = [
   {
@@ -37,11 +36,6 @@ const routes: Routes = [
     canActivate: [AuthGuard, AdminGuard],
   },
   {
-    path: 'login',
-    component: LoginComponent,
-    canActivate: [NotAuthGuard],
-  },
-  {
     path: 'login/password',
     component: PasswordComponent,
     canActivate: [NotAuthGuard],
@@ -60,7 +54,7 @@ const routes: Routes = [
     path: 'dashboard',
     component: DashboardComponent,
   },
-  // { path: 'login', component: LoginComponent, canActivate: [NotAuthGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [NotAuthGuard] },
   {
     path: ':sessionId',
     component: MainComponent,
