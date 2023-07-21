@@ -83,7 +83,7 @@
     "@nx/nest": "16.4.0",
     "@nx/node": "16.4.0",
     "@nx/workspace": "16.4.0",
-    "@schematics/angular": "16.1.4",
+    "@schematics/angular": "16.1.5",
     "@types/cron": "^2.0.1",
     "@types/jest": "29.5.3",
     "@types/node": "^20.4.2",
