@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Musira</string>
+    <string name="title_activity_main">Musira</string>
+    <string name="package_name">com.musira.app</string>
+    <string name="custom_url_scheme">com.musira.app</string>
+</resources>
