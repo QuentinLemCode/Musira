@@ -21,10 +21,7 @@ import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private users: UsersService,
-    private auth: AuthService,
-  ) {}
+  constructor(private users: UsersService, private auth: AuthService) {}
 
   @Post('register')
   async register(

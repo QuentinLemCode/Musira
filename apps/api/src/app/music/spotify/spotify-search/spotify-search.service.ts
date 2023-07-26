@@ -76,8 +76,9 @@ export class SpotifySearchService implements OnModuleInit {
   private async loadToken(): Promise<Token> {
     if (this.currentToken?.expiryDate) {
       this.logger.log(
-        `App token expired at current date : ${new Date()} for token expiry date : ${this
-          .currentToken?.expiryDate}. Refreshing...`,
+        `App token expired at current date : ${new Date()} for token expiry date : ${
+          this.currentToken?.expiryDate
+        }. Refreshing...`,
       );
     }
     const token = await this.getToken();

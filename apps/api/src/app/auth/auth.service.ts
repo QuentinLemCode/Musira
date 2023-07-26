@@ -19,10 +19,7 @@ export class AuthService {
     expiresIn: env.JWT_REFRESH_EXPIRATION ?? '1y',
   };
 
-  constructor(
-    private users: UsersService,
-    private jwt: JwtService,
-  ) {}
+  constructor(private users: UsersService, private jwt: JwtService) {}
 
   async validateUser(
     name: string,
