@@ -16,6 +16,7 @@
     "tsc-alias": "tsc-alias -p apps/api/tsconfig.debug.json -w",
     "lint": "eslint --fix",
     "format": "prettier -w ./",
+    "format:check": "prettier -c ./",
     "prepare": "husky install"
   },
   "private": true,
