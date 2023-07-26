@@ -32,7 +32,7 @@ jobs:
           cache: 'npm'
           node-version-file: '.nvmrc'
       - run: npm i
-      - run: npm run format
+      - run: npm run format:check
       - run: npx nx affected -t lint --parallel=3
       - run: npx nx affected -t test --parallel=3 --configuration=ci
   build:
