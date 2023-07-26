@@ -7,7 +7,10 @@ import { UserService } from '../services/user.service';
   providedIn: 'root',
 })
 export class AuthGuard {
-  constructor(private user: UserService, private router: Router) {}
+  constructor(
+    private user: UserService,
+    private router: Router,
+  ) {}
   canActivate():
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree>
