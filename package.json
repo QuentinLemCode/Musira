@@ -15,7 +15,8 @@
     "build:watch": "tsc -p apps/api/tsconfig.debug.json && (concurrently \"tsc -p apps/api/tsconfig.debug.json -w\" \"tsc-alias -p apps/api/tsconfig.debug.json -w\")",
     "tsc-alias": "tsc-alias -p apps/api/tsconfig.debug.json -w",
     "lint": "eslint --fix",
-    "format": "nx format:write"
+    "format": "prettier -w ./",
+    "prepare": "husky install"
   },
   "private": true,
   "engines": {
