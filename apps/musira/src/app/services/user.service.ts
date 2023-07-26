@@ -23,7 +23,10 @@ export class UserService {
   private userEndpoint = environment.serverUrl + 'users';
   private authEndpoint = environment.serverUrl + 'auth';
 
-  constructor(private readonly http: HttpClient, private router: Router) {}
+  constructor(
+    private readonly http: HttpClient,
+    private router: Router,
+  ) {}
 
   register(name: string, challenge: string) {
     return this.http

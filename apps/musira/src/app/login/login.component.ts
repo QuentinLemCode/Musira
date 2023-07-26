@@ -21,7 +21,10 @@ export class LoginComponent implements OnInit {
   @ViewChild('input')
   inputLogin!: ElementRef<HTMLInputElement>;
 
-  constructor(private user: UserService, private router: Router) {}
+  constructor(
+    private user: UserService,
+    private router: Router,
+  ) {}
   ngOnInit(): void {
     setTimeout(() => {
       this.inputLogin.nativeElement.focus();
