@@ -17,7 +17,9 @@
     "lint": "eslint --fix",
     "format": "prettier -w ./",
     "format:check": "prettier -c ./",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "android:open": "nx run musira:open --platform android",
+    "android:sync": "npx --projects=musira -t build && nx run musira:sync:android"
   },
   "private": true,
   "engines": {
