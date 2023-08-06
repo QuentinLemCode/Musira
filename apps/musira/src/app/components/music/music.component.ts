@@ -1,12 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   faTrashCan,
-  IconDefinition,
+  IconDefinition as IconDefinitionRegular,
 } from '@fortawesome/free-regular-svg-icons';
+import { IconDefinition } from '@fortawesome/fontawesome-common-types';
 import {
   faFolderPlus,
   faForwardFast,
   faPlus,
+  IconDefinition as IconDefinitionSolid,
 } from '@fortawesome/free-solid-svg-icons';
 import { Music } from '../../services/music-api.interface';
 
@@ -17,9 +19,14 @@ export interface MusicComponentConfiguration {
   backlog: boolean;
 }
 
+type AllIconDefinition =
+  | IconDefinition
+  | IconDefinitionSolid
+  | IconDefinitionRegular;
+
 export interface IconUpdateStatus {
   updateLoading: (loading: boolean) => void;
-  updateIcon: (icon: IconDefinition) => void;
+  updateIcon: (icon: AllIconDefinition) => void;
   completeEmitter: () => void;
 }
 
@@ -56,10 +63,10 @@ export class MusicComponent implements OnInit {
   @Output()
   addToBacklog = new EventEmitter<IconUpdateStatus>();
 
-  iconDelete = faTrashCan;
-  iconForward = faForwardFast;
-  iconAdd = faPlus;
-  iconBacklog = faFolderPlus;
+  iconDelete: AllIconDefinition = faTrashCan;
+  iconForward: AllIconDefinition = faForwardFast;
+  iconAdd: AllIconDefinition = faPlus;
+  iconBacklog: AllIconDefinition = faFolderPlus;
 
   loadingDelete = false;
   loadingForward = false;
