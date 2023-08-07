@@ -89,7 +89,6 @@
     "@nx/node": "16.6.0",
     "@nx/workspace": "16.6.0",
     "@schematics/angular": "16.1.8",
-    "@types/cron": "^2.4.0",
     "@types/jest": "29.5.3",
     "@types/node": "^20.4.8",
     "@types/passport-jwt": "^3.0.9",
