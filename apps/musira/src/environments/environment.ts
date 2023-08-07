@@ -6,7 +6,7 @@ import { Environment } from './environment.interface';
 
 export const environment: Environment = {
   production: false,
-  serverUrl: 'http://localhost:2828/',
+  serverUrl: 'http://localhost:4200/',
 };
 
 /*
