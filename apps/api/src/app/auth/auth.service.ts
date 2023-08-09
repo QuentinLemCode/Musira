@@ -1,5 +1,4 @@
 import {
-  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -8,9 +7,8 @@ import type { JwtSignOptions } from '@nestjs/jwt';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
 import { env } from 'process';
-import { UsersService } from '../users/users.service';
 import { UserRole } from '../users/user.entity';
-import { hashPassword } from '../utils/hash';
+import { UsersService } from '../users/users.service';
 import type {
   RefreshTokenPayload,
   TokenPayload,
@@ -27,42 +25,42 @@ export class AuthService {
   constructor(private users: UsersService, private jwt: JwtService) {}
 
   async validateUser(
-    name: string,
-    ip: string,
-    password?: string,
-    challenge?: string,
+    _name: string,
+    _ip: string,
+    _password?: string,
+    _challenge?: string,
   ) {
-    const user = await this.users.find(name);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    if (user.locked) {
-      throw new ForbiddenException({ cause: 'locked' });
-    }
-    if (user?.role === UserRole.ADMIN) {
-      if (!password) {
-        throw new ForbiddenException({ cause: 'password' });
-      }
-      if (password && hashPassword(password, user?.salt) === user?.password) {
-        return user;
-      } else {
-        throw new ForbiddenException({ cause: 'password' });
-      }
-    }
-    if (user?.noIPverification && !challenge) {
-      await this.users.addLoginTry(user);
-      throw new ForbiddenException({ cause: 'challenge' });
-    }
-    if (user?.ip === ip) {
-      await this.users.resetLoginTry(user);
-      return user;
-    }
-    if (challenge && user.challenge === hashPassword(challenge, user.salt)) {
-      await this.users.resetLoginTry(user);
-      return user;
-    }
-    this.users.addLoginTry(user);
-    throw new ForbiddenException({ cause: 'challenge' });
+    // const user = await this.users.find(name);
+    // if (!user) {
+    //   throw new NotFoundException('User not found');
+    // }
+    // if (user.locked) {
+    //   throw new ForbiddenException({ cause: 'locked' });
+    // }
+    // if (user?.role === UserRole.ADMIN) {
+    //   if (!password) {
+    //     throw new ForbiddenException({ cause: 'password' });
+    //   }
+    //   if (password && hashPassword(password, user?.salt) === user?.password) {
+    //     return user;
+    //   } else {
+    //     throw new ForbiddenException({ cause: 'password' });
+    //   }
+    // }
+    // if (user?.noIPverification && !challenge) {
+    //   await this.users.addLoginTry(user);
+    //   throw new ForbiddenException({ cause: 'challenge' });
+    // }
+    // if (user?.ip === ip) {
+    //   await this.users.resetLoginTry(user);
+    //   return user;
+    // }
+    // if (challenge && user.challenge === hashPassword(challenge, user.salt)) {
+    //   await this.users.resetLoginTry(user);
+    //   return user;
+    // }
+    // this.users.addLoginTry(user);
+    // throw new ForbiddenException({ cause: 'challenge' });
   }
 
   async login(user: unknown, refreshToken?: string): Promise<UserLogin> {
@@ -94,7 +92,7 @@ export class AuthService {
     if (!decoded) {
       throw new Error();
     }
-    const user = await this.users.findById(decoded.userId);
+    const user = await this.users.findEmailUserById(decoded.userId);
     if (!user) {
       throw new NotFoundException('User with this id does not exist');
     }

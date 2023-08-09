@@ -1,16 +1,26 @@
-import type { EmailRegisterDTO } from '@musira/api-interfaces/user/email.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes, randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
 import type { MusicSession } from '../music-session/entities/music-session.entity';
 import { hashPassword } from '../utils/hash';
+import { EmailUser } from './user.email.entity';
+import { SocialLoginUser } from './user.social-login.entity';
 import { User } from './user.entity';
+import type {
+  SocialUserDTO,
+  EmailRegisterDTO,
+} from '@musira/api-interfaces/index';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private readonly users: Repository<User>,
+    @InjectRepository(SocialLoginUser)
+    private readonly socialUsers: Repository<SocialLoginUser>,
+    @InjectRepository(EmailUser)
+    private readonly emailUsers: Repository<EmailUser>,
+    @InjectRepository(User)
+    private readonly users: Repository<User>,
   ) {}
 
   find(name: string) {
@@ -21,23 +31,17 @@ export class UsersService {
     return this.users.findOneBy({ id });
   }
 
+  findEmailUserById(id: number) {
+    return this.emailUsers.findOneBy({ id });
+  }
+
   delete(id: number) {
     return this.users.delete(id);
   }
 
   getAll() {
     return this.users.find({
-      select: [
-        'id',
-        'name',
-        'role',
-        'locked',
-        'noIPverification',
-        'created_at',
-        'updated_at',
-        'ip',
-        'loginTries',
-      ],
+      select: ['id', 'name', 'role', 'created_at', 'updated_at'],
     });
   }
 
@@ -47,14 +51,26 @@ export class UsersService {
   }
 
   async emailRegister(registerDTO: EmailRegisterDTO) {
-    const user = this.users.create();
+    const user = this.emailUsers.create();
     user.salt = randomBytes(16).toString('base64');
     user.name = registerDTO.username;
     user.password = hashPassword(registerDTO.password, user.salt);
     return this.users.save(user);
   }
 
-  addLoginTry(user: User) {
+  async socialLogin(socialUserDTO: SocialUserDTO) {
+    const user = this.socialUsers.create();
+    user.authToken = socialUserDTO.authToken;
+    user.email = socialUserDTO.email;
+    user.idToken = socialUserDTO.idToken;
+    user.name = socialUserDTO.name;
+    user.photoUrl = socialUserDTO.photoUrl;
+    user.provider = socialUserDTO.provider;
+    user.idToken = socialUserDTO.idToken;
+    return this.users.save(user);
+  }
+
+  addLoginTry(user: EmailUser) {
     user.loginTries += 1;
     if (user.loginTries >= 3) {
       user.locked = true;
@@ -62,13 +78,13 @@ export class UsersService {
     return this.users.save(user);
   }
 
-  resetLoginTry(user: User) {
+  resetLoginTry(user: EmailUser) {
     user.loginTries = 0;
     return this.users.save(user);
   }
 
   async generateRefreshUUID(id: number) {
-    const user = await this.findById(id);
+    const user = await this.findEmailUserById(id);
     if (!user) throw new NotFoundException('User not found');
     const uuid = randomUUID();
     user.refresh_token_id = uuid;
@@ -77,7 +93,7 @@ export class UsersService {
   }
 
   async removeRefreshUUID(id: number) {
-    const user = await this.findById(id);
+    const user = await this.findEmailUserById(id);
     if (!user) throw new NotFoundException('User not found');
     user.refresh_token_id = null;
     return this.users.save(user);

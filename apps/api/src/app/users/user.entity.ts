@@ -7,9 +7,10 @@ import {
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
+  TableInheritance,
 } from 'typeorm';
-import { Queue } from '../music/queue/queue.entity';
 import { MusicSession } from '../music-session/entities/music-session.entity';
+import { Queue } from '../music/queue/queue.entity';
 
 export enum UserRole {
   ADMIN = 1,
@@ -17,6 +18,7 @@ export enum UserRole {
 }
 
 @Entity()
+@TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export class User {
   @BeforeUpdate()
   updateDates() {
@@ -32,13 +34,12 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ unique: true })
+  email: string;
+
   @Column()
   @Index({ unique: true })
   name: string;
-
-  @Column({ type: 'varchar', nullable: true })
-  @Index({ unique: true })
-  ip: string | null;
 
   @Column({
     type: 'enum',
@@ -46,12 +47,6 @@ export class User {
     default: UserRole.USER,
   })
   role: UserRole;
-
-  @Column({
-    type: 'bool',
-    default: false,
-  })
-  noIPverification: boolean;
 
   @Column({ type: 'datetime' })
   public created_at: Date;
@@ -63,35 +58,7 @@ export class User {
     type: 'varchar',
     nullable: true,
   })
-  password: string | null;
-
-  @Column({
-    type: 'varchar',
-    nullable: false,
-  })
-  salt: string;
-
-  @Column({
-    type: 'varchar',
-    nullable: true,
-  })
   challenge: string | null;
-
-  @Column({
-    default: 0,
-  })
-  loginTries: number;
-
-  @Column({
-    default: false,
-  })
-  locked: boolean;
-
-  @Column({
-    type: 'varchar',
-    nullable: true,
-  })
-  refresh_token_id: string | null;
 
   @OneToMany(() => Queue, (queue) => queue.user)
   queued_musics: Queue[];
