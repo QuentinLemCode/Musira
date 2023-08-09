@@ -1,13 +1,16 @@
-import { Injectable } from '@angular/core';
-import { Router, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Inject, Injectable } from '@angular/core';
+import { Router, type UrlTree } from '@angular/router';
+import type { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotAuthGuard {
-  constructor(private user: UserService, private router: Router) {}
+  constructor(
+    @Inject(UserService) private user: UserService,
+    @Inject(Router) private router: Router,
+  ) {}
   canActivate():
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree>

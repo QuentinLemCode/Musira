@@ -1,4 +1,5 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import type { OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes } from 'crypto';
 import { Repository } from 'typeorm';

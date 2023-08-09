@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { BacklogController } from './backlog.controller';
 import { BacklogService } from './backlog.service';
 import { MusicSessionService } from '../../music-session/music-session.service';

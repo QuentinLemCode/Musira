@@ -1,4 +1,4 @@
-import { Logger as TypeOrmLogger } from 'typeorm';
+import type { Logger as TypeOrmLogger } from 'typeorm';
 import { Logger as NestLogger } from '@nestjs/common';
 
 class DatabaseLogger implements TypeOrmLogger {

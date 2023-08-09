@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { SettingsService } from '../services/settings.service';
 import { MusicSessionsService } from '../services/music-sessions.service';
 import { Router } from '@angular/router';
@@ -12,9 +13,10 @@ export class SessionSettingsComponent implements OnInit {
   maxVote: number | null = null;
   maxQueuableSongs: number | null = null;
   constructor(
-    private readonly settings: SettingsService,
+    @Inject(SettingsService) private readonly settings: SettingsService,
+    @Inject(MusicSessionsService)
     private readonly sessions: MusicSessionsService,
-    private readonly router: Router,
+    @Inject(Router) private readonly router: Router,
   ) {}
 
   ngOnInit(): void {

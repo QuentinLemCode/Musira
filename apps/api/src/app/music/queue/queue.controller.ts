@@ -17,16 +17,16 @@ import { MusicSession } from '../../music-session/entities/music-session.entity'
 import { UserRole } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
 import { MusicSessionParam } from '../../utils/decorators/session-hash-id.decorator';
-import { Backlog } from '../backlog/backlog.entity';
+import type { Backlog } from '../backlog/backlog.entity';
 import { BacklogService } from '../backlog/backlog.service';
 import { Music } from '../music.entity';
 import { QueueEngineService } from './queue-engine/queue-engine.service';
-import { Queue } from './queue.entity';
+import type { Queue } from './queue.entity';
 import { QueueService } from './queue.service';
 
 interface QueueResponse {
   queue: Queue[];
-  backlog: Backlog | null;
+  backlog: Backlog | null | undefined;
 }
 
 @Controller('session/:sessionHashId/queue')

@@ -12,12 +12,12 @@ import { RolesGuard } from '../auth/roles.guard';
 import { MusicSession } from '../music-session/entities/music-session.entity';
 import { UserRole } from '../users/user.entity';
 import { MusicSessionParam } from '../utils/decorators/session-hash-id.decorator';
-import { CurrentMusic, Music } from './music.interface';
+import type { CurrentMusic, Music } from './music.interface';
 import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';
 import { SpotifyApiService } from './spotify/spotify-api/spotify-api.service';
 import { SpotifySearchService } from './spotify/spotify-search/spotify-search.service';
-import {
+import type {
   SearchResponse,
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
@@ -78,7 +78,7 @@ export class MusicController {
     return {
       album: track.album.name,
       artist: track.artists.map((artist) => artist.name).join(', '),
-      cover: track.album.images[0].url,
+      cover: track.album?.images?.[0]?.url,
       uri: track.uri,
       title: track.name,
       duration: track.duration_ms,

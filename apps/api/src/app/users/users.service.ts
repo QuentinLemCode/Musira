@@ -1,15 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import type { EmailRegisterDTO } from '@musira/api-interfaces/user/email.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes, randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
-import { MusicSession } from '../music-session/entities/music-session.entity';
+import type { MusicSession } from '../music-session/entities/music-session.entity';
 import { hashPassword } from '../utils/hash';
 import { User } from './user.entity';
-import { RegisterUserDTO } from './users.interface';
 
 @Injectable()
 export class UsersService {
@@ -18,7 +14,6 @@ export class UsersService {
   ) {}
 
   find(name: string) {
-    name = this.formatUsername(name);
     return this.users.findOne({ where: { name } });
   }
 
@@ -26,7 +21,7 @@ export class UsersService {
     return this.users.findOneBy({ id });
   }
 
-  async delete(id: number) {
+  delete(id: number) {
     return this.users.delete(id);
   }
 
@@ -51,39 +46,11 @@ export class UsersService {
     return queuedMusics.filter((q) => q.userId === id);
   }
 
-  async unlock(id: number) {
-    const user = await this.users.findOneBy({ id });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    user.loginTries = 0;
-    user.locked = false;
-    await this.users.save(user);
-  }
-
-  async register(registerDTO: RegisterUserDTO, ip: string) {
-    if (!registerDTO.challenge) {
-      throw new BadRequestException({ cause: 'challenge' });
-    }
-    await this.hasAlreadyIp(ip);
+  async emailRegister(registerDTO: EmailRegisterDTO) {
     const user = this.users.create();
     user.salt = randomBytes(16).toString('base64');
-    user.name = this.formatUsername(registerDTO.name);
-    user.ip = ip;
-    user.challenge = hashPassword(registerDTO.challenge, user.salt);
-    return this.users.save(user);
-  }
-
-  removeIPverification(user: User) {
-    user.noIPverification = true;
-    user.ip = null;
-    return this.users.save(user);
-  }
-
-  async saveIp(user: User, ip: string) {
-    if (user.noIPverification) return;
-    await this.hasAlreadyIp(ip);
-    user.ip = ip;
+    user.name = registerDTO.username;
+    user.password = hashPassword(registerDTO.password, user.salt);
     return this.users.save(user);
   }
 
@@ -114,28 +81,5 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
     user.refresh_token_id = null;
     return this.users.save(user);
-  }
-
-  async toggleIPVerification(id: number) {
-    const user = await this.findById(id);
-    if (!user) throw new NotFoundException('User not found');
-    user.noIPverification = !user.noIPverification;
-    user.ip = null;
-    return this.users.save(user);
-  }
-
-  private async hasAlreadyIp(ip: string) {
-    const userWithIp = await this.users.findOneBy({ ip });
-    if (userWithIp !== null) {
-      throw new BadRequestException({ cause: 'ip' });
-    }
-  }
-
-  private formatUsername(username: string) {
-    return username
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/gi, '');
   }
 }

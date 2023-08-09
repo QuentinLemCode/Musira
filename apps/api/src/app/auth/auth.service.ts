@@ -4,13 +4,18 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import type { JwtSignOptions } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
 import { env } from 'process';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../users/user.entity';
 import { hashPassword } from '../utils/hash';
-import { RefreshTokenPayload, TokenPayload, UserLogin } from './auth.interface';
+import type {
+  RefreshTokenPayload,
+  TokenPayload,
+  UserLogin,
+} from './auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -54,7 +59,6 @@ export class AuthService {
     }
     if (challenge && user.challenge === hashPassword(challenge, user.salt)) {
       await this.users.resetLoginTry(user);
-      await this.users.saveIp(user, ip);
       return user;
     }
     this.users.addLoginTry(user);
@@ -69,9 +73,10 @@ export class AuthService {
       role: user.role,
     };
     const token = this.jwt.sign(payload);
-    const expirationTimestamp = this.jwt.decode(token, { complete: true })?.[
-      'payload'
-    ]?.exp;
+    const decoded = this.jwt.decode(token, { complete: true });
+    if (typeof decoded === 'string' || decoded === null)
+      throw new UnauthorizedException('Bad request');
+    const expirationTimestamp = decoded.payload.exp;
     return {
       access_token: token,
       id: user.id,

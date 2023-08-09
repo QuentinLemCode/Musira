@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MusicSessionsService } from '../services/music-sessions.service';
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { firstValueFrom } from 'rxjs';
@@ -10,7 +11,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./create-session.component.scss'],
 })
 export class CreateSessionComponent implements OnInit {
-  constructor(private readonly musicSessions: MusicSessionsService) {}
+  constructor(
+    @Inject(MusicSessionsService)
+    private readonly musicSessions: MusicSessionsService,
+  ) {}
 
   createSessionForm!: FormGroup;
 

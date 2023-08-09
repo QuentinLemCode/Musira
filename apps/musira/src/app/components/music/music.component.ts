@@ -1,16 +1,15 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import {
-  faTrashCan,
-  IconDefinition as IconDefinitionRegular,
-} from '@fortawesome/free-regular-svg-icons';
-import { IconDefinition } from '@fortawesome/fontawesome-common-types';
+import type { OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import type { IconDefinition as IconDefinitionRegular } from '@fortawesome/free-regular-svg-icons';
+import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import type { IconDefinition } from '@fortawesome/fontawesome-common-types';
+import type { IconDefinition as IconDefinitionSolid } from '@fortawesome/free-solid-svg-icons';
 import {
   faFolderPlus,
   faForwardFast,
   faPlus,
-  IconDefinition as IconDefinitionSolid,
 } from '@fortawesome/free-solid-svg-icons';
-import { Music } from '../../services/music-api.interface';
+import type { Music } from '../../services/music-api.interface';
 
 export interface MusicComponentConfiguration {
   votable: boolean;

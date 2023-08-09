@@ -1,7 +1,7 @@
+import type { SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 import {
   FacebookLoginProvider,
   GoogleLoginProvider,
-  SocialAuthServiceConfig,
   SocialLoginModule,
   GoogleSigninButtonModule,
 } from '@abacritt/angularx-social-login';

@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { MusicSessionService } from './music-session.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MusicSession } from './entities/music-session.entity';

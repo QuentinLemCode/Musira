@@ -1,15 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, computed } from '@angular/core';
-import {
-  Observable,
-  ReplaySubject,
-  Subscription,
-  combineLatest,
-  timer,
-} from 'rxjs';
+import { Inject, Injectable, computed } from '@angular/core';
+import type { Observable, Subscription } from 'rxjs';
+import { ReplaySubject, combineLatest, timer } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { CurrentMusic, Music } from './music-api.interface';
+import type { CurrentMusic, Music } from './music-api.interface';
 import { MusicSessionsService } from './music-sessions.service';
 import { VisibilityService } from './visibility.service';
 
@@ -25,8 +20,9 @@ export class MusicApiService {
   private $polling?: Subscription;
 
   constructor(
-    private readonly http: HttpClient,
-    readonly visibility: VisibilityService,
+    @Inject(HttpClient) private readonly http: HttpClient,
+    @Inject(VisibilityService) readonly visibility: VisibilityService,
+    @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
   ) {
     this.endpoint = computed(

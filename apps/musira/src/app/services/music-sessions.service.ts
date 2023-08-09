@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
+import { Inject, Injectable, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
-import { MusicSessionDto } from '@musira/api-interfaces/sessions/music-session.dto';
-import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
+import type { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
+import type { MusicSessionDto } from '@musira/api-interfaces/sessions/music-session.dto';
+import type { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { StorageService } from './storage.service';
@@ -25,9 +25,9 @@ export class MusicSessionsService {
   public currentSession$ = toObservable(this.currentSession);
 
   constructor(
-    private readonly http: HttpClient,
-    private readonly router: Router,
-    private readonly storage: StorageService,
+    @Inject(HttpClient) private readonly http: HttpClient,
+    @Inject(Router) private readonly router: Router,
+    @Inject(StorageService) private readonly storage: StorageService,
   ) {}
 
   public create(musicSessionDto: CreateMusicSessionDto) {

@@ -1,6 +1,6 @@
-import { SocialUser } from '@abacritt/angularx-social-login';
+import type { SocialUser } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 
 enum LocalStorageKeys {
   TOKEN = 'token',
@@ -14,10 +14,26 @@ enum LocalStorageKeys {
   providedIn: 'root',
 })
 export class UserService {
-  constructor(private readonly http: HttpClient) {}
+  constructor(@Inject(HttpClient) private readonly http: HttpClient) {}
 
-  enrollUser(user: SocialUser) {
-    this.http.post('http://localhost:3000/api/user', user).subscribe();
+  socialLogin(user: SocialUser) {
+    this.http.post('http://localhost:3000/api/user/social', user).subscribe();
+  }
+
+  emailLogin(email: string, password: string) {
+    this.http
+      .post('http://localhost:3000/api/user/email/login', { email, password })
+      .subscribe();
+  }
+
+  emailRegister(email: string, username: string, password: string) {
+    this.http
+      .post('http://localhost:3000/api/user/email/register', {
+        email,
+        username,
+        password,
+      })
+      .subscribe();
   }
 
   logout() {

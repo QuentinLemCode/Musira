@@ -1,9 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { MusicSessionsService } from '../services/music-sessions.service';
-import { SettingsQuery, SettingsService } from '../services/settings.service';
+import type { SettingsQuery } from '../services/settings.service';
+import { SettingsService } from '../services/settings.service';
 import { SessionSettingsComponent } from './session-settings.component';
 import { SpotifyDeviceComponent } from './spotify-device/spotify-device.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';

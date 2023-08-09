@@ -1,13 +1,14 @@
 import { ScheduleModule } from '@nestjs/schedule';
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MusicSessionService } from '../../music-session/music-session.service';
-import { Music } from '../music.entity';
-import {
+import type { Music } from '../music.entity';
+import type {
   APIResult,
   SpotifyApiService,
 } from '../spotify/spotify-api/spotify-api.service';
-import {
+import type {
   CurrentPlaybackResponse,
   TrackObjectFull,
 } from '../spotify/types/spotify-interfaces';

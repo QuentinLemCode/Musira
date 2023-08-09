@@ -18,6 +18,7 @@ import { SpotifyOAuthDTO } from '../music.interface';
 import { SpotifyApiService } from './spotify-api/spotify-api.service';
 import { MusicSessionService } from '../../music-session/music-session.service';
 import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
+import { isResponseError } from '../../utils/type-guards';
 
 @Controller('spotify')
 export class SpotifyLoginController {
@@ -61,6 +62,8 @@ export class SpotifyLoginController {
   @Roles(UserRole.ADMIN)
   async spotifyAuthentication(@Body() spotifyOAuth: SpotifyOAuthDTO) {
     const [sessionHashId, state] = spotifyOAuth.state.split('*');
+    if (!sessionHashId)
+      throw new BadRequestException('Session hashId not found');
     const musicSession = await this.sessions.findOneByHashid(sessionHashId);
     if (!musicSession) throw new BadRequestException('Session not found');
     if (musicSession.spotifyAuthUuid !== state)
@@ -69,7 +72,7 @@ export class SpotifyLoginController {
     try {
       await this.spotify.registerPlayer(musicSession, spotifyOAuth.code);
     } catch (error) {
-      if (error?.response?.status === 400) {
+      if (isResponseError(error) && error?.response?.status === 400) {
         throw new BadRequestException({
           spotifyMessage: error.response.data.error,
           isSpotifyAccountRegistered:

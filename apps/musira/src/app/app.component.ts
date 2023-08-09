@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   faGithubSquare,
@@ -19,9 +19,10 @@ export class AppComponent {
   faLinkedIn = faLinkedin;
 
   constructor(
-    private user: UserService,
-    private router: Router,
-    private session: MusicSessionsService,
+    @Inject(UserService) private readonly user: UserService,
+    @Inject(Router) private readonly router: Router,
+    @Inject(MusicSessionsService)
+    private readonly session: MusicSessionsService,
   ) {}
 
   get currentSession() {

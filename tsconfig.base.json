@@ -16,7 +16,23 @@
     "baseUrl": ".",
     "paths": {
       "@musira/api-interfaces/*": ["libs/api-interfaces/src/*"]
-    }
+    },
+    "noUncheckedIndexedAccess": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitThis": true,
+    "removeComments": true,
+    "strict": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "strictPropertyInitialization": false
   },
   "exclude": ["node_modules", "tmp"]
 }

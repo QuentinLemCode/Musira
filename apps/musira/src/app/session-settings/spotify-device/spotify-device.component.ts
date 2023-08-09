@@ -1,6 +1,7 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { CurrentMusic } from '../../services/music-api.interface';
+import type { HttpErrorResponse } from '@angular/common/http';
+import type { OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import type { CurrentMusic } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 
 @Component({
@@ -12,7 +13,7 @@ export class SpotifyDeviceComponent implements OnInit {
   error = '';
   musicStatus: CurrentMusic | null = null;
 
-  constructor(private music: MusicApiService) {}
+  constructor(@Inject(MusicApiService) private music: MusicApiService) {}
 
   handleError = (err: HttpErrorResponse) => {
     this.error = err?.error?.error || err?.error?.message;

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { getClientIp } from '@supercharge/request-ip';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { Strategy } from 'passport-local';
 import { AuthService } from './auth.service';
 @Injectable()

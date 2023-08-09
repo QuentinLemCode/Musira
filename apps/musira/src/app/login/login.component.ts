@@ -1,5 +1,6 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import type { HttpErrorResponse } from '@angular/common/http';
+import type { ElementRef, OnInit } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
@@ -21,7 +22,10 @@ export class LoginComponent implements OnInit {
   @ViewChild('input')
   inputLogin!: ElementRef<HTMLInputElement>;
 
-  constructor(private user: UserService, private router: Router) {}
+  constructor(
+    @Inject(UserService) private user: UserService,
+    @Inject(Router) private router: Router,
+  ) {}
   ngOnInit(): void {
     setTimeout(() => {
       this.inputLogin.nativeElement.focus();

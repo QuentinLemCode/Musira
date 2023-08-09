@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MusicSessionsService } from '../../services/music-sessions.service';
 
 @Component({
@@ -7,7 +7,10 @@ import { MusicSessionsService } from '../../services/music-sessions.service';
   styleUrls: ['./music-session.component.scss'],
 })
 export class MusicSessionComponent {
-  public constructor(private readonly musicSessions: MusicSessionsService) {}
+  public constructor(
+    @Inject(MusicSessionsService)
+    private readonly musicSessions: MusicSessionsService,
+  ) {}
 
   joinSession(code: string) {
     this.musicSessions.joinSession(code).subscribe();

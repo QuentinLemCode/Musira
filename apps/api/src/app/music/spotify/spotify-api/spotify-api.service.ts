@@ -1,27 +1,27 @@
 import { HttpService } from '@nestjs/axios';
+import type { OnModuleInit } from '@nestjs/common';
 import {
   Inject,
   Injectable,
   Logger,
-  OnModuleInit,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { env } from 'process';
 import { catchError, firstValueFrom, map, of, pipe, retry, tap } from 'rxjs';
 import { Repository } from 'typeorm';
 import { querystring } from '../../../utils/querystring';
 import { SpotifyAccount } from '../spotify-account.entity';
-import { SpotifyRefreshToken, SpotifyToken } from '../token';
+import type { SpotifyRefreshToken, SpotifyToken } from '../token';
 import { Cache } from 'cache-manager';
-import {
+import type {
   CurrentPlaybackResponse,
   SpotifyTrackCategory,
   SpotifyURI,
 } from '../types/spotify-interfaces';
-import { MusicSession } from '../../../music-session/entities/music-session.entity';
+import type { MusicSession } from '../../../music-session/entities/music-session.entity';
 import { MusicSessionService } from '../../../music-session/music-session.service';
 
 export type PlaybackState =
@@ -80,12 +80,16 @@ export class SpotifyApiService implements OnModuleInit {
   async isAccountRegistered(musicSession: MusicSession): Promise<boolean> {
     const account = await musicSession.spotify_account;
     return (
-      account && account.expires_at !== null && account.expires_at >= Date.now()
+      (account &&
+        account.expires_at !== null &&
+        account.expires_at >= Date.now()) ??
+      false
     );
   }
 
   async unregisterPlayer(musicSession: MusicSession) {
     const currentAccount = await musicSession.spotify_account;
+    if (!currentAccount) return;
     this.spotifyAccount.remove(currentAccount);
     this.stopTokenRenewInterval();
   }
@@ -300,7 +304,7 @@ export class SpotifyApiService implements OnModuleInit {
   ) {
     const account = await musicSession.spotify_account;
     return {
-      Authorization: `${account.token_type} ${account.access_token}`,
+      Authorization: `${account?.token_type} ${account?.access_token}`,
     };
   }
 

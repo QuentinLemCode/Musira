@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 
@@ -9,9 +10,9 @@ import { UserService } from '../../services/user.service';
 })
 export class RegisterComponent implements OnInit {
   constructor(
-    private route: ActivatedRoute,
-    private user: UserService,
-    private router: Router,
+    @Inject(ActivatedRoute) private route: ActivatedRoute,
+    @Inject(UserService) private user: UserService,
+    @Inject(Router) private router: Router,
   ) {}
   name = '';
   error = '';

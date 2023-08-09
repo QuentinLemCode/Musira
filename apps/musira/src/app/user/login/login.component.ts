@@ -1,7 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
-import { FacebookLoginProvider } from '@abacritt/angularx-social-login';
-import { Subscription } from 'rxjs';
+import type { SocialUser } from '@abacritt/angularx-social-login';
+import {
+  FacebookLoginProvider,
+  SocialAuthService,
+} from '@abacritt/angularx-social-login';
+import type { OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import type { Subscription } from 'rxjs';
 
 @Component({
   selector: 'musira-login',
@@ -9,14 +13,15 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  constructor(private authService: SocialAuthService) {}
+  constructor(
+    @Inject(SocialAuthService) private authService: SocialAuthService,
+  ) {}
 
   user: SocialUser | null = null;
   $authState?: Subscription;
 
   ngOnInit(): void {
     this.$authState = this.authService.authState.subscribe((user) => {
-      console.log(user);
       this.user = user;
     });
   }
@@ -25,8 +30,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.$authState?.unsubscribe();
   }
 
-  signInWithFB(): void {
-    this.authService.signIn(FacebookLoginProvider.PROVIDER_ID);
+  async signInWithFB() {
+    const user = await this.authService.signIn(
+      FacebookLoginProvider.PROVIDER_ID,
+    );
   }
 
   signOut(): void {

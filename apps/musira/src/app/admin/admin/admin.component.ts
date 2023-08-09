@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { mergeMap } from 'rxjs/operators';
-import { FullUser } from '../../interfaces/user';
+import type { FullUser } from '../../interfaces/user';
 import { UserService } from '../../services/user.service';
 
 @Component({
@@ -11,7 +12,7 @@ import { UserService } from '../../services/user.service';
 export class AdminComponent implements OnInit {
   usersList: FullUser[] = [];
 
-  constructor(private readonly users: UserService) {}
+  constructor(@Inject(UserService) private readonly users: UserService) {}
 
   ngOnInit(): void {
     this.users.getAllUsers().subscribe({

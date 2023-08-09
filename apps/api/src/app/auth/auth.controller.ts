@@ -8,8 +8,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { User } from '../users/user.entity';
-import { UserLogin } from './auth.interface';
+import type { User } from '../users/user.entity';
+import type { UserLogin } from './auth.interface';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './local.guard';
 

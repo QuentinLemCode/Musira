@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { takeUntil, tap } from 'rxjs/operators';
-import { Backlog, Queue, Status } from '../../services/music-api.interface';
+import type { Backlog, Queue } from '../../services/music-api.interface';
+import { Status } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { UserService } from '../../services/user.service';
 import { UnsubscribableComponent } from '../../utils/unsubscribable-component';
-import {
+import type {
   IconUpdateStatus,
   MusicComponentConfiguration,
 } from '../music/music.component';
@@ -42,9 +44,9 @@ export class QueueComponent extends UnsubscribableComponent implements OnInit {
   }
 
   constructor(
-    private readonly queue: QueueService,
-    private readonly user: UserService,
-    private readonly music: MusicApiService,
+    @Inject(QueueService) private readonly queue: QueueService,
+    @Inject(UserService) private readonly user: UserService,
+    @Inject(MusicApiService) private readonly music: MusicApiService,
   ) {
     super();
   }
@@ -123,7 +125,10 @@ export class QueueComponent extends UnsubscribableComponent implements OnInit {
   private loadQueue(queues: Queue[]) {
     const indexPlaying = queues.findIndex((q) => q.status === Status.PLAYING);
     if (indexPlaying !== -1) {
-      [this.playing] = queues.splice(indexPlaying, 1);
+      const [playing] = queues.splice(indexPlaying, 1);
+      if (playing) {
+        this.playing = playing;
+      }
     }
     this.queues = queues;
   }

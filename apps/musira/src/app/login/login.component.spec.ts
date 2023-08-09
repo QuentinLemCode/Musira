@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { UserService } from '../services/user.service';
 import { LoginComponent } from './login.component';
 import { EMPTY } from 'rxjs';

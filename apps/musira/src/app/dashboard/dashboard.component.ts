@@ -1,11 +1,6 @@
 import { DOCUMENT } from '@angular/common';
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Inject,
-  ViewChild,
-} from '@angular/core';
+import type { AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { toCanvas } from 'qrcode';
 
 @Component({

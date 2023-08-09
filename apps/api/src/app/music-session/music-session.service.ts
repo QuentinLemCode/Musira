@@ -1,5 +1,5 @@
-import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
-import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
+import type { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
+import type { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -34,7 +34,7 @@ export class MusicSessionService {
     return this.musicSession.find();
   }
 
-  findOne(id: number): Promise<MusicSession> {
+  findOne(id: number): Promise<MusicSession | null> {
     return this.musicSession.findOne({
       where: { id },
       relations: ['creator'],

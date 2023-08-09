@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CONSTANTS } from '../constants';
 import { MusicApiService } from '../services/music-api.service';
 import { StorageService } from '../services/storage.service';
-import { CONSTANTS } from '../constants';
 
 @Component({
   selector: 'musira-spotify-auth',
@@ -19,10 +20,10 @@ export class SpotifyAuthComponent implements OnInit {
   }
 
   constructor(
-    private readonly music: MusicApiService,
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly storage: StorageService,
+    @Inject(MusicApiService) private readonly music: MusicApiService,
+    @Inject(ActivatedRoute) private readonly route: ActivatedRoute,
+    @Inject(Router) private readonly router: Router,
+    @Inject(StorageService) private readonly storage: StorageService,
   ) {}
 
   ngOnInit(): void {

@@ -6,6 +6,7 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -52,6 +53,7 @@ export class MusicSessionController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const musicSessions = await this.session.findOne(hashIdDecode(id));
+    if (!musicSessions) throw new NotFoundException('session not found');
     return {
       name: musicSessions.name,
       id: musicSessions.hashId,

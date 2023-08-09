@@ -1,18 +1,19 @@
-import {
-  HttpErrorResponse,
+import type {
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Inject, Injectable } from '@angular/core';
+import type { Observable } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { UserService } from '../services/user.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(private users: UserService) {}
+  constructor(@Inject(UserService) private users: UserService) {}
 
   intercept(
     request: HttpRequest<unknown>,

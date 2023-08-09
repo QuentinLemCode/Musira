@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { SpotifyAuthComponent } from './spotify-auth.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MusicApiService } from '../services/music-api.service';

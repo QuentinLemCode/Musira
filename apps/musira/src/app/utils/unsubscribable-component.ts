@@ -1,4 +1,5 @@
-import { Component, OnDestroy } from '@angular/core';
+import type { OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Component({ template: '' })

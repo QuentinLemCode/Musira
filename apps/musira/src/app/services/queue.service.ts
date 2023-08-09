@@ -1,9 +1,15 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, computed } from '@angular/core';
-import { ReplaySubject, Subscription, combineLatest, timer } from 'rxjs';
+import { Inject, Injectable, computed } from '@angular/core';
+import type { Subscription } from 'rxjs';
+import { ReplaySubject, combineLatest, timer } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { Backlog, Music, Queue, QueueResponse } from './music-api.interface';
+import type {
+  Backlog,
+  Music,
+  Queue,
+  QueueResponse,
+} from './music-api.interface';
 import { MusicSessionsService } from './music-sessions.service';
 import { VisibilityService } from './visibility.service';
 
@@ -19,8 +25,9 @@ export class QueueService {
   private $polling?: Subscription;
 
   constructor(
-    private readonly http: HttpClient,
-    readonly visibility: VisibilityService,
+    @Inject(HttpClient) private readonly http: HttpClient,
+    @Inject(VisibilityService) readonly visibility: VisibilityService,
+    @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
   ) {
     console.log('init with ' + this.session.currentSession());

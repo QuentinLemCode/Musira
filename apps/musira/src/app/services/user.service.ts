@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { FullUser } from '../interfaces/user';
-import { UserLogin } from '../interfaces/user-login';
+import type { FullUser } from '../interfaces/user';
+import type { UserLogin } from '../interfaces/user-login';
 
 enum LocalStorageKeys {
   TOKEN = 'token',
@@ -23,7 +23,10 @@ export class UserService {
   private userEndpoint = environment.serverUrl + 'users';
   private authEndpoint = environment.serverUrl + 'auth';
 
-  constructor(private readonly http: HttpClient, private router: Router) {}
+  constructor(
+    @Inject(HttpClient) private readonly http: HttpClient,
+    @Inject(Router) private router: Router,
+  ) {}
 
   register(name: string, challenge: string) {
     return this.http

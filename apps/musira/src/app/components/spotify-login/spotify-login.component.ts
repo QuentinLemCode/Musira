@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { MusicApiService } from '../../services/music-api.service';
 import { StorageService } from '../../services/storage.service';
 import { CONSTANTS } from '../../constants';
@@ -14,8 +14,8 @@ export class SpotifyLoginComponent {
   @Input() redirect_to = '';
 
   constructor(
-    private readonly music: MusicApiService,
-    private readonly storage: StorageService,
+    @Inject(MusicApiService) private readonly music: MusicApiService,
+    @Inject(StorageService) private readonly storage: StorageService,
   ) {}
 
   async login() {

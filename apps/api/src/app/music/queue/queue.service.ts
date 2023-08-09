@@ -6,9 +6,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Raw, Repository } from 'typeorm';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { User, UserRole } from '../../users/user.entity';
-import { Music } from '../music.entity';
+import type { MusicSession } from '../../music-session/entities/music-session.entity';
+import type { User } from '../../users/user.entity';
+import { UserRole } from '../../users/user.entity';
+import type { Music } from '../music.entity';
 import { Queue, Status } from './queue.entity';
 
 @Injectable()
@@ -50,6 +51,7 @@ export class QueueService {
       return null;
     }
     const [first] = queue;
+    if (!first) return null;
     first.status = Status.PLAYING;
     await this.queue.save(first);
     await this.updatePriority(first.userId);
@@ -90,7 +92,7 @@ export class QueueService {
   }
 
   async getQueue(queueOrId: Queue | number | string) {
-    let queue: Queue;
+    let queue: Queue | undefined;
     if (typeof queueOrId === 'string' || typeof queueOrId === 'number') {
       [queue] = await this.queue.find({
         where: { id: +queueOrId },

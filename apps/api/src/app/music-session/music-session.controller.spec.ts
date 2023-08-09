@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { MusicSessionController } from './music-session.controller';
 import { MusicSessionService } from './music-session.service';
 

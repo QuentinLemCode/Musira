@@ -1,4 +1,4 @@
-import { UserRole } from '../users/user.entity';
+import type { UserRole } from '../users/user.entity';
 
 export interface UserLogin {
   access_token: string;

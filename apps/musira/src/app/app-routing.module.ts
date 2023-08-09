@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import type { Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AdminComponent } from './admin/admin/admin.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { ChallengeComponent } from './login/challenge/challenge.component';
 
+import { CreateSessionComponent } from './create-session/create-session.component';
 import { PasswordComponent } from './login/password/password.component';
 import { RegisterComponent } from './login/register/register.component';
 import { MainComponent } from './main/main.component';
@@ -14,7 +15,6 @@ import { musicSessionGuard } from './shared/music-session.guard';
 import { NotAuthGuard } from './shared/not-auth.guard';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { SpotifyAuthComponent } from './spotifyAuth/spotify-auth.component';
-import { CreateSessionComponent } from './create-session/create-session.component';
 import { LoginComponent } from './user/login/login.component';
 
 const routes: Routes = [
@@ -44,11 +44,6 @@ const routes: Routes = [
   {
     path: 'login/password',
     component: PasswordComponent,
-    canActivate: [NotAuthGuard],
-  },
-  {
-    path: 'login/challenge',
-    component: ChallengeComponent,
     canActivate: [NotAuthGuard],
   },
   {

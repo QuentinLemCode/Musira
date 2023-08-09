@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MusicSessionsService } from '../services/music-sessions.service';
 import { UserService } from '../services/user.service';
 
@@ -9,7 +9,8 @@ import { UserService } from '../services/user.service';
 })
 export class MainComponent {
   constructor(
-    private readonly user: UserService,
+    @Inject(UserService) private readonly user: UserService,
+    @Inject(MusicSessionsService)
     private readonly sessions: MusicSessionsService,
   ) {}
 

@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { CreateSessionComponent } from './create-session.component';
 import { MusicSessionsService } from '../services/music-sessions.service';
 import { SpotifyLoginComponent } from '../components/spotify-login/spotify-login.component';

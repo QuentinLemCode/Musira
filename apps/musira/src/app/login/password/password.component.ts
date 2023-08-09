@@ -1,5 +1,6 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import type { HttpErrorResponse } from '@angular/common/http';
+import type { ElementRef, OnInit } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
@@ -23,9 +24,9 @@ export class PasswordComponent implements OnInit {
     return this.form.value.password;
   }
   constructor(
-    private route: ActivatedRoute,
-    private user: UserService,
-    private router: Router,
+    @Inject(ActivatedRoute) private route: ActivatedRoute,
+    @Inject(UserService) private user: UserService,
+    @Inject(Router) private router: Router,
   ) {}
   name = '';
   ngOnInit(): void {
