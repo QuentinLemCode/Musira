@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MusicSessionsService } from '../services/music-sessions.service';
-import { UserService } from '../services/user.service';
+import { UserService } from '../user/user.service';
 
 @Component({
   selector: 'musira-main',

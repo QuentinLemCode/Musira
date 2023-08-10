@@ -1,8 +1,8 @@
 import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
+import type { UserDTO } from '@musira/api-interfaces/index';
 import { mergeMap } from 'rxjs/operators';
-import type { FullUser } from '../../interfaces/user';
-import { UserService } from '../../services/user.service';
+import { UserService } from '../../user/user.service';
 
 @Component({
   selector: 'musira-admin',
@@ -10,7 +10,7 @@ import { UserService } from '../../services/user.service';
   styleUrls: ['./admin.component.scss'],
 })
 export class AdminComponent implements OnInit {
-  usersList: FullUser[] = [];
+  usersList: UserDTO[] = [];
 
   constructor(@Inject(UserService) private readonly users: UserService) {}
 
@@ -36,17 +36,6 @@ export class AdminComponent implements OnInit {
   unlockUser(id: number) {
     this.users
       .unlock(id)
-      .pipe(mergeMap(() => this.users.getAllUsers()))
-      .subscribe({
-        next: (users) => {
-          this.usersList = users;
-        },
-      });
-  }
-
-  toggleIPVerification(id: number) {
-    this.users
-      .toggleIPVerification(id)
       .pipe(mergeMap(() => this.users.getAllUsers()))
       .subscribe({
         next: (users) => {

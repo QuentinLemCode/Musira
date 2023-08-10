@@ -5,7 +5,7 @@ import {
   faLinkedin,
   faTwitterSquare,
 } from '@fortawesome/free-brands-svg-icons';
-import { UserService } from './services/user.service';
+import { UserService } from './user/user.service';
 import { MusicSessionsService } from './services/music-sessions.service';
 
 @Component({
@@ -41,11 +41,8 @@ export class AppComponent {
     return this.user.isAdmin();
   }
 
-  logout() {
-    this.user.logout().subscribe({
-      next: () => {
-        this.router.navigate(['/login'], { replaceUrl: true });
-      },
-    });
+  async logout() {
+    await this.user.logout();
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 }

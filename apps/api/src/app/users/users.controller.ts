@@ -19,7 +19,8 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.users.delete(+id);
+  async delete(@Param('id') id: string) {
+    await this.users.delete(+id);
+    return this.getAll();
   }
 }

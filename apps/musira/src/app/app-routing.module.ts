@@ -5,8 +5,7 @@ import { AdminComponent } from './admin/admin/admin.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
 import { CreateSessionComponent } from './create-session/create-session.component';
-import { PasswordComponent } from './login/password/password.component';
-import { RegisterComponent } from './login/register/register.component';
+import { RegisterComponent } from './user/register/register.component';
 import { MainComponent } from './main/main.component';
 import { SessionSettingsComponent } from './session-settings/session-settings.component';
 import { AdminGuard } from './shared/admin.guard';
@@ -37,17 +36,12 @@ const routes: Routes = [
     canActivate: [AuthGuard, AdminGuard],
   },
   {
-    path: 'login',
+    path: 'user/login',
     component: LoginComponent,
     canActivate: [NotAuthGuard],
   },
   {
-    path: 'login/password',
-    component: PasswordComponent,
-    canActivate: [NotAuthGuard],
-  },
-  {
-    path: 'login/register',
+    path: 'user/register',
     component: RegisterComponent,
     canActivate: [NotAuthGuard],
   },
@@ -55,7 +49,6 @@ const routes: Routes = [
     path: 'dashboard',
     component: DashboardComponent,
   },
-  // { path: 'login', component: LoginComponent, canActivate: [NotAuthGuard] },
   {
     path: ':sessionId',
     component: MainComponent,
@@ -66,7 +59,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { enableTracing: false })],
+  imports: [RouterModule.forRoot(routes, { enableTracing: true })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

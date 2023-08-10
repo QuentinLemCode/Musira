@@ -1,4 +1,4 @@
 import { Controller } from '@nestjs/common';
 
-@Controller('login')
+@Controller('users/email/login')
 export class LoginController {}

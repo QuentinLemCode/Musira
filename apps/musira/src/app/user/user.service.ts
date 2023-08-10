@@ -1,48 +1,212 @@
-import type { SocialUser } from '@abacritt/angularx-social-login';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import type {
+  SocialUserLoginDTO,
+  UserDTO,
+  UserLoginResponseDTO,
+} from '@musira/api-interfaces/index';
+import { catchError, lastValueFrom, tap, throwError } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 enum LocalStorageKeys {
   TOKEN = 'token',
-  USER = 'user',
+  USERNAME = 'username',
+  USER_ID = 'user_id',
+  SESSIONS_CREATOR = 'sessions_creator',
   EXPIRES_AT = 'expires_at',
   ROLE = 'role',
+  TYPE = 'type',
+  PROVIDER = 'provider',
+  EMAIL = 'email',
   REFRESH_TOKEN = 'refresh_token',
-  USER_ID = 'user_id',
 }
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  constructor(@Inject(HttpClient) private readonly http: HttpClient) {}
+  private readonly usersEndpoint = environment.serverUrl + 'users/';
+  constructor(
+    @Inject(HttpClient) private readonly http: HttpClient,
+    @Inject(SocialAuthService) private readonly authService: SocialAuthService,
+    @Inject(Router) private readonly router: Router,
+  ) {}
 
-  socialLogin(user: SocialUser) {
-    this.http.post('http://localhost:3000/api/user/social', user).subscribe();
+  socialLogin(user: SocialUserLoginDTO) {
+    return this.http
+      .post<UserLoginResponseDTO>(this.usersEndpoint + 'social/login', user)
+      .pipe(
+        tap((response) => {
+          this.saveLogin(response);
+        }),
+      );
   }
 
   emailLogin(email: string, password: string) {
-    this.http
-      .post('http://localhost:3000/api/user/email/login', { email, password })
-      .subscribe();
+    return this.http
+      .post<UserLoginResponseDTO>(this.usersEndpoint + 'email/login', {
+        email,
+        password,
+      })
+      .pipe(
+        tap((token) => {
+          this.saveLogin(token);
+        }),
+      );
   }
 
   emailRegister(email: string, username: string, password: string) {
-    this.http
-      .post('http://localhost:3000/api/user/email/register', {
+    return this.http
+      .post<UserLoginResponseDTO>(this.usersEndpoint + 'email/register', {
         email,
         username,
         password,
       })
-      .subscribe();
+      .pipe(
+        tap((token) => {
+          this.saveLogin(token);
+        }),
+      );
   }
 
-  logout() {
+  async logout() {
+    if (this.isSocialLogin) await this.authService.signOut();
+    if (this.isEmailLogin) await this.emailLogout();
     this.clearLocalStorage();
+  }
+
+  getAllUsers() {
+    return this.http.get<UserDTO[]>(this.usersEndpoint);
+  }
+
+  delete(id: number) {
+    return this.http.delete<UserDTO[]>(this.usersEndpoint + id);
+  }
+
+  unlock(id: number) {
+    return this.http.post<UserDTO[]>(
+      this.usersEndpoint + 'email/unlock/' + id,
+      {},
+    );
+  }
+
+  refreshToken() {
+    const body = {
+      token: this.savedRefreshToken,
+    };
+    return this.http
+      .post<UserLoginResponseDTO>(this.usersEndpoint + 'email/refresh', body)
+      .pipe(
+        tap((login) => this.saveLogin(login)),
+        catchError((err) => {
+          this.clearLocalStorage();
+          this.router.navigate(['/login']);
+          return throwError(err);
+        }),
+      );
+  }
+
+  get isSocialLogin(): boolean {
+    return this.type === 'SOCIAL';
+  }
+
+  get isEmailLogin(): boolean {
+    return this.type === 'EMAIL';
+  }
+
+  get type(): string | null {
+    return localStorage.getItem(LocalStorageKeys.TYPE);
+  }
+
+  get username(): string | null {
+    if (this.isLoggedIn) {
+      return localStorage.getItem(LocalStorageKeys.USERNAME);
+    }
+    return null;
+  }
+
+  get userId(): string | null {
+    return localStorage.getItem(LocalStorageKeys.USER_ID);
+  }
+
+  get isLoggedIn(): boolean {
+    const authToken = this.getToken();
+    if (authToken === null) return false;
+    if (this.isTokenExpired()) return false;
+    return true;
+  }
+
+  get expires_at(): number | null {
+    const lsItem = localStorage.getItem(LocalStorageKeys.EXPIRES_AT);
+    if (lsItem === null) {
+      return null;
+    }
+    return +lsItem;
+  }
+
+  get savedRefreshToken(): string | null {
+    return localStorage.getItem(LocalStorageKeys.REFRESH_TOKEN);
+  }
+
+  getToken() {
+    return localStorage.getItem(LocalStorageKeys.TOKEN);
+  }
+
+  isTokenExpired() {
+    return !this.expires_at || this.expires_at <= this.now();
+  }
+
+  isAdmin() {
+    if (!this.isLoggedIn) {
+      return false;
+    }
+    return localStorage.getItem(LocalStorageKeys.ROLE) === 'admin';
+  }
+
+  isSessionCreator(session: string) {
+    if (!this.isLoggedIn) {
+      return false;
+    }
+    const sessions = localStorage
+      .getItem(LocalStorageKeys.SESSIONS_CREATOR)
+      ?.split(';');
+    return sessions?.includes(session) ?? false;
+  }
+
+  private emailLogout() {
+    return lastValueFrom(
+      this.http.post(this.usersEndpoint + 'email/logout/' + this.userId, ''),
+    );
+  }
+
+  private now() {
+    return Math.floor(Date.now() / 1000);
   }
 
   private clearLocalStorage() {
     Object.values(LocalStorageKeys).forEach((val) => {
       localStorage.removeItem(val);
     });
+  }
+
+  private saveLogin(login: UserLoginResponseDTO) {
+    localStorage.setItem(LocalStorageKeys.TOKEN, login.token);
+    localStorage.setItem(LocalStorageKeys.USERNAME, login.username);
+    localStorage.setItem(LocalStorageKeys.USER_ID, '' + login.userId);
+    localStorage.setItem(
+      LocalStorageKeys.SESSIONS_CREATOR,
+      login.sessionsCreator.join(';'),
+    );
+    localStorage.setItem(LocalStorageKeys.EXPIRES_AT, '' + login.expiresAt);
+    localStorage.setItem(LocalStorageKeys.TYPE, login.type);
+    localStorage.setItem(LocalStorageKeys.ROLE, login.role);
+    if (login.type === 'SOCIAL') {
+      localStorage.setItem(LocalStorageKeys.PROVIDER, login.provider);
+    }
+    if (login.type === 'EMAIL') {
+      localStorage.setItem(LocalStorageKeys.REFRESH_TOKEN, login.refreshToken);
+      localStorage.setItem(LocalStorageKeys.EMAIL, login.email);
+    }
   }
 }

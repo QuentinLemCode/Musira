@@ -6,6 +6,8 @@ import {
 import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
 import type { Subscription } from 'rxjs';
+import { UserService } from '../user.service';
+import { SocialUserLoginDTO } from '@musira/api-interfaces/index';
 
 @Component({
   selector: 'musira-login',
@@ -14,7 +16,8 @@ import type { Subscription } from 'rxjs';
 })
 export class LoginComponent implements OnInit, OnDestroy {
   constructor(
-    @Inject(SocialAuthService) private authService: SocialAuthService,
+    @Inject(SocialAuthService) private readonly authService: SocialAuthService,
+    @Inject(UserService) private readonly userService: UserService,
   ) {}
 
   user: SocialUser | null = null;
@@ -22,7 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.$authState = this.authService.authState.subscribe((user) => {
-      this.user = user;
+      this.userService.socialLogin(new SocialUserLoginDTO(user)).subscribe();
     });
   }
 
@@ -34,6 +37,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     const user = await this.authService.signIn(
       FacebookLoginProvider.PROVIDER_ID,
     );
+    if (user) {
+      this.userService.socialLogin(new SocialUserLoginDTO(user)).subscribe();
+    }
   }
 
   signOut(): void {

@@ -62,11 +62,7 @@
           "browserTarget": "musira:build:development"
         }
       },
-      "defaultConfiguration": "development",
-      "options": {
-        "proxyConfig": "apps/musira/proxy.conf.json",
-        "ssl": true
-      }
+      "defaultConfiguration": "development"
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",

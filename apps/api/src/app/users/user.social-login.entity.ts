@@ -17,11 +17,5 @@ export class SocialLoginUser extends User implements SocialUserDTO {
   lastName: string;
 
   @Column()
-  authToken: string;
-
-  @Column()
   idToken: string;
-
-  @Column()
-  authorizationCode: string;
 }

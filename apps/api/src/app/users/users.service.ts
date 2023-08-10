@@ -35,6 +35,10 @@ export class UsersService {
     return this.emailUsers.findOneBy({ id });
   }
 
+  findByEmail(email: string) {
+    return this.users.findOneBy({ email });
+  }
+
   delete(id: number) {
     return this.users.delete(id);
   }
@@ -43,6 +47,16 @@ export class UsersService {
     return this.users.find({
       select: ['id', 'name', 'role', 'created_at', 'updated_at'],
     });
+  }
+
+  async unlock(id: number) {
+    const user = await this.emailUsers.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.loginTries = 0;
+    user.locked = false;
+    await this.users.save(user);
   }
 
   async getQueuedMusicForUser(musicSession: MusicSession, id: number) {
@@ -59,14 +73,13 @@ export class UsersService {
   }
 
   async socialLogin(socialUserDTO: SocialUserDTO) {
+    const existingUser = await this.findByEmail(socialUserDTO.email);
+    if (existingUser) return;
     const user = this.socialUsers.create();
-    user.authToken = socialUserDTO.authToken;
     user.email = socialUserDTO.email;
-    user.idToken = socialUserDTO.idToken;
     user.name = socialUserDTO.name;
     user.photoUrl = socialUserDTO.photoUrl;
     user.provider = socialUserDTO.provider;
-    user.idToken = socialUserDTO.idToken;
     return this.users.save(user);
   }
 

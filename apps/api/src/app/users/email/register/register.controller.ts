@@ -2,7 +2,7 @@ import { type EmailRegisterDTO } from '@musira/api-interfaces/user/email.dto';
 import { Body, Controller, Post } from '@nestjs/common';
 import { UsersService } from '../../users.service';
 
-@Controller('email')
+@Controller('users/email/register')
 export class EmailController {
   constructor(private readonly usersService: UsersService) {}
 

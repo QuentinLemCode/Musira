@@ -5,7 +5,7 @@ import type { Backlog, Queue } from '../../services/music-api.interface';
 import { Status } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
-import { UserService } from '../../services/user.service';
+import { UserService } from '../../user/user.service';
 import { UnsubscribableComponent } from '../../utils/unsubscribable-component';
 import type {
   IconUpdateStatus,

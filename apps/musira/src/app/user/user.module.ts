@@ -8,10 +8,21 @@ import {
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { LoginComponent } from './login/login.component';
+import { environment } from '../../environments/environment';
+import { RegisterComponent } from './register/register.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
-  declarations: [LoginComponent],
-  imports: [CommonModule, SocialLoginModule, GoogleSigninButtonModule],
+  declarations: [LoginComponent, RegisterComponent],
+  imports: [
+    CommonModule,
+    SocialLoginModule,
+    GoogleSigninButtonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ComponentsModule,
+  ],
   providers: [
     {
       provide: 'SocialAuthServiceConfig',
@@ -20,13 +31,11 @@ import { LoginComponent } from './login/login.component';
         providers: [
           {
             id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(
-              '315266048563-u7ap28p393uegvd0m8al1gbjjepoaub6.apps.googleusercontent.com',
-            ),
+            provider: new GoogleLoginProvider(environment.googleClientId),
           },
           {
             id: FacebookLoginProvider.PROVIDER_ID,
-            provider: new FacebookLoginProvider('288143117002067'),
+            provider: new FacebookLoginProvider(environment.facebookClientId),
           },
         ],
         onError: (err: unknown) => {

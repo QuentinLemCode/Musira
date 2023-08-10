@@ -1,5 +1,14 @@
-import { SocialUserDTO } from '@musira/api-interfaces/index';
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import {
+  SocialUserDTO,
+  SocialUserLoginDTO,
+} from '@musira/api-interfaces/index';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Inject,
+  Post,
+} from '@nestjs/common';
 import { UsersService } from '../../users.service';
 
 @Controller('users/social/login')
@@ -8,6 +17,8 @@ export class LoginController {
 
   @Post()
   login(@Body() body: SocialUserDTO) {
-    return this.users.socialLogin(body);
+    const socialUser = new SocialUserLoginDTO(body);
+    if (!socialUser.isValid()) throw new BadRequestException('Invalid body');
+    return this.users.socialLogin(socialUser);
   }
 }

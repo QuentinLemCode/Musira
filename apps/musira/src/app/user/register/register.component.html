@@ -1,0 +1,28 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <p>
+    <input
+      #input
+      name="username"
+      formControlName="username"
+      placeholder="Ton prénom"
+      [minlength]="3"
+    />
+    <input
+      #input
+      name="email"
+      formControlName="email"
+      placeholder="Ton email"
+      [email]="true"
+    />
+    <input
+      #input
+      type="password"
+      name="password"
+      formControlName="password"
+      placeholder="Ton mot de passe"
+      [minlength]="6"
+      [maxlength]="64"
+    />
+  </p>
+  <div class="error" *ngIf="error">{{ error }}</div>
+</form>

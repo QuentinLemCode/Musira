@@ -9,7 +9,7 @@ import { Inject, Injectable } from '@angular/core';
 import type { Observable } from 'rxjs';
 import { throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { UserService } from '../services/user.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
@@ -42,7 +42,7 @@ export class JwtInterceptor implements HttpInterceptor {
   private refreshToken(request: HttpRequest<unknown>, next: HttpHandler) {
     return this.users.refreshToken().pipe(
       switchMap((userLogin) => {
-        request = this.cloneRequest(request, userLogin.access_token);
+        request = this.cloneRequest(request, userLogin.token);
         return next.handle(request);
       }),
     );
