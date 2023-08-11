@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.userService
         .socialLogin(new SocialLoginUserDTO(user), user.idToken)
         .subscribe(() => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/'], { replaceUrl: true });
         });
     });
   }

@@ -129,7 +129,7 @@ export class UserService {
   get isLoggedIn(): boolean {
     const authToken = this.getToken();
     if (authToken === null) return false;
-    if (this.isTokenExpired()) return false;
+    // if (this.isTokenExpired()) return false;
     return true;
   }
 
@@ -187,8 +187,6 @@ export class UserService {
   }
 
   private saveLogin(login: UserResponseDTO, token?: string) {
-    console.log(login);
-    console.log(token);
     localStorage.setItem(LocalStorageKeys.USERNAME, login.name);
     localStorage.setItem(LocalStorageKeys.USER_ID, '' + login.id);
     localStorage.setItem(

@@ -5,7 +5,7 @@
         <a routerLink="/admin">Administration</a>
       </li>
       <li>
-        <a [routerLink]="'/' + currentSession ? currentSession?.id : ''"
+        <a [routerLink]="'/' + currentSession ? '' + currentSession?.code : ''"
           >Accueil</a
         >
       </li>
@@ -13,7 +13,7 @@
         <a routerLink="/dashboard">Dashboard</a>
       </li>
       <li *ngIf="currentSession">
-        <a [routerLink]="[currentSession.id, 'session-settings']"
+        <a [routerLink]="[currentSession.code, 'session-settings']"
           >Session settings</a
         >
       </li>

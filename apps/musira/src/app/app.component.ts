@@ -43,6 +43,7 @@ export class AppComponent {
 
   async logout() {
     await this.user.logout();
+    console.log('ok');
     this.router.navigate(['/login'], { replaceUrl: true });
   }
 }
