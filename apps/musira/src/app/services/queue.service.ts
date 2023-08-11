@@ -30,7 +30,6 @@ export class QueueService {
     @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
   ) {
-    console.log('init with ' + this.session.currentSession());
     this.queueEndpoint = computed(
       () =>
         environment.serverUrl +
