@@ -12,11 +12,11 @@ import { Roles } from '../../auth/roles.decorator';
 import { RolesGuard } from '../../auth/roles.guard';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { UserRole } from '../../users/user.entity';
-import { MusicSessionParam } from '../../utils/decorators/session-hash-id.decorator';
+import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { Music } from '../music.entity';
 import { BacklogService } from './backlog.service';
 
-@Controller('session/:sessionHashId/backlog')
+@Controller('session/:publicCode/backlog')
 export class BacklogController {
   constructor(private readonly backlog: BacklogService) {}
 

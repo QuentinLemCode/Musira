@@ -12,13 +12,13 @@ import { JwtGuard } from '../../auth/jwt.guard';
 import { Roles } from '../../auth/roles.decorator';
 import { RolesGuard } from '../../auth/roles.guard';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { UserRole } from '../../users/user.entity';
-import { MusicSessionParam } from '../../utils/decorators/session-hash-id.decorator';
-import { SpotifyOAuthDTO } from '../music.interface';
-import { SpotifyApiService } from './spotify-api/spotify-api.service';
 import { MusicSessionService } from '../../music-session/music-session.service';
-import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
+import { UserRole } from '../../users/user.entity';
+import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { isResponseError } from '../../utils/type-guards';
+import { SpotifyOAuthDTO } from '../music.interface';
+import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
+import { SpotifyApiService } from './spotify-api/spotify-api.service';
 
 @Controller('spotify')
 export class SpotifyLoginController {
@@ -30,8 +30,8 @@ export class SpotifyLoginController {
 
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @Get(':sessionHashId/spotify-login')
-  spotifyLogin(@MusicSessionParam() musicSession: MusicSession) {
+  @Get(':code/spotify-login')
+  async spotifyLogin(@MusicSessionParam() musicSession: MusicSession) {
     const uuid = randomUUID();
     this.sessions.setSpotifyAuthUuid(musicSession, uuid);
     const scope =
@@ -49,7 +49,7 @@ export class SpotifyLoginController {
       client_id: client_id,
       scope: scope,
       redirect_uri: this.spotify.redirectUrl,
-      state: musicSession.hashId + '*' + uuid,
+      state: musicSession.publicCode + '*' + uuid,
     };
     Object.entries(params).forEach(([key, value]) => {
       url.searchParams.set(key, value);
@@ -61,10 +61,10 @@ export class SpotifyLoginController {
   @UseGuards(JwtGuard)
   @Roles(UserRole.ADMIN)
   async spotifyAuthentication(@Body() spotifyOAuth: SpotifyOAuthDTO) {
-    const [sessionHashId, state] = spotifyOAuth.state.split('*');
-    if (!sessionHashId)
-      throw new BadRequestException('Session hashId not found');
-    const musicSession = await this.sessions.findOneByHashid(sessionHashId);
+    const [publicCode, state] = spotifyOAuth.state.split('*');
+    if (!publicCode)
+      throw new BadRequestException('Session public code not found');
+    const musicSession = await this.sessions.findOneByPublicCode(+publicCode);
     if (!musicSession) throw new BadRequestException('Session not found');
     if (musicSession.spotifyAuthUuid !== state)
       throw new BadRequestException('Invalid state');
@@ -81,10 +81,10 @@ export class SpotifyLoginController {
         });
       }
     }
-    return { connected: true, sessionHashId: musicSession.hashId };
+    return { connected: true, publicCode: musicSession.publicCode };
   }
 
-  @Post(':sessionHashId/logout-player')
+  @Post(':publicCode/logout-player')
   @UseGuards(JwtGuard)
   @Roles(UserRole.ADMIN)
   async spotifyLogout(@MusicSessionParam() musicSession: MusicSession) {

@@ -11,7 +11,6 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { MusicSession } from '../music-session/entities/music-session.entity';
 import { UserRole } from '../users/user.entity';
-import { MusicSessionParam } from '../utils/decorators/session-hash-id.decorator';
 import type { CurrentMusic, Music } from './music.interface';
 import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';
@@ -21,8 +20,9 @@ import type {
   SearchResponse,
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
+import { MusicSessionParam } from '../utils/decorators/music-session.decorator';
 
-@Controller('session/:sessionHashId/music')
+@Controller('session/:publicCode/music')
 export class MusicController {
   constructor(
     private readonly spotify: SpotifyApiService,

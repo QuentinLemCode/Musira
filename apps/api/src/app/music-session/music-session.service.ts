@@ -1,12 +1,12 @@
 import type { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import type { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/user.entity';
-import { hashIdDecode } from '../utils/hashid';
 import { MusicSession } from './entities/music-session.entity';
 import { Settings } from './settings/settings.entity';
+import { PublicCodeGeneratorService } from './public-code-generator/public-code-generator.service';
 
 @Injectable()
 export class MusicSessionService {
@@ -15,6 +15,8 @@ export class MusicSessionService {
     private readonly musicSession: Repository<MusicSession>,
     @InjectRepository(User)
     private readonly user: Repository<User>,
+    @Inject(PublicCodeGeneratorService)
+    private readonly publicCodeGenerator: PublicCodeGeneratorService,
   ) {}
 
   async create(
@@ -24,10 +26,15 @@ export class MusicSessionService {
     const user = await this.user.findOneOrFail({ where: { id: creator_id } });
     const session = this.musicSession.create({
       name: createMusicSessionDto.name,
+      publicCode: await this.publicCodeGenerator.generatePublicCode(),
     });
     session.creator = user;
     session.settings = Promise.resolve(new Settings());
     return this.musicSession.save(session);
+  }
+
+  findOneByPublicCode(publicCode: number) {
+    return this.musicSession.findOneBy({ publicCode });
   }
 
   findAll() {
@@ -37,13 +44,6 @@ export class MusicSessionService {
   findOne(id: number): Promise<MusicSession | null> {
     return this.musicSession.findOne({
       where: { id },
-      relations: ['creator'],
-    });
-  }
-
-  findOneByHashid(hashid: string) {
-    return this.musicSession.findOne({
-      where: { id: hashIdDecode(hashid) },
       relations: ['creator'],
     });
   }
@@ -60,11 +60,11 @@ export class MusicSessionService {
   }
 
   async update(
-    id: number,
+    publicCode: number,
     updateMusicSessionDto: UpdateMusicSessionDto,
   ): Promise<MusicSession> {
     const session = await this.musicSession.findOneOrFail({
-      where: { id },
+      where: { publicCode },
       relations: ['creator'],
     });
     session.name = updateMusicSessionDto.name;

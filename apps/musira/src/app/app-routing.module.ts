@@ -52,14 +52,14 @@ const routes: Routes = [
   {
     path: ':sessionId',
     component: MainComponent,
-    canActivate: [AuthGuard, musicSessionGuard],
+    canActivate: [musicSessionGuard],
   },
   { path: '', component: MainComponent, canActivate: [AuthGuard] },
   { path: '**', component: NotFoundComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { enableTracing: true })],
+  imports: [RouterModule.forRoot(routes, { enableTracing: false })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

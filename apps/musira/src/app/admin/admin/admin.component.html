@@ -17,8 +17,8 @@
       <th>{{ user.id }}</th>
       <th>{{ user.name }}</th>
       <th>{{ user.role }}</th>
-      <th>{{ user.loginTries }}</th>
-      <th>{{ user.locked }}</th>
+      <th>{{ user.type === 'EMAIL' && user.loginTries }}</th>
+      <th>{{ user.type === 'EMAIL' && user.locked }}</th>
       <th>{{ user.created_at }}</th>
       <th>{{ user.updated_at }}</th>
       <td class="actions">

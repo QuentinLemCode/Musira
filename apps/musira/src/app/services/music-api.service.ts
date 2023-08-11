@@ -29,7 +29,7 @@ export class MusicApiService {
       () =>
         environment.serverUrl +
         'session/' +
-        this.session.currentSession()?.id +
+        this.session.currentSession()?.code +
         '/music',
     );
     const pollingObservable = combineLatest([
@@ -57,7 +57,7 @@ export class MusicApiService {
     return this.http
       .get(
         this.spotifyEndpoint +
-          this.session.currentSession()?.id +
+          this.session.currentSession()?.code +
           '/spotify-login',
         {
           responseType: 'text',
@@ -67,7 +67,7 @@ export class MusicApiService {
   }
 
   authenticatePlayer(code: string, state: string) {
-    return this.http.post<{ connected?: boolean; sessionHashId: string }>(
+    return this.http.post<{ connected?: boolean; publicCode: string }>(
       this.spotifyEndpoint + 'register-player',
       {
         code,
@@ -79,7 +79,7 @@ export class MusicApiService {
   logoutPlayer() {
     return this.http.post(
       this.spotifyEndpoint +
-        this.session.currentSession()?.id +
+        this.session.currentSession()?.code +
         '/logout-player',
       {},
     );

@@ -4,15 +4,15 @@ import { Roles } from '../../auth/roles.decorator';
 import { RolesGuard } from '../../auth/roles.guard';
 import { UserRole } from '../../users/user.entity';
 import { SettingsService } from './settings.service';
-import { MusicSessionParam } from '../../utils/decorators/session-hash-id.decorator';
 import { MusicSession } from '../entities/music-session.entity';
+import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 
 export interface SettingsQuery {
   maxVotes: number;
   maxQueuableSongPerUser: number;
 }
 
-@Controller('session/:sessionHashId/settings')
+@Controller('session/:publicCode/settings')
 export class SettingsController {
   constructor(private readonly settings: SettingsService) {}
 

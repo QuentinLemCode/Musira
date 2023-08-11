@@ -1,4 +1,4 @@
-export interface SocialUserDTO {
+export interface SocialLoginUserInterface {
   provider: string;
   email: string;
   name: string;
@@ -7,8 +7,8 @@ export interface SocialUserDTO {
   lastName: string;
 }
 
-export class SocialUserLoginDTO implements SocialUserDTO {
-  constructor(socialUser: SocialUserDTO) {
+export class SocialLoginUserDTO implements SocialLoginUserInterface {
+  constructor(socialUser: SocialLoginUserInterface) {
     this.provider = socialUser.provider;
     this.email = socialUser.email;
     this.name = socialUser.name;
@@ -33,24 +33,4 @@ export class SocialUserLoginDTO implements SocialUserDTO {
       this.lastName
     );
   }
-}
-
-export type UserLoginResponseDTO = (SocialUserLogin | EmailUserLogin) & {
-  token: string;
-  username: string;
-  userId: number;
-  sessionsCreator: string[];
-  expiresAt: number;
-  role: string;
-};
-
-interface SocialUserLogin {
-  type: 'SOCIAL';
-  provider: string;
-}
-
-interface EmailUserLogin {
-  type: 'EMAIL';
-  email: string;
-  refreshToken: string;
 }

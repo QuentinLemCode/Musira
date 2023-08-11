@@ -1,9 +1,9 @@
 import { ChildEntity, Column } from 'typeorm';
 import { User } from './user.entity';
-import type { SocialUserDTO } from '@musira/api-interfaces/index';
+import type { SocialLoginUserInterface } from '@musira/api-interfaces/index';
 
 @ChildEntity()
-export class SocialLoginUser extends User implements SocialUserDTO {
+export class SocialLoginUser extends User implements SocialLoginUserInterface {
   @Column()
   provider: string;
 
@@ -15,7 +15,4 @@ export class SocialLoginUser extends User implements SocialUserDTO {
 
   @Column()
   lastName: string;
-
-  @Column()
-  idToken: string;
 }

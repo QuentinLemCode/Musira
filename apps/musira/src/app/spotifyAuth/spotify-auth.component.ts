@@ -34,7 +34,7 @@ export class SpotifyAuthComponent implements OnInit {
       this.music.authenticatePlayer(code, state).subscribe({
         next: (status) => {
           if (status.connected) {
-            const navigate = [status.sessionHashId];
+            const navigate = [status.publicCode];
             const redirect = this.storage.getSessionItem<string>(
               CONSTANTS.SPOTIFY_LOGIN_REDIRECT_SESSION_KEY,
             );

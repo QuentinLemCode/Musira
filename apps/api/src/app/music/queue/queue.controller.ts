@@ -16,7 +16,7 @@ import { RolesGuard } from '../../auth/roles.guard';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { UserRole } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
-import { MusicSessionParam } from '../../utils/decorators/session-hash-id.decorator';
+import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import type { Backlog } from '../backlog/backlog.entity';
 import { BacklogService } from '../backlog/backlog.service';
 import { Music } from '../music.entity';
@@ -29,7 +29,7 @@ interface QueueResponse {
   backlog: Backlog | null | undefined;
 }
 
-@Controller('session/:sessionHashId/queue')
+@Controller('session/:publicCode/queue')
 export class QueueController {
   constructor(
     private readonly queue: QueueService,

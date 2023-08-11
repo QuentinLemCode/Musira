@@ -23,7 +23,7 @@ export class SettingsService {
       () =>
         environment.serverUrl +
         'session/' +
-        this.session.currentSession()?.id +
+        this.session.currentSession()?.code +
         '/settings',
     );
   }

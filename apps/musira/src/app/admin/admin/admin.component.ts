@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
-import type { UserDTO } from '@musira/api-interfaces/index';
+import type { UserResponseDTO } from '@musira/api-interfaces/index';
 import { mergeMap } from 'rxjs/operators';
 import { UserService } from '../../user/user.service';
 
@@ -10,7 +10,7 @@ import { UserService } from '../../user/user.service';
   styleUrls: ['./admin.component.scss'],
 })
 export class AdminComponent implements OnInit {
-  usersList: UserDTO[] = [];
+  usersList: UserResponseDTO[] = [];
 
   constructor(@Inject(UserService) private readonly users: UserService) {}
 

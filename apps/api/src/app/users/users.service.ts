@@ -1,3 +1,8 @@
+import type {
+  EmailLoginInterface,
+  EmailRegisterInterface,
+  SocialLoginUserInterface,
+} from '@musira/api-interfaces/index';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes, randomUUID } from 'crypto';
@@ -5,12 +10,8 @@ import { Repository } from 'typeorm';
 import type { MusicSession } from '../music-session/entities/music-session.entity';
 import { hashPassword } from '../utils/hash';
 import { EmailUser } from './user.email.entity';
-import { SocialLoginUser } from './user.social-login.entity';
 import { User } from './user.entity';
-import type {
-  SocialUserDTO,
-  EmailRegisterDTO,
-} from '@musira/api-interfaces/index';
+import { SocialLoginUser } from './user.social-login.entity';
 
 @Injectable()
 export class UsersService {
@@ -49,6 +50,12 @@ export class UsersService {
     });
   }
 
+  findOneSocialLoginByEmail(email: string) {
+    return this.socialUsers.findOneBy({
+      email,
+    });
+  }
+
   async unlock(id: number) {
     const user = await this.emailUsers.findOneBy({ id });
     if (!user) {
@@ -64,7 +71,7 @@ export class UsersService {
     return queuedMusics.filter((q) => q.userId === id);
   }
 
-  async emailRegister(registerDTO: EmailRegisterDTO) {
+  emailRegister(registerDTO: EmailRegisterInterface) {
     const user = this.emailUsers.create();
     user.salt = randomBytes(16).toString('base64');
     user.name = registerDTO.username;
@@ -72,9 +79,37 @@ export class UsersService {
     return this.users.save(user);
   }
 
-  async socialLogin(socialUserDTO: SocialUserDTO) {
-    const existingUser = await this.findByEmail(socialUserDTO.email);
-    if (existingUser) return;
+  async emailLogin(login: EmailLoginInterface) {
+    const { email, password } = login;
+    const user = await this.emailUsers.findOneBy({ email });
+    if (!user) {
+      return null;
+    }
+    if (!user.password) {
+      return null;
+    }
+    if (hashPassword(password, user.salt) !== user.password) {
+      return null;
+    }
+    return user;
+  }
+
+  async socialLogin(socialUserDTO: SocialLoginUserInterface) {
+    const existingUser = await this.findOneSocialLoginByEmail(
+      socialUserDTO.email,
+    );
+    if (existingUser !== null) {
+      await this.socialUsers.update(
+        { id: existingUser.id },
+        {
+          name: socialUserDTO.name,
+          photoUrl: socialUserDTO.photoUrl,
+          firstName: socialUserDTO.firstName,
+          lastName: socialUserDTO.lastName,
+        },
+      );
+      return await this.socialUsers.findOneByOrFail({ id: existingUser.id });
+    }
     const user = this.socialUsers.create();
     user.email = socialUserDTO.email;
     user.name = socialUserDTO.name;

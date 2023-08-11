@@ -35,14 +35,14 @@ export class QueueService {
       () =>
         environment.serverUrl +
         'session/' +
-        this.session.currentSession()?.id +
+        this.session.currentSession()?.code +
         '/queue',
     );
     this.backlogEndpoint = computed(
       () =>
         environment.serverUrl +
         'session/' +
-        this.session.currentSession()?.id +
+        this.session.currentSession()?.code +
         '/backlog',
     );
     const pollingObservable = combineLatest([

@@ -56,7 +56,7 @@ export class MusicSessionsService {
   public deleteSession() {
     const session = this.currentSession();
     if (!session) return EMPTY;
-    return this.http.delete(this.endpoint + `/${session.id}`).pipe(
+    return this.http.delete(this.endpoint + `/${session.code}`).pipe(
       tap(() => {
         this.deleteSessionInHistory(session);
         this.currentSession.set(null);
@@ -88,7 +88,7 @@ export class MusicSessionsService {
         CONSTANTS.SESSION_HISTORY_KEY,
       ) || [];
     const existingSessionHistory = sessionHistory.find(
-      (entry) => entry.musicSession.id === musicSession.id,
+      (entry) => entry.musicSession.code === musicSession.code,
     );
     if (existingSessionHistory) {
       existingSessionHistory.access_date = new Date();
@@ -108,7 +108,7 @@ export class MusicSessionsService {
         CONSTANTS.SESSION_HISTORY_KEY,
       ) || [];
     const existingSessionHistory = sessionHistory.find(
-      (entry) => entry.musicSession.id === musicSession.id,
+      (entry) => entry.musicSession.code === musicSession.code,
     );
     if (existingSessionHistory) {
       sessionHistory.splice(sessionHistory.indexOf(existingSessionHistory), 1);

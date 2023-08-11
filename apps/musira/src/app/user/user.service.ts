@@ -1,11 +1,9 @@
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import type {
-  SocialUserLoginDTO,
-  UserDTO,
-  UserLoginResponseDTO,
+  SocialLoginUserDTO,
+  UserResponseDTO,
 } from '@musira/api-interfaces/index';
 import { catchError, lastValueFrom, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -30,22 +28,21 @@ export class UserService {
   constructor(
     @Inject(HttpClient) private readonly http: HttpClient,
     @Inject(SocialAuthService) private readonly authService: SocialAuthService,
-    @Inject(Router) private readonly router: Router,
   ) {}
 
-  socialLogin(user: SocialUserLoginDTO) {
+  socialLogin(user: SocialLoginUserDTO, token: string) {
     return this.http
-      .post<UserLoginResponseDTO>(this.usersEndpoint + 'social/login', user)
+      .post<UserResponseDTO>(this.usersEndpoint + 'social/login', user)
       .pipe(
         tap((response) => {
-          this.saveLogin(response);
+          this.saveLogin(response, token);
         }),
       );
   }
 
   emailLogin(email: string, password: string) {
     return this.http
-      .post<UserLoginResponseDTO>(this.usersEndpoint + 'email/login', {
+      .post<UserResponseDTO>(this.usersEndpoint + 'email/login', {
         email,
         password,
       })
@@ -58,7 +55,7 @@ export class UserService {
 
   emailRegister(email: string, username: string, password: string) {
     return this.http
-      .post<UserLoginResponseDTO>(this.usersEndpoint + 'email/register', {
+      .post<UserResponseDTO>(this.usersEndpoint + 'email/register', {
         email,
         username,
         password,
@@ -77,15 +74,15 @@ export class UserService {
   }
 
   getAllUsers() {
-    return this.http.get<UserDTO[]>(this.usersEndpoint);
+    return this.http.get<UserResponseDTO[]>(this.usersEndpoint);
   }
 
   delete(id: number) {
-    return this.http.delete<UserDTO[]>(this.usersEndpoint + id);
+    return this.http.delete<UserResponseDTO[]>(this.usersEndpoint + id);
   }
 
   unlock(id: number) {
-    return this.http.post<UserDTO[]>(
+    return this.http.post<UserResponseDTO[]>(
       this.usersEndpoint + 'email/unlock/' + id,
       {},
     );
@@ -96,13 +93,12 @@ export class UserService {
       token: this.savedRefreshToken,
     };
     return this.http
-      .post<UserLoginResponseDTO>(this.usersEndpoint + 'email/refresh', body)
+      .post<UserResponseDTO>(this.usersEndpoint + 'email/refresh', body)
       .pipe(
         tap((login) => this.saveLogin(login)),
         catchError((err) => {
           this.clearLocalStorage();
-          this.router.navigate(['/login']);
-          return throwError(err);
+          return throwError(() => err);
         }),
       );
   }
@@ -190,21 +186,24 @@ export class UserService {
     });
   }
 
-  private saveLogin(login: UserLoginResponseDTO) {
-    localStorage.setItem(LocalStorageKeys.TOKEN, login.token);
-    localStorage.setItem(LocalStorageKeys.USERNAME, login.username);
-    localStorage.setItem(LocalStorageKeys.USER_ID, '' + login.userId);
+  private saveLogin(login: UserResponseDTO, token?: string) {
+    console.log(login);
+    console.log(token);
+    localStorage.setItem(LocalStorageKeys.USERNAME, login.name);
+    localStorage.setItem(LocalStorageKeys.USER_ID, '' + login.id);
     localStorage.setItem(
       LocalStorageKeys.SESSIONS_CREATOR,
-      login.sessionsCreator.join(';'),
+      login.sessionCreatedIds.join(';'),
     );
     localStorage.setItem(LocalStorageKeys.EXPIRES_AT, '' + login.expiresAt);
     localStorage.setItem(LocalStorageKeys.TYPE, login.type);
-    localStorage.setItem(LocalStorageKeys.ROLE, login.role);
-    if (login.type === 'SOCIAL') {
+    localStorage.setItem(LocalStorageKeys.ROLE, '' + login.role);
+    if (login.type === 'SOCIAL' && token) {
+      localStorage.setItem(LocalStorageKeys.TOKEN, token);
       localStorage.setItem(LocalStorageKeys.PROVIDER, login.provider);
     }
     if (login.type === 'EMAIL') {
+      localStorage.setItem(LocalStorageKeys.TOKEN, login.token);
       localStorage.setItem(LocalStorageKeys.REFRESH_TOKEN, login.refreshToken);
       localStorage.setItem(LocalStorageKeys.EMAIL, login.email);
     }

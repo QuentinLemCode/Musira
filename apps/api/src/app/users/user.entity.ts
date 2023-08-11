@@ -7,6 +7,7 @@ import {
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
+  RelationId,
   TableInheritance,
 } from 'typeorm';
 import { MusicSession } from '../music-session/entities/music-session.entity';
@@ -54,12 +55,6 @@ export class User {
   @Column({ type: 'datetime' })
   public updated_at: Date;
 
-  @Column({
-    type: 'varchar',
-    nullable: true,
-  })
-  challenge: string | null;
-
   @OneToMany(() => Queue, (queue) => queue.user)
   queued_musics: Queue[];
 
@@ -72,5 +67,8 @@ export class User {
   session_participation: MusicSession[];
 
   @OneToMany(() => MusicSession, (session) => session.creator)
-  session_created: MusicSession[];
+  sessionCreated: MusicSession[];
+
+  @RelationId((user: User) => user.sessionCreated)
+  sessionCreatedIds: number[];
 }

@@ -42,7 +42,9 @@ export class JwtInterceptor implements HttpInterceptor {
   private refreshToken(request: HttpRequest<unknown>, next: HttpHandler) {
     return this.users.refreshToken().pipe(
       switchMap((userLogin) => {
-        request = this.cloneRequest(request, userLogin.token);
+        if (userLogin.type === 'EMAIL') {
+          request = this.cloneRequest(request, userLogin.token);
+        }
         return next.handle(request);
       }),
     );
