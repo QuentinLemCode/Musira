@@ -21,7 +21,7 @@
   },
   "private": true,
   "engines": {
-    "node": "v20.5.0"
+    "node": "v20.5.1"
   },
   "dependencies": {
     "@angular/animations": "16.1.3",
