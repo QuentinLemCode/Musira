@@ -24,7 +24,7 @@ export class MusicSession {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'int', unsigned: true, unique: true })
+  @Column({ type: 'int', unsigned: true })
   @Index({ unique: true })
   publicCode: number;
 
