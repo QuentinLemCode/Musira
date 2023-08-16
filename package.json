@@ -21,7 +21,7 @@
   },
   "private": true,
   "engines": {
-    "node": "v20.5.0"
+    "node": "v20.5.1"
   },
   "dependencies": {
     "@abacritt/angularx-social-login": "^2.1.0",
