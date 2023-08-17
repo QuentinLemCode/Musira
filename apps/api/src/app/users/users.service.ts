@@ -71,12 +71,18 @@ export class UsersService {
     return queuedMusics.filter((q) => q.userId === id);
   }
 
-  emailRegister(registerDTO: EmailRegisterInterface) {
+  async emailRegister(registerDTO: EmailRegisterInterface) {
     const user = this.emailUsers.create();
     user.salt = randomBytes(16).toString('base64');
+    user.email = registerDTO.email;
     user.name = registerDTO.username;
     user.password = hashPassword(registerDTO.password, user.salt);
-    return this.users.save(user);
+    try {
+      const savedUser = await this.emailUsers.save(user);
+      return savedUser;
+    } catch (e) {
+      return null;
+    }
   }
 
   async emailLogin(login: EmailLoginInterface) {
@@ -85,12 +91,13 @@ export class UsersService {
     if (!user) {
       return null;
     }
-    if (!user.password) {
+    if (!user.password || hashPassword(password, user.salt) !== user.password) {
+      user.loginTries += 1;
+      await this.emailUsers.save(user);
       return null;
     }
-    if (hashPassword(password, user.salt) !== user.password) {
-      return null;
-    }
+    user.loginTries = 0;
+    await this.emailUsers.save(user);
     return user;
   }
 

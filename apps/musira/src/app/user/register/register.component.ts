@@ -76,13 +76,16 @@ export class RegisterComponent implements OnInit {
       .emailRegister(this.email, this.username, this.password)
       .subscribe({
         next: () => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/'], { replaceUrl: true });
         },
         error: (error) => {
+          console.log(error);
           this.loading = false;
-          if (error?.error?.cause === 'ip') {
+          if (error?.error?.cause === 'exist') {
             this.error =
-              'Vous avez déjà enregistré un compte sur cet appareil. Veuillez revenir à la page précédente et vous connecter avec votre compte.';
+              "Cet email ou ce nom d'utilisateur est déjà pris. Veuillez choisir un autre nom ou revenir sur la page précédente pour vous connecter";
+          } else {
+            this.error = "Une erreur s'est produite. Veuillez réessayer.";
           }
         },
       });
@@ -92,9 +95,9 @@ export class RegisterComponent implements OnInit {
     controlToCheck: AbstractControl,
   ): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      const password: string = controlToCheck?.value;
+      const password: string = controlToCheck.value;
       const confirmPassword: string = control.value;
-      if (password !== confirmPassword) {
+      if (controlToCheck.invalid || password !== confirmPassword) {
         return { PassswordMatch: true };
       } else {
         return null;

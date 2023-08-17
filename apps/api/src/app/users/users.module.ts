@@ -11,6 +11,7 @@ import { UnlockController } from './email/unlock/unlock.controller';
 import { SocialLoginUser } from './user.social-login.entity';
 import { LogoutController } from './email/logout/logout.controller';
 import { JwtService } from './jwt/jwt.service';
+import { RegisterController } from './email/register/register.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, EmailUser, SocialLoginUser])],
@@ -21,6 +22,7 @@ import { JwtService } from './jwt/jwt.service';
     RefreshController,
     UnlockController,
     LogoutController,
+    RegisterController,
   ],
   exports: [UsersService, JwtService],
 })

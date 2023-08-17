@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios';
 import {
   Injectable,
   InternalServerErrorException,
@@ -21,7 +20,7 @@ enum IssuerType {
 
 @Injectable()
 export class JwtService {
-  private readonly jwtAlgorithm = 'RS256';
+  private readonly jwtAlgorithm = 'HS256';
   private readonly LOGGER = new Logger(JwtService.name);
 
   private readonly refreshTokenSecret: Uint8Array;
@@ -34,10 +33,7 @@ export class JwtService {
     new URL('https://www.googleapis.com/oauth2/v3/certs'),
   );
 
-  constructor(
-    private readonly users: UsersService,
-    private readonly http: HttpService,
-  ) {
+  constructor(private readonly users: UsersService) {
     this.refreshTokenSecret = this.encodeSecret(
       env.JWT_REFRESH_SECRET ?? randomBytes(16).toString('base64'),
     );
