@@ -12,6 +12,8 @@ import { environment } from '../../environments/environment';
 import { RegisterComponent } from './register/register.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ComponentsModule } from '../components/components.module';
+import { AppRoutingModule } from '../app-routing.module';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [LoginComponent, RegisterComponent],
@@ -22,6 +24,8 @@ import { ComponentsModule } from '../components/components.module';
     FormsModule,
     ReactiveFormsModule,
     ComponentsModule,
+    AppRoutingModule,
+    FontAwesomeModule,
   ],
   providers: [
     {

@@ -1,28 +1,44 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
-  <p>
+  <div class="register-form">
     <input
       #input
       name="username"
       formControlName="username"
       placeholder="Ton prénom"
-      [minlength]="3"
     />
+    <div class="error" *ngIf="formControls.username.touched && formControls.username.invalid">
+      Le prénom doit contenir au moins 3 caractères
+    </div>
     <input
       #input
       name="email"
       formControlName="email"
       placeholder="Ton email"
-      [email]="true"
     />
+    <div class="error" *ngIf="formControls.email.touched && formControls.email.invalid">
+      L'email est invalide
+    </div>
     <input
       #input
       type="password"
       name="password"
       formControlName="password"
       placeholder="Ton mot de passe"
-      [minlength]="6"
-      [maxlength]="64"
     />
-  </p>
-  <div class="error" *ngIf="error">{{ error }}</div>
+    <div class="error" *ngIf="formControls.password.touched && formControls.password.invalid">
+      Le mot de passe doit contenir au moins 8 caractères et au maximum 64 caractères
+    </div>
+    <input
+      #input
+      type="password"
+      name="passwordConfirmation"
+      formControlName="passwordConfirmation"
+      placeholder="Confirme ton mot de passe"
+    />
+    <div class="error" *ngIf="formControls.passwordConfirmation.touched && formControls.passwordConfirmation.invalid">
+      Les mots de passe ne correspondent pas
+    </div>
+    <button type="submit" [disabled]="form.invalid">S'inscrire <fa-icon *ngIf="loading" [icon]="faCircle" animation="spin"></fa-icon></button>
+    <div class="error" *ngIf="error">{{ error }}</div>
+  </div>
 </form>

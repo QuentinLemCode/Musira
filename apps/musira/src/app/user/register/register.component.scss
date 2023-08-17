@@ -1,0 +1,14 @@
+div.register-form {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-content: center;
+  & > * {
+    margin-top: 16px;
+    width: 300px;
+  }
+}
+
+.error {
+  color: red;
+}
