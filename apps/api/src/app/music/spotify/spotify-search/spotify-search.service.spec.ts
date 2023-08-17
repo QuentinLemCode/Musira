@@ -66,7 +66,7 @@ describe('SpotifySearchService', () => {
 
     const spyGet = jest
       .spyOn(httpService, 'get')
-      .mockImplementation((url, config) => {
+      .mockImplementation((_url, config) => {
         if (config?.headers?.Authorization === 'Bearer valid') {
           return of(validResponse);
         }

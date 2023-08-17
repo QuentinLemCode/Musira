@@ -8,12 +8,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { JwtGuard } from '../../auth/jwt.guard';
-import { Roles } from '../../auth/roles.decorator';
-import { RolesGuard } from '../../auth/roles.guard';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { MusicSessionService } from '../../music-session/music-session.service';
-import { UserRole } from '../../users/user.entity';
+import { JwtGuard } from '../../users/jwt/jwt.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { isResponseError } from '../../utils/type-guards';
 import { SpotifyOAuthDTO } from '../music.interface';
@@ -28,9 +25,9 @@ export class SpotifyLoginController {
     private readonly queueEngine: QueueEngineService,
   ) {}
 
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Get(':code/spotify-login')
+  // TODO : implement session creator guard
+  @UseGuards(JwtGuard)
+  @Get(':publicCode/spotify-login')
   async spotifyLogin(@MusicSessionParam() musicSession: MusicSession) {
     const uuid = randomUUID();
     this.sessions.setSpotifyAuthUuid(musicSession, uuid);
@@ -59,7 +56,6 @@ export class SpotifyLoginController {
 
   @Post('register-player')
   @UseGuards(JwtGuard)
-  @Roles(UserRole.ADMIN)
   async spotifyAuthentication(@Body() spotifyOAuth: SpotifyOAuthDTO) {
     const [publicCode, state] = spotifyOAuth.state.split('*');
     if (!publicCode)
@@ -86,7 +82,6 @@ export class SpotifyLoginController {
 
   @Post(':publicCode/logout-player')
   @UseGuards(JwtGuard)
-  @Roles(UserRole.ADMIN)
   async spotifyLogout(@MusicSessionParam() musicSession: MusicSession) {
     await this.spotify.unregisterPlayer(musicSession);
     this.queueEngine.stop();

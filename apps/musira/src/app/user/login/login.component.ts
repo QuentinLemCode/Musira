@@ -1,43 +1,28 @@
-import type { SocialUser } from '@abacritt/angularx-social-login';
 import {
   FacebookLoginProvider,
   SocialAuthService,
 } from '@abacritt/angularx-social-login';
-import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
-import type { Subscription } from 'rxjs';
-import { UserService } from '../user.service';
-import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'musira-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit, OnDestroy {
+export class LoginComponent {
   constructor(
     @Inject(SocialAuthService) private readonly authService: SocialAuthService,
     @Inject(UserService) private readonly userService: UserService,
     @Inject(Router) private readonly router: Router,
-  ) {}
-
-  user: SocialUser | null = null;
-  $authState?: Subscription;
-
-  ngOnInit(): void {
-    this.$authState = this.authService.authState.subscribe((user) => {
+  ) {
+    this.userService.userLogin$.pipe(takeUntilDestroyed()).subscribe((user) => {
       if (user === null) return;
-      this.userService
-        .socialLogin(new SocialLoginUserDTO(user), user.idToken)
-        .subscribe(() => {
-          this.router.navigate(['/'], { replaceUrl: true });
-        });
+      this.router.navigate(['/']);
     });
-  }
-
-  ngOnDestroy(): void {
-    this.$authState?.unsubscribe();
   }
 
   async signInWithFB() {
@@ -49,9 +34,5 @@ export class LoginComponent implements OnInit, OnDestroy {
         .socialLogin(new SocialLoginUserDTO(user), user.idToken)
         .subscribe();
     }
-  }
-
-  signOut(): void {
-    this.authService.signOut();
   }
 }

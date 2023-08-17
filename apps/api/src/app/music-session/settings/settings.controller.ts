@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles } from '../../auth/roles.decorator';
-import { RolesGuard } from '../../auth/roles.guard';
+import { Roles } from '../../users/roles.decorator';
 import { UserRole } from '../../users/user.entity';
 import { SettingsService } from './settings.service';
 import { MusicSession } from '../entities/music-session.entity';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
+import { JwtGuard } from '../../users/jwt/jwt.guard';
+import { RolesGuard } from '../../users/roles.guard';
 
 export interface SettingsQuery {
   maxVotes: number;
@@ -16,7 +16,7 @@ export interface SettingsQuery {
 export class SettingsController {
   constructor(private readonly settings: SettingsService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Put()
   async setSettings(

@@ -1,7 +1,7 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { EMPTY } from 'rxjs';
-import { JwtGuard } from '../auth/jwt.guard';
+import { JwtGuard } from '../users/jwt/jwt.guard';
 import { MusicController } from './music.controller';
 import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';

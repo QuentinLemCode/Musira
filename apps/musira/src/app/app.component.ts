@@ -1,3 +1,4 @@
+import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -5,15 +6,15 @@ import {
   faLinkedin,
   faTwitterSquare,
 } from '@fortawesome/free-brands-svg-icons';
-import { UserService } from './user/user.service';
 import { MusicSessionsService } from './services/music-sessions.service';
+import { UserService } from './user/user.service';
 
 @Component({
   selector: 'musira-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   faTwitter = faTwitterSquare;
   faGithub = faGithubSquare;
   faLinkedIn = faLinkedin;
@@ -24,6 +25,13 @@ export class AppComponent {
     @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
   ) {}
+
+  ngOnInit() {
+    const isLoggedIn = this.user.refreshTokenIfExpired();
+    if (!isLoggedIn) {
+      this.router.navigate(['/login'], { replaceUrl: true });
+    }
+  }
 
   get currentSession() {
     return this.session.currentSession();
@@ -43,6 +51,11 @@ export class AppComponent {
 
   async logout() {
     await this.user.logout();
-    this.router.navigate(['/login'], { replaceUrl: true });
+    if (this.currentSession) {
+      return this.router.navigate([this.currentSession.code], {
+        replaceUrl: true,
+      });
+    }
+    return this.router.navigate(['/user/login'], { replaceUrl: true });
   }
 }

@@ -27,24 +27,23 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error) => {
         if (
+          this.users.isEmailLogin &&
           error instanceof HttpErrorResponse &&
-          !request.url.includes('auth/login') &&
-          !request.url.includes('auth/refresh') &&
+          !request.url.includes('users/email/login') &&
+          !request.url.includes('users/email/refresh') &&
           error.status === 401
         ) {
           return this.refreshToken(request, next);
         }
-        return throwError(error);
+        return throwError(() => error);
       }),
     );
   }
 
   private refreshToken(request: HttpRequest<unknown>, next: HttpHandler) {
-    return this.users.refreshToken().pipe(
+    return this.users.refreshEmailToken().pipe(
       switchMap((userLogin) => {
-        if (userLogin.type === 'EMAIL') {
-          request = this.cloneRequest(request, userLogin.token);
-        }
+        request = this.cloneRequest(request, userLogin.token);
         return next.handle(request);
       }),
     );

@@ -13,7 +13,7 @@ const parseCode = (code: string) => {
 export const PublicCode = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return parseCode(request.params?.sessionCode);
+    return parseCode(request.params?.publicCode);
   },
 );
 

@@ -50,10 +50,10 @@ export class QueueService {
     ]);
     pollingObservable.subscribe({
       next: ([visibility, session]) => {
-        if (visibility.visible && session) {
+        if (visibility.visible && session?.linkedToSpotify) {
           this.launchPolling();
         } else {
-          if (!session) {
+          if (!session?.linkedToSpotify) {
             this.$queue.next([]);
             this.$backlog.next(null);
           }

@@ -34,7 +34,10 @@ export class MusicSessionService {
   }
 
   findOneByPublicCode(publicCode: number) {
-    return this.musicSession.findOneBy({ publicCode });
+    return this.musicSession.findOne({
+      where: { publicCode },
+      relations: ['creator'],
+    });
   }
 
   findAll() {

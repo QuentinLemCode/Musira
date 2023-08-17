@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { MusicSessionService } from './music-session.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MusicSession } from './entities/music-session.entity';
-import { User } from '../users/user.email.entity';
+import { User } from '../users/user.entity';
 
 describe('MusicSessionService', () => {
   let service: MusicSessionService;

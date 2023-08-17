@@ -38,7 +38,7 @@ export class MusicApiService {
     ]);
     pollingObservable.subscribe({
       next: ([visibility, session]) => {
-        if (visibility.visible && session) {
+        if (visibility.visible && session?.linkedToSpotify) {
           this.launchPolling();
         } else {
           this.stopPolling();

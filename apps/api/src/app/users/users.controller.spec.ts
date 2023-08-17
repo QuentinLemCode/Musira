@@ -1,6 +1,5 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
-import { AuthService } from '../auth/auth.service';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -16,12 +15,6 @@ describe('UsersController', () => {
           useValue: {
             find: () => null,
             register: () => null,
-          },
-        },
-        {
-          provide: AuthService,
-          useValue: {
-            login: () => null,
           },
         },
       ],

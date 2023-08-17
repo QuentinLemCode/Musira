@@ -1,22 +1,22 @@
 import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from './roles.decorator';
 import { UserRole } from './user.entity';
 import { UsersService } from './users.service';
+import { JwtGuard } from './jwt/jwt.guard';
+import { RolesGuard } from './roles.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private users: UsersService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Get()
   getAll() {
     return this.users.getAll();
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Delete(':id')
   async delete(@Param('id') id: string) {

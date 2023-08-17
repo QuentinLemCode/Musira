@@ -6,11 +6,12 @@ import {
   ServiceUnavailableException,
   UseGuards,
 } from '@nestjs/common';
-import { JwtGuard } from '../auth/jwt.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
 import { MusicSession } from '../music-session/entities/music-session.entity';
+import { JwtGuard } from '../users/jwt/jwt.guard';
+import { Roles } from '../users/roles.decorator';
+import { RolesGuard } from '../users/roles.guard';
 import { UserRole } from '../users/user.entity';
+import { MusicSessionParam } from '../utils/decorators/music-session.decorator';
 import type { CurrentMusic, Music } from './music.interface';
 import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';
@@ -20,7 +21,6 @@ import type {
   SearchResponse,
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
-import { MusicSessionParam } from '../utils/decorators/music-session.decorator';
 
 @Controller('session/:publicCode/music')
 export class MusicController {

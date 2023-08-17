@@ -1,11 +1,19 @@
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
+import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
 import type {
-  SocialLoginUserDTO,
+  EmailUserResponseDTO,
   UserResponseDTO,
 } from '@musira/api-interfaces/index';
-import { catchError, lastValueFrom, tap, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  firstValueFrom,
+  lastValueFrom,
+  tap,
+  throwError,
+} from 'rxjs';
 import { environment } from '../../environments/environment';
 
 enum LocalStorageKeys {
@@ -24,17 +32,27 @@ enum LocalStorageKeys {
   providedIn: 'root',
 })
 export class UserService {
+  private readonly userLoginSubject =
+    new BehaviorSubject<UserResponseDTO | null>(null);
+  public readonly userLogin$ = this.userLoginSubject.asObservable();
+
   private readonly usersEndpoint = environment.serverUrl + 'users/';
   constructor(
     @Inject(HttpClient) private readonly http: HttpClient,
     @Inject(SocialAuthService) private readonly authService: SocialAuthService,
-  ) {}
+  ) {
+    this.authService.authState.subscribe((user) => {
+      if (user === null) return;
+      this.socialLogin(new SocialLoginUserDTO(user), user.idToken).subscribe();
+    });
+  }
 
   socialLogin(user: SocialLoginUserDTO, token: string) {
     return this.http
       .post<UserResponseDTO>(this.usersEndpoint + 'social/login', user)
       .pipe(
         tap((response) => {
+          this.userLoginSubject.next(response);
           this.saveLogin(response, token);
         }),
       );
@@ -47,8 +65,9 @@ export class UserService {
         password,
       })
       .pipe(
-        tap((token) => {
-          this.saveLogin(token);
+        tap((response) => {
+          this.userLoginSubject.next(response);
+          this.saveLogin(response);
         }),
       );
   }
@@ -88,12 +107,12 @@ export class UserService {
     );
   }
 
-  refreshToken() {
+  refreshEmailToken() {
     const body = {
       token: this.savedRefreshToken,
     };
     return this.http
-      .post<UserResponseDTO>(this.usersEndpoint + 'email/refresh', body)
+      .post<EmailUserResponseDTO>(this.usersEndpoint + 'email/refresh', body)
       .pipe(
         tap((login) => this.saveLogin(login)),
         catchError((err) => {
@@ -101,6 +120,18 @@ export class UserService {
           return throwError(() => err);
         }),
       );
+  }
+
+  async refreshSocialToken() {
+    const provider = this.provider;
+    if (provider === null) {
+      throw new Error('No provider found');
+    }
+    return this.authService.refreshAuthToken(provider);
+  }
+
+  get provider(): string | null {
+    return localStorage.getItem(LocalStorageKeys.PROVIDER);
   }
 
   get isSocialLogin(): boolean {
@@ -143,6 +174,24 @@ export class UserService {
 
   get savedRefreshToken(): string | null {
     return localStorage.getItem(LocalStorageKeys.REFRESH_TOKEN);
+  }
+
+  async refreshTokenIfExpired(): Promise<boolean> {
+    if (!this.isTokenExpired) return true;
+    if (this.isEmailLogin) {
+      try {
+        await firstValueFrom(this.refreshEmailToken());
+        return true;
+      } catch {
+        return false;
+      }
+    }
+    try {
+      await this.refreshSocialToken();
+    } catch {
+      return false;
+    }
+    return true;
   }
 
   getToken() {

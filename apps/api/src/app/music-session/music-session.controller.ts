@@ -2,6 +2,7 @@ import type { MusicSessionDto } from '@musira/api-interfaces/index';
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,11 +10,12 @@ import {
   Get,
   Patch,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { JWTPayload } from 'jose';
+import { JwtGuard } from '../users/jwt/jwt.guard';
+import { UsersService } from '../users/users.service';
+import { Jwt } from '../utils/decorators/jwt.decorator';
 import {
   MusicSessionParam,
   PublicCode,
@@ -23,42 +25,59 @@ import { MusicSessionService } from './music-session.service';
 
 @Controller('music-session')
 export class MusicSessionController {
-  constructor(private readonly session: MusicSessionService) {}
+  constructor(
+    private readonly session: MusicSessionService,
+    private readonly users: UsersService,
+  ) {}
 
   @Post()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtGuard)
   async create(
     @Body() createMusicSessionDto: CreateMusicSessionDto,
-    @Req() request: Request,
+    @Jwt() jwt: JWTPayload,
   ): Promise<MusicSessionDto> {
-    if (!request.user) throw new ForbiddenException('no jwt');
+    if (!jwt.email || typeof jwt.email !== 'string')
+      throw new ForbiddenException('no jwt');
+    const user = await this.users.findByEmail(jwt.email);
+    if (!user) {
+      throw new BadRequestException({
+        cause: 'user',
+        message: 'user not found',
+      });
+    }
+
     const createdSession = await this.session.create(
       createMusicSessionDto,
-      request.user.userId,
+      user.id,
     );
     return {
       name: createdSession.name,
       code: createdSession.publicCode,
       creator: createdSession.creator.name,
+      linkedToSpotify: createdSession.spotifyAuthUuid !== null,
     };
   }
 
   @Get()
-  async findAll() {
+  async findAll(): Promise<MusicSessionDto[]> {
     const musicSessions = await this.session.findAll();
     return musicSessions.map((musicSession) => ({
       name: musicSession.name,
       code: musicSession.publicCode,
       creator: musicSession.creator.name,
+      linkedToSpotify: musicSession.spotifyAuthUuid !== null,
     }));
   }
 
   @Get(':publicCode')
-  async findOne(@MusicSessionParam() musicSession: MusicSession) {
+  async findOne(
+    @MusicSessionParam() musicSession: MusicSession,
+  ): Promise<MusicSessionDto> {
     return {
       name: musicSession.name,
       code: musicSession.publicCode,
       creator: musicSession.creator.name,
+      linkedToSpotify: musicSession.spotifyAuthUuid !== null,
     };
   }
 
@@ -66,12 +85,13 @@ export class MusicSessionController {
   async update(
     @PublicCode() code: number,
     @Body() updateMusicSessionDto: UpdateMusicSessionDto,
-  ) {
+  ): Promise<MusicSessionDto> {
     const musicSession = await this.session.update(code, updateMusicSessionDto);
     return {
       name: musicSession.name,
       code: musicSession.publicCode,
       creator: musicSession.creator.name,
+      linkedToSpotify: musicSession.spotifyAuthUuid !== null,
     };
   }
 

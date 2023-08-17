@@ -7,15 +7,15 @@ import {
   Get,
   Param,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
-import { RolesGuard } from '../../auth/roles.guard';
+import { JWTPayload } from 'jose';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
+import { JwtGuard } from '../../users/jwt/jwt.guard';
+import { RolesGuard } from '../../users/roles.guard';
 import { UserRole } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
+import { Jwt } from '../../utils/decorators/jwt.decorator';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import type { Backlog } from '../backlog/backlog.entity';
 import { BacklogService } from '../backlog/backlog.service';
@@ -50,18 +50,18 @@ export class QueueController {
     };
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtGuard)
   @Post()
   async pushToQueue(
     @Body() music: Music,
-    @Req() req: Request,
+    @Jwt() jwt: JWTPayload,
     @MusicSessionParam() musicSession: MusicSession,
   ) {
-    const user = this.getUser(req);
+    const user = await this.getUser(jwt);
     if (user.role !== UserRole.ADMIN) {
       const settings = await musicSession.settings;
       if (
-        (await this.queue.countQueuedItemForUser(user.userId)) >=
+        (await this.queue.countQueuedItemForUser(user.id)) >=
         settings.maxQueuableSongPerUser
       ) {
         throw new BadRequestException({
@@ -73,22 +73,22 @@ export class QueueController {
     return this.queue.push(
       musicSession,
       music,
-      user.userId,
+      user.id,
       user.role === UserRole.ADMIN,
     );
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Delete(':id')
   async deleteFromQueue(
     @Param('id') id: string,
-    @Req() req: Request,
+    @Jwt() jwt: JWTPayload,
     @MusicSessionParam() musicSession: MusicSession,
   ) {
-    const user = this.getUser(req);
+    const user = await this.getUser(jwt);
     const queuedMusics = await this.users.getQueuedMusicForUser(
       musicSession,
-      user.userId,
+      user.id,
     );
     if (queuedMusics.length === 0) {
       throw new BadRequestException(
@@ -96,7 +96,7 @@ export class QueueController {
       );
     }
     if (
-      this.getUser(req).role !== UserRole.ADMIN &&
+      user.role !== UserRole.ADMIN &&
       queuedMusics.find((m) => m.id === +id) === undefined
     ) {
       throw new ForbiddenException('You are not allowed to delete this music');
@@ -105,24 +105,34 @@ export class QueueController {
     return this.queue.delete(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtGuard)
   @Post('/:id/forward')
   async forwardQueue(
     @Param('id') id: string,
-    @Req() req: Request,
+    @Jwt() jwt: JWTPayload,
     @MusicSessionParam() musicSession: MusicSession,
   ) {
-    const user = await this.users.findById(this.getUser(req).userId);
+    const user = await this.users.findById((await this.getUser(jwt)).id);
     if (user === null) {
       throw new BadRequestException('User not found in database');
     }
     return this.queueEngine.forward(musicSession, id, user);
   }
 
-  private getUser(req: Request) {
-    const user = req.user;
+  private async getUser(jwt: JWTPayload) {
+    const email = jwt.email;
+    if (!email || typeof email !== 'string') {
+      throw new BadRequestException({
+        cause: 'user',
+        message: 'email not found in jwt',
+      });
+    }
+    const user = await this.users.findByEmail(email);
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException({
+        cause: 'user',
+        message: 'user not found',
+      });
     }
     return user;
   }
