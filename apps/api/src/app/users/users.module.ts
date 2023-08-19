@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { LoginController } from './social/login/login.controller';
+import { LoginController as EmailLoginController } from './email/login/login.controller';
 import { EmailUser } from './user.email.entity';
 import { RefreshController } from './email/refresh/refresh.controller';
 import { UnlockController } from './email/unlock/unlock.controller';
@@ -23,6 +24,8 @@ import { RegisterController } from './email/register/register.controller';
     UnlockController,
     LogoutController,
     RegisterController,
+    LoginController,
+    EmailLoginController,
   ],
   exports: [UsersService, JwtService],
 })

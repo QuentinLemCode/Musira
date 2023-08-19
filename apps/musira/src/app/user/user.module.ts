@@ -16,7 +16,7 @@ import { AppRoutingModule } from '../app-routing.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
-  declarations: [LoginComponent, RegisterComponent],
+  declarations: [LoginComponent, RegisterComponent, LoginComponent],
   imports: [
     CommonModule,
     SocialLoginModule,

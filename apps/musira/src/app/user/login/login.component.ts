@@ -7,6 +7,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
 import { UserService } from '../user.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'musira-login',
@@ -23,6 +25,41 @@ export class LoginComponent {
       if (user === null) return;
       this.router.navigate(['/']);
     });
+  }
+
+  faCircle = faCircleNotch;
+  emailLogin = false;
+  loading = false;
+  form = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.maxLength(64),
+    ]),
+  });
+  error = '';
+
+  submit() {
+    if (
+      this.form.invalid ||
+      !this.form.value.email ||
+      !this.form.value.password
+    ) {
+      return;
+    }
+    this.loading = true;
+    this.userService
+      .emailLogin(this.form.value.email, this.form.value.password)
+      .subscribe({
+        next: () => {
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = err.error.message;
+        },
+      });
   }
 
   async signInWithFB() {
