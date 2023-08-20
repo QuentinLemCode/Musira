@@ -5,6 +5,16 @@ h1 {
 main {
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  & > * {
+    width: 300px;
+  }
+}
+
+.login-box {
+  display: flex;
+  flex-direction: column;
   flex-wrap: nowrap;
   align-items: center;
   & > * {
