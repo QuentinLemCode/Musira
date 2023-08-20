@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MusicSessionsService } from '../../services/music-sessions.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'musira-music-session',
@@ -7,13 +8,23 @@ import { MusicSessionsService } from '../../services/music-sessions.service';
   styleUrls: ['./music-session.component.scss'],
 })
 export class MusicSessionComponent {
+  form = new FormGroup({
+    code: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(9),
+      Validators.maxLength(9),
+      Validators.pattern('[0-9]*'),
+    ]),
+  });
+
   public constructor(
     @Inject(MusicSessionsService)
     private readonly musicSessions: MusicSessionsService,
   ) {}
 
-  joinSession(code: string) {
-    this.musicSessions.joinSession(code).subscribe();
+  joinSession() {
+    if (this.form.invalid || !this.form.value.code) return;
+    this.musicSessions.joinSession(this.form.value.code).subscribe();
   }
 
   get sessionHistory() {

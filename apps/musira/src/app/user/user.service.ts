@@ -1,11 +1,11 @@
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
 import type {
-  EmailUserResponseDTO,
+  EmailRefreshResponseDTO,
   UserResponseDTO,
 } from '@musira/api-interfaces/index';
+import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
 import {
   BehaviorSubject,
   catchError,
@@ -112,9 +112,9 @@ export class UserService {
       token: this.savedRefreshToken,
     };
     return this.http
-      .post<EmailUserResponseDTO>(this.usersEndpoint + 'email/refresh', body)
+      .post<EmailRefreshResponseDTO>(this.usersEndpoint + 'email/refresh', body)
       .pipe(
-        tap((login) => this.saveLogin(login)),
+        tap((refresh) => this.saveRefresh(refresh)),
         catchError((err) => {
           this.clearLocalStorage();
           return throwError(() => err);
@@ -160,7 +160,7 @@ export class UserService {
   get isLoggedIn(): boolean {
     const authToken = this.getToken();
     if (authToken === null) return false;
-    // if (this.isTokenExpired()) return false;
+    if (this.isTokenExpired()) return false;
     return true;
   }
 
@@ -233,6 +233,12 @@ export class UserService {
     Object.values(LocalStorageKeys).forEach((val) => {
       localStorage.removeItem(val);
     });
+  }
+
+  private saveRefresh(refresh: EmailRefreshResponseDTO) {
+    localStorage.setItem(LocalStorageKeys.TOKEN, refresh.token);
+    localStorage.setItem(LocalStorageKeys.REFRESH_TOKEN, refresh.refreshToken);
+    localStorage.setItem(LocalStorageKeys.EXPIRES_AT, '' + refresh.expiresAt);
   }
 
   private saveLogin(login: UserResponseDTO, token?: string) {

@@ -54,4 +54,12 @@ export class EmailUserResponseDTO implements EmailUserResponseInterface {
   ) {}
 }
 
+export class EmailRefreshResponseDTO {
+  constructor(
+    public token: string,
+    public refreshToken: string,
+    public expiresAt: number,
+  ) {}
+}
+
 export type UserResponseDTO = SocialUserResponseDTO | EmailUserResponseDTO;

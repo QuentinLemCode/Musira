@@ -1,15 +1,32 @@
-<label
-  >Rejoindre une session :<input
-    type="text"
-    #joinCode
-    placeholder="Code de session"
-/></label>
-<button (click)="joinSession(joinCode.value)">Rejoindre une session</button>
+<main>
+  <h1>Rejoindre une session</h1>
+  <form [formGroup]="form" (ngSubmit)="joinSession()">
+    <div class="join-session">
+      <label for="sessionCode"
+        >Code de session</label>
+        <input
+        type="text"
+        name="sessionCode"
+        placeholder="123456789"
+    />
+    {{form.controls.code.touched}}
+      <div
+        class="error"
+        *ngIf="form.controls.code.invalid && form.controls.code.touched"
+      >
+        Le code de session doit comporter 9 chiffres.
+      </div>
+    </div>
+    <button (click)="joinSession()" [disabled]="form.invalid">Rejoindre une session</button>
+  </form>
+</main>
 
 <h2>Historique des sessions</h2>
 <ul>
   <li *ngFor="let session of this.sessionHistory">
-    <a [routerLink]="'' + session.musicSession.code">{{ session.musicSession.code }}</a>
+    <a [routerLink]="'' + session.musicSession.code">{{
+      session.musicSession.code
+    }}</a>
   </li>
 </ul>
 
