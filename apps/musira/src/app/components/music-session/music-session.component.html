@@ -1,24 +1,32 @@
 <main>
+<h1>Créer une session musicale</h1>
+<div class="flex">
+  <button routerLink="create-session">Créer une session</button>
+</div>
+<hr />
+
   <h1>Rejoindre une session</h1>
   <form [formGroup]="form" (ngSubmit)="joinSession()">
     <div class="join-session">
-      <label for="sessionCode"
+      <label for="code"
         >Code de session</label>
         <input
         type="text"
-        name="sessionCode"
+        name="code"
+        formControlName="code"
         placeholder="123456789"
     />
-    {{form.controls.code.touched}}
-      <div
-        class="error"
-        *ngIf="form.controls.code.invalid && form.controls.code.touched"
-      >
-        Le code de session doit comporter 9 chiffres.
-      </div>
+
     </div>
     <button (click)="joinSession()" [disabled]="form.invalid">Rejoindre une session</button>
+
   </form>
+  <div
+  class="error"
+  *ngIf="form.controls.code.invalid && form.controls.code.touched"
+>
+  Le code de session doit comporter 9 chiffres.
+</div>
 </main>
 
 <h2>Historique des sessions</h2>
@@ -30,4 +38,4 @@
   </li>
 </ul>
 
-<button routerLink="create-session">Créer une session</button>
+

@@ -160,7 +160,6 @@ export class UserService {
   get isLoggedIn(): boolean {
     const authToken = this.getToken();
     if (authToken === null) return false;
-    if (this.isTokenExpired()) return false;
     return true;
   }
 

@@ -11,7 +11,7 @@ export class MusicSessionComponent {
   form = new FormGroup({
     code: new FormControl('', [
       Validators.required,
-      Validators.maxLength(9),
+      Validators.minLength(9),
       Validators.maxLength(9),
       Validators.pattern('[0-9]*'),
     ]),
@@ -24,6 +24,8 @@ export class MusicSessionComponent {
 
   joinSession() {
     if (this.form.invalid || !this.form.value.code) return;
+
+    // TODO : handle error
     this.musicSessions.joinSession(this.form.value.code).subscribe();
   }
 
