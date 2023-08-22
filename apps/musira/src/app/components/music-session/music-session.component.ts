@@ -22,12 +22,12 @@ export class MusicSessionComponent {
     private readonly musicSessions: MusicSessionsService,
   ) {}
 
-  joinSession(code?: string) {
+  joinSession(code?: number) {
     const sessionCode = code || this.form.value.code;
     if (!sessionCode || this.form.invalid || !this.form.value.code) return;
 
     // TODO : handle error
-    this.musicSessions.joinSession(sessionCode).subscribe();
+    this.musicSessions.joinSession(sessionCode.toString()).subscribe();
   }
 
   get sessionHistory() {
