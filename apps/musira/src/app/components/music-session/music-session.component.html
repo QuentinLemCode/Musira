@@ -34,7 +34,7 @@
 
 <h2 class="mt-16 mb-8">Historique des sessions</h2>
 <div class="grid grid-cols-3 gap-4">
-  <a *ngFor="let session of this.sessionHistory" class="session-history border-2 border-neutral-400 bg-neutral-700 rounded-xl" (click)="joinSession(session.musicSession.code)">
+  <a *ngFor="let session of this.sessionHistory" class="session-history border-2 border-neutral-400 bg-neutral-700 rounded-xl" (click)="joinSessionWithCode(session.musicSession.code)">
     <h2 class="text-center">{{session.musicSession.name}}</h2>
     <hr />
     <div>Rejoint le {{session.access_date}}</div>

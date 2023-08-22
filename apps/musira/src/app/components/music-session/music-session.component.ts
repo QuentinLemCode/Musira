@@ -22,15 +22,21 @@ export class MusicSessionComponent {
     private readonly musicSessions: MusicSessionsService,
   ) {}
 
-  joinSession(code?: number) {
-    const sessionCode = code || this.form.value.code;
-    if (!sessionCode || this.form.invalid || !this.form.value.code) return;
+  joinSession() {
+    if (this.form.invalid || !this.form.value.code) return;
+    this.joinSessionRequest(this.form.value.code);
+  }
 
-    // TODO : handle error
-    this.musicSessions.joinSession(sessionCode.toString()).subscribe();
+  joinSessionWithCode(code: number) {
+    this.joinSessionRequest(code.toString());
   }
 
   get sessionHistory() {
     return this.musicSessions.getSessionHistory();
+  }
+
+  private joinSessionRequest(code: string) {
+    // TODO : handle error
+    this.musicSessions.joinSession(code).subscribe();
   }
 }
