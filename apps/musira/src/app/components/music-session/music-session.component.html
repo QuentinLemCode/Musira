@@ -1,11 +1,14 @@
 <main>
 <h1>Créer une session musicale</h1>
-<div class="flex">
-  <button routerLink="create-session">Créer une session</button>
+<div class="flex items-baseline">
+  <p class="font-bold">Faites décoller vos soirées en faisant participer vos amis à la playlist !</p>
+  <button class="ml-8" routerLink="create-session">Créer une session</button>
 </div>
 <hr />
 
   <h1>Rejoindre une session</h1>
+  <p class="font-bold mt-4 mb-4">Fais passer tes meilleurs sons !</p>
+  <p class="mb-4">Tu auras besoin du code de session, demande-le à l'organisateur</p>
   <form [formGroup]="form" (ngSubmit)="joinSession()">
     <div class="join-session">
       <label for="code"
@@ -29,13 +32,17 @@
 </div>
 </main>
 
-<h2>Historique des sessions</h2>
+<h2 class="mt-16 mb-8">Historique des sessions</h2>
+<div class="grid grid-cols-3 gap-4">
+  <a *ngFor="let session of this.sessionHistory" class="session-history border-2 border-neutral-400 bg-neutral-700 rounded-xl" (click)="joinSession()">
+    <h2 class="text-center">{{session.musicSession.name}}</h2>
+    <hr />
+    <div>Rejoint le {{session.access_date}}</div>
+    <div>Crée par {{session.musicSession.creator}}</div>
+    <div>Code : {{session.musicSession.code}}</div>
+  </a>
+</div>
 <ul>
-  <li *ngFor="let session of this.sessionHistory">
-    <a [routerLink]="'' + session.musicSession.code">{{
-      session.musicSession.code
-    }}</a>
-  </li>
-</ul>
+
 
 
