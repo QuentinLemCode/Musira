@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MusicSessionsService } from '../../services/music-sessions.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { intlFormat } from 'date-fns';
 
 @Component({
   selector: 'musira-music-session',
@@ -33,6 +34,23 @@ export class MusicSessionComponent {
 
   get sessionHistory() {
     return this.musicSessions.getSessionHistory();
+  }
+
+  formatDate(date: Date) {
+    return intlFormat(
+      new Date(date),
+      {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      },
+      {
+        locale: 'fr-FR',
+      },
+    );
   }
 
   private joinSessionRequest(code: string) {

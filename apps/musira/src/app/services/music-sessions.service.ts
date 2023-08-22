@@ -73,7 +73,11 @@ export class MusicSessionsService {
     return (
       this.storage
         .getLocalItem<SessionHistory[]>(CONSTANTS.SESSION_HISTORY_KEY)
-        ?.reverse() || []
+        ?.reverse()
+        ?.map((session) => ({
+          ...session,
+          access_date: new Date(session.access_date),
+        })) || []
     );
   }
 
