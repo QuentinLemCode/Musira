@@ -80,7 +80,7 @@
     "@angular/compiler-cli": "16.2.0",
     "@angular/language-service": "16.2.1",
     "@nestjs/schematics": "10.0.2",
-    "@nestjs/testing": "10.2.0",
+    "@nestjs/testing": "10.2.1",
     "@nx/cypress": "16.7.0",
     "@nx/eslint-plugin": "16.7.0",
     "@nx/jest": "16.7.0",
