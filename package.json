@@ -47,7 +47,7 @@
     "@nestjs/jwt": "^10.1.0",
     "@nestjs/mapped-types": "^2.0.2",
     "@nestjs/passport": "^10.0.1",
-    "@nestjs/platform-fastify": "^10.2.0",
+    "@nestjs/platform-fastify": "^10.2.1",
     "@nestjs/schedule": "^3.0.3",
     "@nestjs/typeorm": "^10.0.0",
     "@nx/angular": "16.7.0",
