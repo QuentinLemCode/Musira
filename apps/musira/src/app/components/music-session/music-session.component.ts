@@ -1,7 +1,8 @@
 import { Component, Inject } from '@angular/core';
-import { MusicSessionsService } from '../../services/music-sessions.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { intlFormat } from 'date-fns';
+import { MusicSessionsService } from '../../services/music-sessions.service';
+import { codeToString } from '../../utils/format-code';
 
 @Component({
   selector: 'musira-music-session',
@@ -12,9 +13,9 @@ export class MusicSessionComponent {
   form = new FormGroup({
     code: new FormControl('', [
       Validators.required,
-      Validators.minLength(9),
-      Validators.maxLength(9),
-      Validators.pattern('[0-9]*'),
+      Validators.minLength(11),
+      Validators.maxLength(11),
+      Validators.pattern('[0-9-]*'),
     ]),
   });
 
@@ -22,6 +23,26 @@ export class MusicSessionComponent {
     @Inject(MusicSessionsService)
     private readonly musicSessions: MusicSessionsService,
   ) {}
+
+  onInputChange(event: Event) {
+    if (!(event instanceof InputEvent)) return;
+    const value = this.form.controls.code.value?.replaceAll(/[^0-9]/g, '');
+    if (value === undefined || value === null) return;
+    if (value.length > 6) {
+      this.form.controls.code.setValue(
+        `${value.substring(0, 3)}-${value.substring(3, 6)}-${value.substring(
+          6,
+          9,
+        )}`,
+      );
+    } else if (value.length > 3) {
+      this.form.controls.code.setValue(
+        `${value.substring(0, 3)}-${value.substring(3, 6)}`,
+      );
+    } else {
+      this.form.controls.code.setValue(value);
+    }
+  }
 
   joinSession() {
     if (this.form.invalid || !this.form.value.code) return;
@@ -33,7 +54,9 @@ export class MusicSessionComponent {
   }
 
   get sessionHistory() {
-    return this.musicSessions.getSessionHistory();
+    return this.musicSessions
+      .getSessionHistory()
+      .sort((a, b) => b.access_date.getTime() - a.access_date.getTime());
   }
 
   formatDate(date: Date) {
@@ -51,6 +74,10 @@ export class MusicSessionComponent {
         locale: 'fr-FR',
       },
     );
+  }
+
+  formatCode(code: number) {
+    return codeToString(code);
   }
 
   private joinSessionRequest(code: string) {

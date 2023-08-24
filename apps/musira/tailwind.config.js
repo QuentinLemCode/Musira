@@ -8,6 +8,12 @@ module.exports = {
     ...createGlobPatternsForDependencies(__dirname),
   ],
   theme: {
+    colors: {
+      'yellow-primary': '#fef179',
+      'yellow-secondary': '#f1c93c',
+      dark: '#191919',
+      white: '#f0f3f8',
+    },
     extend: {},
   },
   plugins: [],

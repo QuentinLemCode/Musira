@@ -105,6 +105,9 @@ button {
   &:hover {
     background: var(--primary-hover);
   }
+  &:disabled {
+    background-color: var(--disabled);
+  }
 }
 
 h2 {
@@ -128,5 +131,4 @@ h1 {
 
 hr {
   width: 100%;
-  margin-top: 2rem;
 }
