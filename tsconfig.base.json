@@ -32,7 +32,8 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "verbatimModuleSyntax": true
   },
   "exclude": ["node_modules", "tmp"]
 }

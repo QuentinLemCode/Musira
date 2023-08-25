@@ -10,8 +10,8 @@ import type {
   Queue,
   QueueResponse,
 } from './music-api.interface';
-import { MusicSessionsService } from './music-sessions.service';
 import { VisibilityService } from './visibility.service';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
 
 @Injectable({
   providedIn: 'root',

@@ -21,6 +21,7 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
     "lib": ["ES2021.String", "DOM"]
   },
   "angularCompilerOptions": {

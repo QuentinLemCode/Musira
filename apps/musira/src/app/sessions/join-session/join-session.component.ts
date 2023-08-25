@@ -1,15 +1,16 @@
 import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { intlFormat } from 'date-fns';
-import { MusicSessionsService } from '../../services/music-sessions.service';
 import { codeToString } from '../../utils/format-code';
+import { Router } from '@angular/router';
+import { MusicSessionsService } from '../music-sessions.service';
 
 @Component({
-  selector: 'musira-music-session',
-  templateUrl: './music-session.component.html',
-  styleUrls: ['./music-session.component.scss'],
+  selector: 'musira-join-session',
+  templateUrl: './join-session.component.html',
+  styleUrls: ['./join-session.component.scss'],
 })
-export class MusicSessionComponent {
+export class JoinSessionComponent {
   form = new FormGroup({
     code: new FormControl('', [
       Validators.required,
@@ -19,9 +20,12 @@ export class MusicSessionComponent {
     ]),
   });
 
+  joinSessionError = '';
+
   public constructor(
     @Inject(MusicSessionsService)
     private readonly musicSessions: MusicSessionsService,
+    @Inject(Router) private readonly router: Router,
   ) {}
 
   onInputChange(event: Event) {
@@ -81,7 +85,9 @@ export class MusicSessionComponent {
   }
 
   private joinSessionRequest(code: string) {
-    // TODO : handle error
-    this.musicSessions.joinSession(code).subscribe();
+    this.musicSessions.joinSession(code).subscribe({
+      next: () => this.router.navigate([code]),
+      error: () => (this.joinSessionError = 'Ce code de session est invalide'),
+    });
   }
 }

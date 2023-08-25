@@ -1,8 +1,8 @@
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import { CreateSessionComponent } from './create-session.component';
-import { MusicSessionsService } from '../services/music-sessions.service';
-import { SpotifyLoginComponent } from '../components/spotify-login/spotify-login.component';
+import { MusicSessionsService } from '../../services/music-sessions.service';
+import { SpotifyLoginComponent } from '../../components/spotify-login/spotify-login.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 

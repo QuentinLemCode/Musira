@@ -7,29 +7,24 @@ import { AdminComponent } from './admin/admin/admin.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ComponentsModule } from './components/components.module';
-import { MainComponent } from './main/main.component';
-import { SessionSettingsComponent } from './session-settings/session-settings.component';
-import { SpotifyDeviceComponent } from './session-settings/spotify-device/spotify-device.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { SessionsModule } from './sessions/sessions.module';
 import { JwtInterceptor } from './shared/jwt.interceptor';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
-import { SpotifyAuthComponent } from './spotifyAuth/spotify-auth.component';
+import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
 import { UserModule } from './user/user.module';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { CreateSessionComponent } from './create-session/create-session.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SpotifyDeviceComponent,
     NotFoundComponent,
-    MainComponent,
     AdminComponent,
     DashboardComponent,
-    SessionSettingsComponent,
     SpotifyAuthComponent,
-    CreateSessionComponent,
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
@@ -38,6 +33,7 @@ import { CreateSessionComponent } from './create-session/create-session.componen
     FontAwesomeModule,
     UserModule,
     ComponentsModule,
+    SessionsModule,
   ],
   providers: [
     {

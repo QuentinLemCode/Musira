@@ -1,9 +1,9 @@
 import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
-import { MusicSessionsService } from '../services/music-sessions.service';
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { firstValueFrom } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MusicSessionsService } from '../music-sessions.service';
 
 @Component({
   selector: 'musira-create-session',

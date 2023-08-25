@@ -1,13 +1,13 @@
 import { Component, Inject } from '@angular/core';
-import { MusicSessionsService } from '../services/music-sessions.service';
-import { UserService } from '../user/user.service';
+import { UserService } from '../../user/user.service';
+import { MusicSessionsService } from '../music-sessions.service';
 
 @Component({
-  selector: 'musira-main',
-  templateUrl: './main.component.html',
-  styleUrls: ['./main.component.scss'],
+  selector: 'musira-music-session',
+  templateUrl: './music-session.component.html',
+  styleUrls: ['./music-session.component.scss'],
 })
-export class MainComponent {
+export class MusicSessionComponent {
   constructor(
     @Inject(UserService) private readonly user: UserService,
     @Inject(MusicSessionsService)

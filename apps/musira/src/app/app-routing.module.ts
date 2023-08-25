@@ -4,17 +4,18 @@ import { RouterModule } from '@angular/router';
 import { AdminComponent } from './admin/admin/admin.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
-import { CreateSessionComponent } from './create-session/create-session.component';
+import { CreateSessionComponent } from './sessions/create-session/create-session.component';
 import { RegisterComponent } from './user/register/register.component';
-import { MainComponent } from './main/main.component';
-import { SessionSettingsComponent } from './session-settings/session-settings.component';
 import { AdminGuard } from './shared/admin.guard';
 import { AuthGuard } from './shared/auth.guard';
 import { musicSessionGuard } from './shared/music-session.guard';
 import { NotAuthGuard } from './shared/not-auth.guard';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
-import { SpotifyAuthComponent } from './spotifyAuth/spotify-auth.component';
+import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
 import { LoginComponent } from './user/login/login.component';
+import { SessionSettingsComponent } from './sessions/session-settings/session-settings.component';
+import { MusicSessionComponent } from './sessions/music-session/music-session.component';
+import { JoinSessionComponent } from './sessions/join-session/join-session.component';
 
 const routes: Routes = [
   {
@@ -51,10 +52,10 @@ const routes: Routes = [
   },
   {
     path: ':sessionId',
-    component: MainComponent,
+    component: MusicSessionComponent,
     canActivate: [musicSessionGuard],
   },
-  { path: '', component: MainComponent, canActivate: [AuthGuard] },
+  { path: '', component: JoinSessionComponent, canActivate: [AuthGuard] },
   { path: '**', component: NotFoundComponent },
 ];
 

@@ -6,8 +6,8 @@ import {
   faLinkedin,
   faTwitterSquare,
 } from '@fortawesome/free-brands-svg-icons';
-import { MusicSessionsService } from './services/music-sessions.service';
 import { UserService } from './user/user.service';
+import { MusicSessionsService } from './sessions/music-sessions.service';
 
 @Component({
   selector: 'musira-root',

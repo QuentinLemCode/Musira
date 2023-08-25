@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, computed } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { MusicSessionsService } from './music-sessions.service';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
 
 export interface SettingsQuery {
   maxVotes: number;

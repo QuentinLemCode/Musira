@@ -5,8 +5,8 @@ import { ReplaySubject, combineLatest, timer } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import type { CurrentMusic, Music } from './music-api.interface';
-import { MusicSessionsService } from './music-sessions.service';
 import { VisibilityService } from './visibility.service';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
 
 @Injectable({
   providedIn: 'root',

@@ -15,6 +15,7 @@ html {
 }
 
 body {
+  padding-top: 1rem;
   background: var(--bg-primary);
   color: var(--font-primary);
   line-height: 1.4;
@@ -68,12 +69,6 @@ input {
     line-height: 21px;
     font-family: Poppins;
   }
-}
-
-main {
-  padding-top: 1rem;
-  display: flex;
-  flex-direction: column;
 }
 
 img {

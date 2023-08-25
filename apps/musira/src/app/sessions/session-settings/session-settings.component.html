@@ -4,13 +4,13 @@
 <h1>Vote settings</h1>
 <div *ngIf="maxVote !== null">
   <input type="number" [(ngModel)]="maxVote" />
-  <button (click)="setMaxVotes(maxVote)">Save</button>
+  <button (click)="setMaxVotes()">Save</button>
 </div>
 
 <h1>Max queuable songs settings</h1>
 <div *ngIf="maxQueuableSongs !== null">
   <input type="number" [(ngModel)]="maxQueuableSongs" />
-  <button (click)="setMaxVotes(maxQueuableSongs)">Save</button>
+  <button (click)="setMaxQueuableSongs()">Save</button>
 </div>
 
 <button (click)="deleteSession()">Delete session</button>

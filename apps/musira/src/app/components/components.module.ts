@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BacklogComponent } from './backlog/backlog.component';
 import { MusicComponent } from './music/music.component';
-import { MusicSessionComponent } from './music-session/music-session.component';
 import { QueueComponent } from './queue/queue.component';
 import { SearchComponent } from './search/search.component';
 import { SpotifyLoginComponent } from './spotify-login/spotify-login.component';
@@ -14,7 +13,6 @@ import { AppRoutingModule } from '../app-routing.module';
   declarations: [
     BacklogComponent,
     MusicComponent,
-    MusicSessionComponent,
     QueueComponent,
     SearchComponent,
     SpotifyLoginComponent,
@@ -29,7 +27,6 @@ import { AppRoutingModule } from '../app-routing.module';
   exports: [
     BacklogComponent,
     MusicComponent,
-    MusicSessionComponent,
     QueueComponent,
     SearchComponent,
     SpotifyLoginComponent,

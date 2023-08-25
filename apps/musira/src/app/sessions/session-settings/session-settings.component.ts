@@ -1,8 +1,8 @@
 import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
-import { SettingsService } from '../services/settings.service';
-import { MusicSessionsService } from '../services/music-sessions.service';
 import { Router } from '@angular/router';
+import { SettingsService } from '../../services/settings.service';
+import { MusicSessionsService } from '../music-sessions.service';
 
 @Component({
   selector: 'musira-session-settings',
@@ -28,16 +28,18 @@ export class SessionSettingsComponent implements OnInit {
     });
   }
 
-  setMaxVotes(value: number) {
-    this.settings.setMaxVote(value).subscribe({
+  setMaxVotes() {
+    if (!this.maxVote) return;
+    this.settings.setMaxVote(this.maxVote).subscribe({
       next: (vote) => {
         this.maxVote = vote.maxVotes;
       },
     });
   }
 
-  setMaxQueuableSongs(value: number) {
-    this.settings.setMaxQueuableSongPerUser(value).subscribe({
+  setMaxQueuableSongs() {
+    if (!this.maxQueuableSongs) return;
+    this.settings.setMaxQueuableSongPerUser(this.maxQueuableSongs).subscribe({
       next: (vote) => {
         this.maxQueuableSongs = vote.maxQueuableSongPerUser;
       },

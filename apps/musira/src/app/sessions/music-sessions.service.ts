@@ -7,7 +7,7 @@ import type { MusicSessionDto } from '@musira/api-interfaces/sessions/music-sess
 import type { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { StorageService } from './storage.service';
+import { StorageService } from '../services/storage.service';
 import { CONSTANTS } from '../constants';
 
 interface SessionHistory {
@@ -46,10 +46,7 @@ export class MusicSessionsService {
     return this.http.get<MusicSessionDto>(this.endpoint + `/${code}`);
   }
 
-  public joinSession(code: string, navigate_to = true) {
-    if (navigate_to) {
-      this.router.navigate([code]);
-    }
+  public joinSession(code: string) {
     return this.get(code).pipe(this.tapCurrentSession);
   }
 

@@ -1,8 +1,8 @@
 import type { HttpErrorResponse } from '@angular/common/http';
 import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
-import type { CurrentMusic } from '../../services/music-api.interface';
-import { MusicApiService } from '../../services/music-api.service';
+import type { CurrentMusic } from '../../../services/music-api.interface';
+import { MusicApiService } from '../../../services/music-api.service';
 
 @Component({
   selector: 'musira-spotify-device',

@@ -1,28 +1,4 @@
-<header>
-  <nav *ngIf="isLoggedIn && isAdmin">
-    <ul>
-      <li>
-        <a routerLink="/admin">Administration</a>
-      </li>
-      <li>
-        <a [routerLink]="'/' + currentSession ? '' + currentSession?.code : ''"
-          >Accueil</a
-        >
-      </li>
-      <li>
-        <a routerLink="/dashboard">Dashboard</a>
-      </li>
-      <li *ngIf="currentSession">
-        <a [routerLink]="[currentSession.code, 'session-settings']"
-          >Session settings</a
-        >
-      </li>
-    </ul>
-  </nav>
-</header>
-<main>
-  <router-outlet></router-outlet>
-</main>
+<router-outlet></router-outlet>
 <footer>
   <p>
     Développé avec ❤️ par QuentinLemCode
