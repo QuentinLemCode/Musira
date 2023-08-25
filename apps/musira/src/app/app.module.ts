@@ -14,6 +14,7 @@ import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
 import { UserModule } from './user/user.module';
 import { CommonModule } from '@angular/common';
+import { NavigationModule } from './navigation/navigation.module';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { CommonModule } from '@angular/common';
     UserModule,
     ComponentsModule,
     SessionsModule,
+    NavigationModule,
   ],
   providers: [
     {

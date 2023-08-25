@@ -4,8 +4,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import type { MusicSessionDto } from '@musira/api-interfaces/index';
 import { of, throwError } from 'rxjs';
-import { MusicSessionsService } from '../../services/music-sessions.service';
 import { JoinSessionComponent } from './join-session.component';
+import { MusicSessionsService } from '../music-sessions.service';
 
 describe('JoinSessionComponent', () => {
   let component: JoinSessionComponent;

@@ -48,14 +48,4 @@ export class AppComponent implements OnInit {
   get isAdmin() {
     return this.user.isAdmin();
   }
-
-  async logout() {
-    await this.user.logout();
-    if (this.currentSession) {
-      return this.router.navigate([this.currentSession.code], {
-        replaceUrl: true,
-      });
-    }
-    return this.router.navigate(['/user/login'], { replaceUrl: true });
-  }
 }

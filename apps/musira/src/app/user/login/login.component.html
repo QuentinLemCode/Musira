@@ -33,7 +33,7 @@
         <div class="error" *ngIf="form.controls.password.touched && form.controls.password.invalid">
           Le mot de passe doit contenir au moins 8 caractères et au maximum 64 caractères
         </div>
-        <button type="submit" [disabled]="form.invalid">Se connecter <fa-icon *ngIf="loading" [icon]="faCircle" animation="spin"></fa-icon></button>
+        <button class="bg-yellow-primary" type="submit" [disabled]="form.invalid">Se connecter <fa-icon *ngIf="loading" [icon]="faCircle" animation="spin"></fa-icon></button>
         <div class="error" *ngIf="error">{{ error }}</div>
       </div>
     </form>

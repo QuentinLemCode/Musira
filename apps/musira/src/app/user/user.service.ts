@@ -1,6 +1,12 @@
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import {
+  computed,
+  Inject,
+  Injectable,
+  signal,
+  type Signal,
+} from '@angular/core';
 import type {
   EmailRefreshResponseDTO,
   UserResponseDTO,
@@ -28,6 +34,12 @@ enum LocalStorageKeys {
   EMAIL = 'email',
   REFRESH_TOKEN = 'refresh_token',
 }
+
+export interface UserState {
+  isLoggedIn: boolean;
+  username?: string | null;
+  userId?: string | null;
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -35,6 +47,12 @@ export class UserService {
   private readonly userLoginSubject =
     new BehaviorSubject<UserResponseDTO | null>(null);
   public readonly userLogin$ = this.userLoginSubject.asObservable();
+
+  public loggedUser = signal<UserState>({
+    username: this.username,
+    userId: this.userId,
+    isLoggedIn: this.isLoggedIn,
+  });
 
   private readonly usersEndpoint = environment.serverUrl + 'users/';
   constructor(
@@ -90,6 +108,11 @@ export class UserService {
     if (this.isSocialLogin) await this.authService.signOut();
     if (this.isEmailLogin) await this.emailLogout();
     this.clearLocalStorage();
+    this.loggedUser.set({
+      isLoggedIn: false,
+      username: null,
+      userId: null,
+    });
   }
 
   getAllUsers() {
@@ -259,5 +282,10 @@ export class UserService {
       localStorage.setItem(LocalStorageKeys.REFRESH_TOKEN, login.refreshToken);
       localStorage.setItem(LocalStorageKeys.EMAIL, login.email);
     }
+    this.loggedUser.set({
+      isLoggedIn: true,
+      userId: login.id.toString(),
+      username: login.name,
+    });
   }
 }

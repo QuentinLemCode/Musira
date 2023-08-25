@@ -1,7 +1,7 @@
 <main>
 <h1>Créer une session musicale</h1>
 <div class="flex items-baseline mt-4">
-  <p class="font-bold">Faites décoller vos soirées en faisant participer vos amis à la playlist !</p>
+  <p class="font-bold w-1/2">Faites décoller vos soirées en faisant participer vos amis à la playlist !</p>
   <button class="ml-8" routerLink="create-session">Créer une session</button>
 </div>
 <hr class="mt-16"/>
@@ -9,7 +9,7 @@
   <h1>Rejoindre une session</h1>
   <p class="font-bold mt-4 mb-4">Fais passer tes meilleurs sons !</p>
   <p class="mb-4">Tu auras besoin du code de session, demande-le à l'organisateur</p>
-  <form [formGroup]="form" (ngSubmit)="joinSession()">
+  <form class="flex flex-row flex-wrap justify-center items-end gap-4" [formGroup]="form" (ngSubmit)="joinSession()">
     <div class="join-session">
       <label for="code"
         >Code de session</label>
