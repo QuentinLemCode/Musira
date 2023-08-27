@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { JWTPayload } from 'jose';
+import type { JWTPayload } from 'jose';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { JwtGuard } from '../../users/jwt/jwt.guard';
 import { RolesGuard } from '../../users/roles.guard';

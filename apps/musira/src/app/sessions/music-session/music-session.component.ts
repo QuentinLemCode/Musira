@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { UserService } from '../../user/user.service';
 import { MusicSessionsService } from '../music-sessions.service';
+import { codeToString } from '../../utils/format-code';
 
 @Component({
   selector: 'musira-music-session',
@@ -14,12 +15,12 @@ export class MusicSessionComponent {
     private readonly sessions: MusicSessionsService,
   ) {}
 
-  exitSession() {
-    this.sessions.exitSession();
-  }
-
   get currentSession() {
     return this.sessions.currentSession();
+  }
+
+  get formattedSessionCode() {
+    return codeToString(this.currentSession?.code || 0);
   }
 
   get isLoggedIn() {

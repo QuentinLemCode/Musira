@@ -37,12 +37,6 @@ describe('MusicSessionComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should exit session', () => {
-    component.exitSession();
-
-    expect(musicSessionsServiceMock.exitSession).toHaveBeenCalled();
-  });
-
   it('should retrieve current session', () => {
     component.currentSession;
 

@@ -1,8 +1,6 @@
-<ng-container *ngIf="currentSession">
-  <p>
-    Vous êtes sur la session : {{ currentSession.name }}.
-    <a (click)="exitSession()">Quitter la session</a>
-  </p>
+  <h1>🎉 {{currentSession?.name}}</h1>
+  <h3>Oranisé par {{currentSession?.creator}}</h3>
+  <h4>#{{formattedSessionCode}}</h4>
+
   <musira-search *ngIf="isLoggedIn"></musira-search>
   <musira-queue></musira-queue>
-</ng-container>

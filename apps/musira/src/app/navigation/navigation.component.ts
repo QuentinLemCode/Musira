@@ -18,7 +18,7 @@ export class NavigationComponent {
   constructor(
     @Inject(UserService) readonly user: UserService,
     @Inject(MusicSessionsService)
-    private readonly session: MusicSessionsService,
+    private readonly sessions: MusicSessionsService,
     @Inject(Router) private readonly router: Router,
   ) {}
 
@@ -27,7 +27,16 @@ export class NavigationComponent {
   }
 
   get currentSession() {
-    return this.session.currentSession();
+    return this.sessions.currentSession();
+  }
+
+  get isSessionCreator() {
+    if(!this.currentSession) return false;
+    return this.user.isSessionCreator(this.currentSession.id);
+  }
+
+  exitSession() {
+    this.sessions.exitSession();
   }
 
   async logout() {

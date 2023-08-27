@@ -1,7 +1,7 @@
 import { Body, Controller, NotFoundException, Post } from '@nestjs/common';
 import { UsersService } from '../../users.service';
 import {
-  EmailLoginInterface,
+  type EmailLoginInterface,
   EmailUserResponseDTO,
 } from '@musira/api-interfaces/index';
 import { JwtService } from '../../jwt/jwt.service';

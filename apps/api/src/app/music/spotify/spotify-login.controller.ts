@@ -13,7 +13,7 @@ import { MusicSessionService } from '../../music-session/music-session.service';
 import { JwtGuard } from '../../users/jwt/jwt.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { isResponseError } from '../../utils/type-guards';
-import { SpotifyOAuthDTO } from '../music.interface';
+import { type SpotifyOAuthDTO } from '../music.interface';
 import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
 import { SpotifyApiService } from './spotify-api/spotify-api.service';
 

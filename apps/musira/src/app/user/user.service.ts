@@ -1,12 +1,6 @@
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
-import {
-  computed,
-  Inject,
-  Injectable,
-  signal,
-  type Signal,
-} from '@angular/core';
+import { Inject, Injectable, signal } from '@angular/core';
 import type {
   EmailRefreshResponseDTO,
   UserResponseDTO,
@@ -231,14 +225,14 @@ export class UserService {
     return localStorage.getItem(LocalStorageKeys.ROLE) === 'admin';
   }
 
-  isSessionCreator(session: string) {
+  isSessionCreator(sessionId: number) {
     if (!this.isLoggedIn) {
       return false;
     }
     const sessions = localStorage
       .getItem(LocalStorageKeys.SESSIONS_CREATOR)
       ?.split(';');
-    return sessions?.includes(session) ?? false;
+    return sessions?.includes(sessionId.toString()) ?? false;
   }
 
   private emailLogout() {

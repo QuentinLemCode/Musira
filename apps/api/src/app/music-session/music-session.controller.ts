@@ -12,7 +12,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { JWTPayload } from 'jose';
+import { type JWTPayload } from 'jose';
 import { JwtGuard } from '../users/jwt/jwt.guard';
 import { UsersService } from '../users/users.service';
 import { Jwt } from '../utils/decorators/jwt.decorator';
@@ -51,6 +51,7 @@ export class MusicSessionController {
       user.id,
     );
     return {
+      id: createdSession.id,
       name: createdSession.name,
       code: createdSession.publicCode,
       creator: createdSession.creator.name,
@@ -62,6 +63,7 @@ export class MusicSessionController {
   async findAll(): Promise<MusicSessionDto[]> {
     const musicSessions = await this.session.findAll();
     return musicSessions.map((musicSession) => ({
+      id: musicSession.id,
       name: musicSession.name,
       code: musicSession.publicCode,
       creator: musicSession.creator.name,
@@ -74,6 +76,7 @@ export class MusicSessionController {
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<MusicSessionDto> {
     return {
+      id: musicSession.id,
       name: musicSession.name,
       code: musicSession.publicCode,
       creator: musicSession.creator.name,
@@ -88,6 +91,7 @@ export class MusicSessionController {
   ): Promise<MusicSessionDto> {
     const musicSession = await this.session.update(code, updateMusicSessionDto);
     return {
+      id: musicSession.id,
       name: musicSession.name,
       code: musicSession.publicCode,
       creator: musicSession.creator.name,

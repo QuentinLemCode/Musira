@@ -12,6 +12,18 @@
     </button>
     <div class="w-full md:block md:w-auto" [ngClass]="showMenu ? 'visible' : 'hidden'" id="navbar-default">
       <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:dark:bg-gray-900 dark:border-gray-700">
+        <ng-container *ngIf="currentSession">
+          <li *ngIf="isSessionCreator">
+            <a [routerLink]="[currentSession.code ,'session-settings']" class="block py-2 pl-3 pr-4">Paramètre de la session</a>
+          </li>
+          <li>
+            <a (click)="exitSession()" class="block py-2 pl-3 pr-4">Quitter la session</a>
+          </li>
+          <li>
+            <hr class="block py-2 pl-3 pr-4 mt-4" />
+          </li>
+        </ng-container>
+
         <li *ngIf="isLogged()">
           <p class="block py-2 pl-3 pr-4"><fa-icon [icon]="faUser" class="mr-4"></fa-icon>{{username()}}</p>
         </li>

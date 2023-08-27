@@ -15,7 +15,7 @@ import { Repository } from 'typeorm';
 import { querystring } from '../../../utils/querystring';
 import { SpotifyAccount } from '../spotify-account.entity';
 import type { SpotifyRefreshToken, SpotifyToken } from '../token';
-import { Cache } from 'cache-manager';
+import type { Cache } from 'cache-manager';
 import type {
   CurrentPlaybackResponse,
   SpotifyTrackCategory,

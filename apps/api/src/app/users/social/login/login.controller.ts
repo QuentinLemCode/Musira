@@ -1,6 +1,6 @@
 import {
   SocialLoginUserDTO,
-  SocialLoginUserInterface,
+  type SocialLoginUserInterface,
   SocialUserResponseDTO,
 } from '@musira/api-interfaces/index';
 import {
