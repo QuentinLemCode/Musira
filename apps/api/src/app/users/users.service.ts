@@ -3,7 +3,7 @@ import type {
   EmailRegisterInterface,
   SocialLoginUserInterface,
 } from '@musira/api-interfaces/index';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes, randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
@@ -23,6 +23,8 @@ export class UsersService {
     @InjectRepository(User)
     private readonly users: Repository<User>,
   ) {}
+
+  private readonly LOGGER = new Logger(UsersService.name);
 
   find(name: string) {
     return this.users.findOne({ where: { name } });
@@ -54,6 +56,23 @@ export class UsersService {
     return this.socialUsers.findOneBy({
       email,
     });
+  }
+
+  async isCreatorOfSession(
+    email: string,
+    publicCode: number,
+  ): Promise<boolean> {
+    const user = await this.users
+      .createQueryBuilder('user')
+      .leftJoinAndSelect(
+        'user.sessionCreated',
+        'sessionCreated',
+        'sessionCreated.creatorId = user.id',
+      )
+      .where('user.email = :email', { email })
+      .andWhere('sessionCreated.publicCode = :publicCode', { publicCode })
+      .getOne();
+    return !!user;
   }
 
   async unlock(id: number) {

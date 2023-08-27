@@ -10,10 +10,16 @@ const parseCode = (code: string) => {
   }
 };
 
+export const publicCodeFromRequest = (ctx: ExecutionContext) => {
+  const request = ctx.switchToHttp().getRequest();
+  const code = request.params?.publicCode;
+  if (!code) return null;
+  return parseCode(code);
+};
+
 export const PublicCode = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
-    return parseCode(request.params?.publicCode);
+    return publicCodeFromRequest(ctx);
   },
 );
 

@@ -1,6 +1,6 @@
   <h1>🎉 {{currentSession?.name}}</h1>
-  <h3>Oranisé par {{currentSession?.creator}}</h3>
-  <h4>#{{formattedSessionCode}}</h4>
+  <h3 class="text-lg">Oranisé par {{currentSession?.creator}}</h3>
+  <h4 class="italic text-right">#{{formattedSessionCode}}</h4>
 
   <musira-search *ngIf="isLoggedIn"></musira-search>
   <musira-queue></musira-queue>

@@ -1,11 +1,9 @@
 import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
-import { Roles } from '../../users/roles.decorator';
-import { UserRole } from '../../users/user.entity';
-import { SettingsService } from './settings.service';
-import { MusicSession } from '../entities/music-session.entity';
-import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { JwtGuard } from '../../users/jwt/jwt.guard';
-import { RolesGuard } from '../../users/roles.guard';
+import { SessionCreatorGuard } from '../../users/session-creator.guard';
+import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
+import { MusicSession } from '../entities/music-session.entity';
+import { SettingsService } from './settings.service';
 
 export interface SettingsQuery {
   maxVotes: number;
@@ -16,8 +14,7 @@ export interface SettingsQuery {
 export class SettingsController {
   constructor(private readonly settings: SettingsService) {}
 
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Put()
   async setSettings(
     @MusicSessionParam() musicSession: MusicSession,
@@ -35,6 +32,7 @@ export class SettingsController {
     };
   }
 
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Get()
   async getSettings(
     @MusicSessionParam() musicSession: MusicSession,

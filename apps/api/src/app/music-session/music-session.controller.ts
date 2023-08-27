@@ -22,6 +22,7 @@ import {
 } from '../utils/decorators/music-session.decorator';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionService } from './music-session.service';
+import { SessionCreatorGuard } from '../users/session-creator.guard';
 
 @Controller('music-session')
 export class MusicSessionController {
@@ -84,6 +85,7 @@ export class MusicSessionController {
     };
   }
 
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Patch(':publicCode')
   async update(
     @PublicCode() code: number,
@@ -99,6 +101,7 @@ export class MusicSessionController {
     };
   }
 
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Delete(':publicCode')
   remove(@PublicCode() code: number) {
     return this.session.remove(code);

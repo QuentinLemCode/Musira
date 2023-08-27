@@ -21,6 +21,7 @@ import type {
   SearchResponse,
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
+import { SessionCreatorGuard } from '../users/session-creator.guard';
 
 @Controller('session/:publicCode/music')
 export class MusicController {
@@ -39,8 +40,7 @@ export class MusicController {
     return this.mapResults(results);
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Get('start')
   async start(
     @MusicSessionParam() musicSession: MusicSession,
@@ -50,8 +50,7 @@ export class MusicController {
     return this.generateState(musicSession, status.message);
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Get('stop')
   async stop(
     @MusicSessionParam() musicSession: MusicSession,
