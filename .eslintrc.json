@@ -25,6 +25,7 @@
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nx/typescript"],
       "rules": {
+        "@typescript-eslint/consistent-type-imports": "off",
         "@typescript-eslint/no-import-type-side-effects": "error"
       }
     },
