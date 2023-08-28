@@ -1,7 +1,7 @@
 import { Component, Inject, Input } from '@angular/core';
+import { CONSTANTS } from '../../constants';
 import { MusicApiService } from '../../services/music-api.service';
 import { StorageService } from '../../services/storage.service';
-import { CONSTANTS } from '../../constants';
 
 @Component({
   selector: 'musira-spotify-login',

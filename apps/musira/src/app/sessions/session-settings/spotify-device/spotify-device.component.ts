@@ -3,6 +3,7 @@ import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
 import type { CurrentMusic } from '../../../services/music-api.interface';
 import { MusicApiService } from '../../../services/music-api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'musira-spotify-device',
@@ -13,7 +14,10 @@ export class SpotifyDeviceComponent implements OnInit {
   error = '';
   musicStatus: CurrentMusic | null = null;
 
-  constructor(@Inject(MusicApiService) private music: MusicApiService) {}
+  constructor(
+    @Inject(MusicApiService) private readonly music: MusicApiService,
+    @Inject(Router) private readonly router: Router,
+  ) {}
 
   handleError = (err: HttpErrorResponse) => {
     this.error = err?.error?.error || err?.error?.message;
