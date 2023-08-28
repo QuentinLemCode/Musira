@@ -52,7 +52,7 @@
     "@nestjs/typeorm": "^10.0.0",
     "@nx/angular": "16.7.0",
     "@supercharge/request-ip": "^1.2.0",
-    "axios": "^1.4.0",
+    "axios": "^1.5.0",
     "axios-cache-interceptor": "^1.2.0",
     "cache-manager": "^5.2.3",
     "hashids": "^2.3.0",
