@@ -11,15 +11,21 @@ export class SessionCreatorGuard implements CanActivate {
     private readonly userService: UsersService,
   ) {}
 
-  LOGGER = new Logger(SessionCreatorGuard.name);
+  logger = new Logger(SessionCreatorGuard.name);
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const { jwt } = context.switchToHttp().getRequest<{ jwt: JWTPayload }>();
     const email = jwt.email;
-    if (!email || typeof email !== 'string') return false;
+    if (!email || typeof email !== 'string') {
+      this.logger.debug('invalid email : ' + email);
+      return false;
+    }
 
     const publicCode = publicCodeFromRequest(context);
-    if (!publicCode) return false;
+    if (!publicCode) {
+      this.logger.debug('invalid publicCode : ' + publicCode);
+      return false;
+    }
 
     return this.userService.isCreatorOfSession(email, publicCode);
   }

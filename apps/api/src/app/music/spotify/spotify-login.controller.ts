@@ -5,13 +5,17 @@ import {
   Get,
   Post,
   ServiceUnavailableException,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { MusicSessionService } from '../../music-session/music-session.service';
 import { JwtGuard } from '../../users/jwt/jwt.guard';
+import { SessionCreatorGuard } from '../../users/session-creator.guard';
+import type { User } from '../../users/user.entity';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
+import { UserFromRequest } from '../../utils/decorators/user-from-request.decorator';
 import { isResponseError } from '../../utils/type-guards';
 import { type SpotifyOAuthDTO } from '../music.interface';
 import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
@@ -25,8 +29,7 @@ export class SpotifyLoginController {
     private readonly queueEngine: QueueEngineService,
   ) {}
 
-  // TODO : implement session creator guard
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Get(':publicCode/spotify-login')
   async spotifyLogin(@MusicSessionParam() musicSession: MusicSession) {
     const uuid = randomUUID();
@@ -56,7 +59,10 @@ export class SpotifyLoginController {
 
   @Post('register-player')
   @UseGuards(JwtGuard)
-  async spotifyAuthentication(@Body() spotifyOAuth: SpotifyOAuthDTO) {
+  async spotifyAuthentication(
+    @Body() spotifyOAuth: SpotifyOAuthDTO,
+    @UserFromRequest() user: User,
+  ) {
     const [publicCode, state] = spotifyOAuth.state.split('*');
     if (!publicCode)
       throw new BadRequestException('Session public code not found');
@@ -64,6 +70,11 @@ export class SpotifyLoginController {
     if (!musicSession) throw new BadRequestException('Session not found');
     if (musicSession.spotifyAuthUuid !== state)
       throw new BadRequestException('Invalid state');
+
+    if (musicSession.creator.id !== user.id)
+      throw new UnauthorizedException(
+        'Only the session creator can register a player',
+      );
 
     try {
       await this.spotify.registerPlayer(musicSession, spotifyOAuth.code);
@@ -81,7 +92,7 @@ export class SpotifyLoginController {
   }
 
   @Post(':publicCode/logout-player')
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   async spotifyLogout(@MusicSessionParam() musicSession: MusicSession) {
     await this.spotify.unregisterPlayer(musicSession);
     this.queueEngine.stop();

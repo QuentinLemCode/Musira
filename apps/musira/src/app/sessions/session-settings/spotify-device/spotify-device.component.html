@@ -1,13 +1,13 @@
-<p *ngIf="error">{{ error }}</p>
+<p *ngIf="error" class="error">{{ error }}</p>
 
-<div *ngIf="musicStatus; else loading">
+<div class="border border-b-dark dark:border-b-white border-r-4 rounded-lg" *ngIf="musicStatus; else loading">
   <ng-container
     *ngIf="
       musicStatus.isSpotifyAccountRegistered === true;
       else notAuthenticated
     "
   >
-    <h1>Connecté à Spotify</h1>
+    <p>Cette session est connecté à un compte Spotify</p>
     <button (click)="logoutPlayer()">Déconnecter de Spotify</button>
     <h3>
       État du moteur de playlist :

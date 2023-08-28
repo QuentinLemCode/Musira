@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, computed } from '@angular/core';
 import type { Observable, Subscription } from 'rxjs';
 import { ReplaySubject, combineLatest, timer } from 'rxjs';
-import { shareReplay } from 'rxjs/operators';
+import { shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import type { CurrentMusic, Music } from './music-api.interface';
 import { VisibilityService } from './visibility.service';
@@ -77,12 +77,21 @@ export class MusicApiService {
   }
 
   logoutPlayer() {
-    return this.http.post(
-      this.spotifyEndpoint +
-        this.session.currentSession()?.code +
-        '/logout-player',
-      {},
-    );
+    return this.http
+      .post(
+        this.spotifyEndpoint +
+          this.session.currentSession()?.code +
+          '/logout-player',
+        {},
+      )
+      .pipe(
+        tap(() => {
+          this.$status.next({
+            engineStarted: false,
+            isSpotifyAccountRegistered: false,
+          });
+        }),
+      );
   }
 
   getStatus() {
