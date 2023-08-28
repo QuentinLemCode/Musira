@@ -99,11 +99,15 @@ export class MusicApiService {
   }
 
   startEngine() {
-    return this.http.get<CurrentMusic>(this.endpoint() + '/start');
+    return this.http
+      .get<CurrentMusic>(this.endpoint() + '/start')
+      .pipe(tap((status) => this.$status.next(status)));
   }
 
   stopEngine() {
-    return this.http.get<CurrentMusic>(this.endpoint() + '/stop');
+    return this.http
+      .get<CurrentMusic>(this.endpoint() + '/stop')
+      .pipe(tap((status) => this.$status.next(status)));
   }
 
   private launchPolling() {

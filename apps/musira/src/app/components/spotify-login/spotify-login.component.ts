@@ -12,6 +12,8 @@ export class SpotifyLoginComponent {
   @Input() disabled = false;
   @Input() beforeLoginHandler: () => Promise<void> = async () => void 0;
   @Input() redirect_to = '';
+  @Input() format: 'Button' | 'Link' = 'Button';
+  @Input() text = 'Login with Spotify';
 
   constructor(
     @Inject(MusicApiService) private readonly music: MusicApiService,

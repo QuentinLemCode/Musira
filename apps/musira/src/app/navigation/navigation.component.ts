@@ -31,11 +31,12 @@ export class NavigationComponent {
   }
 
   get isSessionCreator() {
-    if(!this.currentSession) return false;
+    if (!this.currentSession) return false;
     return this.user.isSessionCreator(this.currentSession.id);
   }
 
   exitSession() {
+    this.showMenu = false;
     this.sessions.exitSession();
   }
 

@@ -1,24 +1,9 @@
 <p *ngIf="error" class="error">{{ error }}</p>
+<a class="mb-16 mt-4 text-xl text-right" [routerLink]="'..'"><fa-icon [icon]="faArrowRotateLeft"></fa-icon> Retourner sur la session</a>
+<musira-spotify-status></musira-spotify-status>
+<div *ngIf="musicStatus; else loading">
+    <button *ngIf="musicStatus.isSpotifyAccountRegistered" (click)="logoutPlayer()">Déconnecter de Spotify</button>
 
-<div class="border border-b-dark dark:border-b-white border-r-4 rounded-lg" *ngIf="musicStatus; else loading">
-  <ng-container
-    *ngIf="
-      musicStatus.isSpotifyAccountRegistered === true;
-      else notAuthenticated
-    "
-  >
-    <p>Cette session est connecté à un compte Spotify</p>
-    <button (click)="logoutPlayer()">Déconnecter de Spotify</button>
-    <h3>
-      État du moteur de playlist :
-      {{ musicStatus.engineStarted ? 'Démarré' : 'Arreté' }}
-    </h3>
-    <button *ngIf="!musicStatus.engineStarted" (click)="startEngine()">
-      Démarrer
-    </button>
-    <button *ngIf="musicStatus.engineStarted" (click)="stopEngine()">
-      Arrêter
-    </button>
     <p *ngIf="musicStatus.message">{{ musicStatus.message }}</p>
     <h3>Musique en cours de lecture sur Spotify :</h3>
     <musira-music
@@ -30,7 +15,6 @@
     <h3>Backlog :</h3>
     <musira-search></musira-search>
     <musira-backlog></musira-backlog>
-  </ng-container>
 </div>
 
 <ng-template #notAuthenticated>

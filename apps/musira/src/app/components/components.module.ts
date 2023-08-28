@@ -8,6 +8,7 @@ import { SpotifyLoginComponent } from './spotify-login/spotify-login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AppRoutingModule } from '../app-routing.module';
+import { SpotifyStatusComponent } from './spotify-status/spotify-status.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { AppRoutingModule } from '../app-routing.module';
     QueueComponent,
     SearchComponent,
     SpotifyLoginComponent,
+    SpotifyStatusComponent,
   ],
   imports: [
     CommonModule,
@@ -30,6 +32,7 @@ import { AppRoutingModule } from '../app-routing.module';
     QueueComponent,
     SearchComponent,
     SpotifyLoginComponent,
+    SpotifyStatusComponent,
   ],
 })
 export class ComponentsModule {}

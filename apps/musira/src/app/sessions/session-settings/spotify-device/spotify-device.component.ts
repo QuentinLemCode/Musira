@@ -1,9 +1,10 @@
 import type { HttpErrorResponse } from '@angular/common/http';
 import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import type { CurrentMusic } from '../../../services/music-api.interface';
 import { MusicApiService } from '../../../services/music-api.service';
-import { Router } from '@angular/router';
+import { faArrowRotateLeft } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'musira-spotify-device',
@@ -13,11 +14,17 @@ import { Router } from '@angular/router';
 export class SpotifyDeviceComponent implements OnInit {
   error = '';
   musicStatus: CurrentMusic | null = null;
+  faArrowRotateLeft = faArrowRotateLeft;
 
   constructor(
     @Inject(MusicApiService) private readonly music: MusicApiService,
     @Inject(Router) private readonly router: Router,
+    @Inject(ActivatedRoute) private readonly route: ActivatedRoute,
   ) {}
+
+  back() {
+    this.router.navigate(['..'], { relativeTo: this.route });
+  }
 
   handleError = (err: HttpErrorResponse) => {
     this.error = err?.error?.error || err?.error?.message;
@@ -38,21 +45,5 @@ export class SpotifyDeviceComponent implements OnInit {
 
   logoutPlayer(): void {
     this.music.logoutPlayer().subscribe();
-  }
-
-  startEngine() {
-    this.music.startEngine().subscribe({
-      next: (status) => {
-        this.musicStatus = status;
-      },
-    });
-  }
-
-  stopEngine() {
-    this.music.stopEngine().subscribe({
-      next: (status) => {
-        this.musicStatus = status;
-      },
-    });
   }
 }

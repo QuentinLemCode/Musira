@@ -7,6 +7,14 @@
       formControlName="name"
   /></label>
 </form>
+<!-- <p>
+  You need a valid Spotify Premium account to create a session.<br />
+  We do not store any of your spotify data, we only use it to play music on your Spotify
+  account.
+</p> -->
+<p>Vous avez besoin d'un compte Spotify Premium pour créer une session.
+  Nous ne stockons aucune de vos données Spotify, nous l'utilisons uniquement pour lancer les musiques sur votre appareil.
+</p>
 <musira-spotify-login
   [beforeLoginHandler]="createSession(sessionName.value)"
   [disabled]="name?.invalid || false"
