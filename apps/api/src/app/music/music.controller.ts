@@ -96,9 +96,8 @@ export class MusicController {
     musicSession: MusicSession,
     message?: string,
   ): Promise<CurrentMusic> {
-    const isSpotifyAccountRegistered = await this.spotify.isAccountRegistered(
-      musicSession,
-    );
+    const isSpotifyAccountRegistered =
+      await this.spotify.isAccountRegistered(musicSession);
     const engineStarted = this.queueEngine.isRunning;
     if (!isSpotifyAccountRegistered) {
       return { isSpotifyAccountRegistered, engineStarted, message };
