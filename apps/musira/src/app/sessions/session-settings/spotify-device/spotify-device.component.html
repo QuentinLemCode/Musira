@@ -1,24 +1,33 @@
 <p *ngIf="error" class="error">{{ error }}</p>
-<a class="mb-16 mt-4 text-xl text-right" [routerLink]="'..'"><fa-icon [icon]="faArrowRotateLeft"></fa-icon> Retourner sur la session</a>
+<a class="mb-16 mt-4 text-xl text-right" [routerLink]="'..'"
+  ><fa-icon [icon]="faArrowRotateLeft"></fa-icon> Retourner sur la session</a
+>
 <musira-spotify-status></musira-spotify-status>
 <div *ngIf="musicStatus; else loading">
-    <button *ngIf="musicStatus.isSpotifyAccountRegistered" (click)="logoutPlayer()">Déconnecter de Spotify</button>
+  <button
+    *ngIf="musicStatus.isSpotifyAccountRegistered"
+    (click)="logoutPlayer()"
+  >
+    Déconnecter de Spotify
+  </button>
 
-    <p *ngIf="musicStatus.message">{{ musicStatus.message }}</p>
-    <h3>Musique en cours de lecture sur Spotify :</h3>
-    <musira-music
-      *ngIf="musicStatus.currentPlay"
-      [music]="musicStatus.currentPlay"
-    ></musira-music>
-    <h3>File d'attente :</h3>
-    <musira-queue></musira-queue>
-    <h3>Backlog :</h3>
-    <musira-search></musira-search>
-    <musira-backlog></musira-backlog>
+  <p *ngIf="musicStatus.message">{{ musicStatus.message }}</p>
+  <h3>Musique en cours de lecture sur Spotify :</h3>
+  <musira-music
+    *ngIf="musicStatus.currentPlay"
+    [music]="musicStatus.currentPlay"
+  ></musira-music>
+  <h3>File d'attente :</h3>
+  <musira-queue></musira-queue>
+  <h3>Backlog :</h3>
+  <musira-search></musira-search>
+  <musira-backlog></musira-backlog>
 </div>
 
 <ng-template #notAuthenticated>
-  <musira-spotify-login [redirect_to]="'session-settings'"></musira-spotify-login>
+  <musira-spotify-login
+    [redirect_to]="'session-settings'"
+  ></musira-spotify-login>
 </ng-template>
 
 <ng-template #loading>
