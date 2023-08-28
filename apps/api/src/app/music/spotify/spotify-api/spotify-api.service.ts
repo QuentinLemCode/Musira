@@ -190,9 +190,8 @@ export class SpotifyApiService implements OnModuleInit {
           'https://api.spotify.com/v1/me/player/next',
           {},
           {
-            headers: await this.getAuthorizationHeaderForCurrentPlayer(
-              musicSession,
-            ),
+            headers:
+              await this.getAuthorizationHeaderForCurrentPlayer(musicSession),
           },
         )
         .pipe(retry({ count: 5, delay: 1000 }), this.pipeResponse()),
@@ -212,9 +211,8 @@ export class SpotifyApiService implements OnModuleInit {
           'https://api.spotify.com/v1/me/player/queue',
           {},
           {
-            headers: await this.getAuthorizationHeaderForCurrentPlayer(
-              musicSession,
-            ),
+            headers:
+              await this.getAuthorizationHeaderForCurrentPlayer(musicSession),
             params: {
               uri,
             },
@@ -239,9 +237,8 @@ export class SpotifyApiService implements OnModuleInit {
             uris: [uri],
           },
           {
-            headers: await this.getAuthorizationHeaderForCurrentPlayer(
-              musicSession,
-            ),
+            headers:
+              await this.getAuthorizationHeaderForCurrentPlayer(musicSession),
           },
         )
         .pipe(
