@@ -18,9 +18,7 @@ async function bootstrap() {
     new FastifyAdapter(),
     { logger: getLogger() },
   );
-  if (env.PREFIX) {
-    app.setGlobalPrefix(env.PREFIX);
-  }
+  app.setGlobalPrefix(env.PREFIX || 'api');
   if (env.ORIGIN) {
     app.enableCors({
       origin: env.ORIGIN,
