@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { MusicSession } from '../entities/music-session.entity';
+import type { MusicSession } from '../entities/music-session.entity';
 import { Settings } from './settings.entity';
 
 @Injectable()

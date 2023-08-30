@@ -1,28 +1,7 @@
 <header>
-  <nav *ngIf="isLoggedIn && isAdmin">
-    <ul>
-      <li>
-        <a routerLink="/admin">Administration</a>
-      </li>
-      <li>
-        <a [routerLink]="'/' + currentSession ? currentSession?.id : ''"
-          >Accueil</a
-        >
-      </li>
-      <li>
-        <a routerLink="/dashboard">Dashboard</a>
-      </li>
-      <li *ngIf="currentSession">
-        <a [routerLink]="[currentSession.id, 'session-settings']"
-          >Session settings</a
-        >
-      </li>
-    </ul>
-  </nav>
+  <musira-navigation></musira-navigation>
 </header>
-<main>
-  <router-outlet></router-outlet>
-</main>
+<router-outlet></router-outlet>
 <footer>
   <p>
     Développé avec ❤️ par QuentinLemCode
@@ -35,10 +14,5 @@
     <br />
     Un très grand merci à Théo Charlot pour le design ✏️
     <br />
-    <ng-container *ngIf="isLoggedIn"
-      >Connecté en tant que {{ username | titlecase }}</ng-container
-    >
-    <br />
-    <a *ngIf="isLoggedIn" [routerLink]="" (click)="logout()">Se déconnecter</a>
   </p>
 </footer>

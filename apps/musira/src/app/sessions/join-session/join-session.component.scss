@@ -1,0 +1,26 @@
+@import '../../../colors.scss';
+
+form {
+  div.join-session {
+    display: flex;
+    flex-direction: column;
+    margin: 0 1rem 0 1rem;
+
+    input {
+      height: 3rem;
+    }
+
+    label {
+      margin-left: 1rem;
+    }
+  }
+
+  button {
+    margin-bottom: 2px;
+  }
+}
+
+.session-history {
+  // color: var(--neutral);
+  color: var(--bg-secondary);
+}

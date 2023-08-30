@@ -4,6 +4,7 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -12,17 +13,20 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Queue } from '../../music/queue/queue.entity';
-import { User } from '../../users/user.entity';
-import { hashIdEncode } from '../../utils/hashid';
 import { Backlog } from '../../music/backlog/backlog.entity';
-import { Settings } from '../settings/settings.entity';
+import { Queue } from '../../music/queue/queue.entity';
 import { SpotifyAccount } from '../../music/spotify/spotify-account.entity';
+import { User } from '../../users/user.entity';
+import { Settings } from '../settings/settings.entity';
 
 @Entity()
 export class MusicSession {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ type: 'int', unsigned: true })
+  @Index({ unique: true })
+  publicCode: number;
 
   @BeforeUpdate()
   updateDates() {
@@ -85,8 +89,4 @@ export class MusicSession {
 
   @Column({ default: null, nullable: true, type: 'uuid' })
   spotifyAuthUuid: string | null;
-
-  get hashId() {
-    return hashIdEncode(this.id);
-  }
 }

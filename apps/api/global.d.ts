@@ -1,3 +1,5 @@
+import type { JWTPayload } from 'jose';
+
 declare namespace NodeJS {
   export interface ProcessEnv {
     SPOTIFY_CLIENT_ID?: string;
@@ -22,10 +24,6 @@ declare namespace NodeJS {
 
 declare namespace Express {
   export interface Request {
-    user?: {
-      userId: number;
-      name: string;
-      role: UserRole;
-    };
+    jwt?: JWTPayload;
   }
 }

@@ -1,17 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, computed } from '@angular/core';
-import {
-  Observable,
-  ReplaySubject,
-  Subscription,
-  combineLatest,
-  timer,
-} from 'rxjs';
-import { shareReplay } from 'rxjs/operators';
+import { Inject, Injectable, computed } from '@angular/core';
+import type { Observable, Subscription } from 'rxjs';
+import { ReplaySubject, combineLatest, timer } from 'rxjs';
+import { shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { CurrentMusic, Music } from './music-api.interface';
-import { MusicSessionsService } from './music-sessions.service';
+import type { CurrentMusic, Music } from './music-api.interface';
 import { VisibilityService } from './visibility.service';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,15 +20,16 @@ export class MusicApiService {
   private $polling?: Subscription;
 
   constructor(
-    private readonly http: HttpClient,
-    readonly visibility: VisibilityService,
+    @Inject(HttpClient) private readonly http: HttpClient,
+    @Inject(VisibilityService) readonly visibility: VisibilityService,
+    @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
   ) {
     this.endpoint = computed(
       () =>
         environment.serverUrl +
         'session/' +
-        this.session.currentSession()?.id +
+        this.session.currentSession()?.code +
         '/music',
     );
     const pollingObservable = combineLatest([
@@ -42,7 +38,7 @@ export class MusicApiService {
     ]);
     pollingObservable.subscribe({
       next: ([visibility, session]) => {
-        if (visibility.visible && session) {
+        if (visibility.visible && session?.linkedToSpotify) {
           this.launchPolling();
         } else {
           this.stopPolling();
@@ -61,7 +57,7 @@ export class MusicApiService {
     return this.http
       .get(
         this.spotifyEndpoint +
-          this.session.currentSession()?.id +
+          this.session.currentSession()?.code +
           '/spotify-login',
         {
           responseType: 'text',
@@ -71,7 +67,7 @@ export class MusicApiService {
   }
 
   authenticatePlayer(code: string, state: string) {
-    return this.http.post<{ connected?: boolean; sessionHashId: string }>(
+    return this.http.post<{ connected?: boolean; publicCode: string }>(
       this.spotifyEndpoint + 'register-player',
       {
         code,
@@ -81,12 +77,21 @@ export class MusicApiService {
   }
 
   logoutPlayer() {
-    return this.http.post(
-      this.spotifyEndpoint +
-        this.session.currentSession()?.id +
-        '/logout-player',
-      {},
-    );
+    return this.http
+      .post(
+        this.spotifyEndpoint +
+          this.session.currentSession()?.code +
+          '/logout-player',
+        {},
+      )
+      .pipe(
+        tap(() => {
+          this.$status.next({
+            engineStarted: false,
+            isSpotifyAccountRegistered: false,
+          });
+        }),
+      );
   }
 
   getStatus() {
@@ -94,11 +99,15 @@ export class MusicApiService {
   }
 
   startEngine() {
-    return this.http.get<CurrentMusic>(this.endpoint() + '/start');
+    return this.http
+      .get<CurrentMusic>(this.endpoint() + '/start')
+      .pipe(tap((status) => this.$status.next(status)));
   }
 
   stopEngine() {
-    return this.http.get<CurrentMusic>(this.endpoint() + '/stop');
+    return this.http
+      .get<CurrentMusic>(this.endpoint() + '/stop')
+      .pipe(tap((status) => this.$status.next(status)));
   }
 
   private launchPolling() {

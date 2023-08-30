@@ -6,12 +6,13 @@ import {
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { setTimeout } from 'timers';
-import { MusicSession } from '../../../music-session/entities/music-session.entity';
-import { User, UserRole } from '../../../users/user.entity';
-import { Backlog } from '../../backlog/backlog.entity';
+import type { MusicSession } from '../../../music-session/entities/music-session.entity';
+import type { User } from '../../../users/user.entity';
+import { UserRole } from '../../../users/user.entity';
+import type { Backlog } from '../../backlog/backlog.entity';
 import { BacklogService } from '../../backlog/backlog.service';
 import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service';
-import { CurrentPlaybackResponse } from '../../spotify/types/spotify-interfaces';
+import type { CurrentPlaybackResponse } from '../../spotify/types/spotify-interfaces';
 import { Queue } from '../queue.entity';
 import { QueueService } from '../queue.service';
 

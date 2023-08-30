@@ -1,0 +1,32 @@
+<ul *ngIf="musicStatus !== undefined; else loading">
+  <li *ngIf="musicStatus.isSpotifyAccountRegistered">✅ Connecté à Spotify</li>
+  <li *ngIf="!musicStatus.isSpotifyAccountRegistered">
+    ❌ Non connecté à Spotify
+    <ul>
+      <li>
+        <musira-spotify-login
+          [format]="'Link'"
+          [text]="'Se connecter'"
+        ></musira-spotify-login>
+      </li>
+    </ul>
+  </li>
+  <li
+    class="cursor-pointer"
+    *ngIf="musicStatus.engineStarted"
+    (click)="collapsed = !collapsed"
+  >
+    ✅ Gestion de la playlist
+    <div *ngIf="collapsed" class="ml-4">
+      <a (click)="stopEngine()">Arrêter la gestion de la playlist</a>
+    </div>
+  </li>
+  <li *ngIf="!musicStatus.engineStarted">
+    ❌ Gestion de la playlist arrếté
+    <div class="ml-4">
+      <a (click)="startEngine()">Lancer la gestion de la playlist</a>
+    </div>
+  </li>
+</ul>
+
+<ng-template #loading> Chargement </ng-template>

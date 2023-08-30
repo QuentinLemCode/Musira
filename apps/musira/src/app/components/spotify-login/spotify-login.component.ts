@@ -1,7 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
+import { CONSTANTS } from '../../constants';
 import { MusicApiService } from '../../services/music-api.service';
 import { StorageService } from '../../services/storage.service';
-import { CONSTANTS } from '../../constants';
 
 @Component({
   selector: 'musira-spotify-login',
@@ -12,10 +12,12 @@ export class SpotifyLoginComponent {
   @Input() disabled = false;
   @Input() beforeLoginHandler: () => Promise<void> = async () => void 0;
   @Input() redirect_to = '';
+  @Input() format: 'Button' | 'Link' = 'Button';
+  @Input() text = 'Login with Spotify';
 
   constructor(
-    private readonly music: MusicApiService,
-    private readonly storage: StorageService,
+    @Inject(MusicApiService) private readonly music: MusicApiService,
+    @Inject(StorageService) private readonly storage: StorageService,
   ) {}
 
   async login() {

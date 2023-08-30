@@ -1,5 +1,6 @@
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { BacklogService } from '../../backlog/backlog.service';
 import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service';
 import { QueueService } from '../queue.service';

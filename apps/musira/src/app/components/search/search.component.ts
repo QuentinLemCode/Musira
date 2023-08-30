@@ -1,4 +1,5 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, HostListener, Inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import {
   faAdd,
@@ -16,12 +17,12 @@ import {
   takeUntil,
   tap,
 } from 'rxjs/operators';
-import { Music } from '../../services/music-api.interface';
+import type { Music } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
-import { UserService } from '../../services/user.service';
+import { UserService } from '../../user/user.service';
 import { UnsubscribableComponent } from '../../utils/unsubscribable-component';
-import {
+import type {
   IconUpdateStatus,
   MusicComponentConfiguration,
 } from '../music/music.component';
@@ -56,9 +57,9 @@ export class SearchComponent extends UnsubscribableComponent implements OnInit {
   }
 
   constructor(
-    private readonly music: MusicApiService,
-    private readonly queue: QueueService,
-    private readonly user: UserService,
+    @Inject(MusicApiService) private readonly music: MusicApiService,
+    @Inject(QueueService) private readonly queue: QueueService,
+    @Inject(UserService) private readonly user: UserService,
   ) {
     super();
   }

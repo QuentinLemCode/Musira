@@ -1,18 +1,19 @@
-import {
-  HttpErrorResponse,
+import type {
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Inject, Injectable } from '@angular/core';
+import type { Observable } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { UserService } from '../services/user.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(private users: UserService) {}
+  constructor(@Inject(UserService) private users: UserService) {}
 
   intercept(
     request: HttpRequest<unknown>,
@@ -26,22 +27,23 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error) => {
         if (
+          this.users.isEmailLogin &&
           error instanceof HttpErrorResponse &&
-          !request.url.includes('auth/login') &&
-          !request.url.includes('auth/refresh') &&
+          !request.url.includes('users/email/login') &&
+          !request.url.includes('users/email/refresh') &&
           error.status === 401
         ) {
           return this.refreshToken(request, next);
         }
-        return throwError(error);
+        return throwError(() => error);
       }),
     );
   }
 
   private refreshToken(request: HttpRequest<unknown>, next: HttpHandler) {
-    return this.users.refreshToken().pipe(
+    return this.users.refreshEmailToken().pipe(
       switchMap((userLogin) => {
-        request = this.cloneRequest(request, userLogin.access_token);
+        request = this.cloneRequest(request, userLogin.token);
         return next.handle(request);
       }),
     );

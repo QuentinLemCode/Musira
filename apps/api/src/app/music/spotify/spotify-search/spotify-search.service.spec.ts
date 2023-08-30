@@ -1,6 +1,8 @@
 import { HttpModule, HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosHeaders, AxiosResponse } from 'axios';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
+import type { AxiosResponse } from 'axios';
+import { AxiosHeaders } from 'axios';
 import { of, throwError } from 'rxjs';
 import { SpotifySearchService } from './spotify-search.service';
 
@@ -64,7 +66,7 @@ describe('SpotifySearchService', () => {
 
     const spyGet = jest
       .spyOn(httpService, 'get')
-      .mockImplementation((url, config) => {
+      .mockImplementation((_url, config) => {
         if (config?.headers?.Authorization === 'Bearer valid') {
           return of(validResponse);
         }

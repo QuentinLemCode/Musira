@@ -1,6 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SpotifyAccount } from '../spotify-account.entity';
 import { SpotifyApiService } from './spotify-api.service';

@@ -1,5 +1,7 @@
 export interface MusicSessionDto {
+  id: number;
   name: string;
-  id: string;
+  code: number;
   creator: string;
+  linkedToSpotify: boolean;
 }

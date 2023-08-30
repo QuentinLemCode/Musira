@@ -1,24 +1,25 @@
-import { Injectable } from '@angular/core';
-import { Router, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
-import { UserService } from '../services/user.service';
+import { Inject, Injectable } from '@angular/core';
+import type { UrlTree } from '@angular/router';
+import { Router } from '@angular/router';
+import type { Observable } from 'rxjs';
+import { UserService } from '../user/user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminGuard {
   constructor(
-    private user: UserService,
-    private router: Router,
+    @Inject(UserService) private user: UserService,
+    @Inject(Router) private router: Router,
   ) {}
   canActivate():
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (this.user.isLoggedIn !== true && !this.user.isAdmin()) {
-      this.router.navigate(['/']);
+    if (this.user.isAdmin()) {
+      return true;
     }
-    return true;
+    return this.router.navigate(['/']);
   }
 }

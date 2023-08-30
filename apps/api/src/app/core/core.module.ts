@@ -1,7 +1,6 @@
 import { HttpModule } from '@nestjs/axios';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { env } from 'process';
@@ -13,10 +12,6 @@ import { HealthController } from './health/health.controller';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    JwtModule.register({
-      secret: env.JWT_SECRET ?? 'secret',
-      signOptions: { expiresIn: env.JWT_EXPIRATION ?? '10m' },
-    }),
     HttpModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -35,7 +30,6 @@ import { HealthController } from './health/health.controller';
   ],
   controllers: [HealthController],
   exports: [
-    JwtModule,
     HttpModule,
     ConfigModule,
     TypeOrmModule,

@@ -1,8 +1,23 @@
+import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MusicSessionService } from './music-session.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MusicSession } from './entities/music-session.entity';
 import { User } from '../users/user.entity';
+import { MusicSession } from './entities/music-session.entity';
+import { MusicSessionService } from './music-session.service';
+import { PublicCodeGeneratorService } from './public-code-generator/public-code-generator.service';
+
+// Mocking Repositories and Services
+const mockRepository = {
+  create: jest.fn(),
+  findOneOrFail: jest.fn(),
+  find: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+};
+
+const mockPublicCodeGeneratorService = {
+  generatePublicCode: jest.fn(),
+};
 
 describe('MusicSessionService', () => {
   let service: MusicSessionService;
@@ -13,15 +28,15 @@ describe('MusicSessionService', () => {
         MusicSessionService,
         {
           provide: getRepositoryToken(MusicSession),
-          useValue: {
-            createQueryBuilder: () => ({}),
-          },
+          useValue: mockRepository,
         },
         {
           provide: getRepositoryToken(User),
-          useValue: {
-            createQueryBuilder: () => ({}),
-          },
+          useValue: mockRepository,
+        },
+        {
+          provide: PublicCodeGeneratorService,
+          useValue: mockPublicCodeGeneratorService,
         },
       ],
     }).compile();
@@ -31,5 +46,22 @@ describe('MusicSessionService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('create', () => {
+    it('should create a music session', async () => {
+      const createDto: CreateMusicSessionDto = {
+        name: 'toto',
+      }; // Provide valid DTO here
+      const creatorId = 1;
+      const user = new User();
+      mockRepository.findOneOrFail.mockResolvedValue(user);
+      mockRepository.create.mockReturnValue({ name: 'toto' });
+      mockRepository.save.mockResolvedValue({ name: 'toto' });
+
+      const result = await service.create(createDto, creatorId);
+
+      expect(result).toBeDefined();
+    });
   });
 });

@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { mergeMap, takeUntil, tap } from 'rxjs/operators';
-import { Backlog } from '../../services/music-api.interface';
+import type { Backlog } from '../../services/music-api.interface';
 import { QueueService } from '../../services/queue.service';
 import { UnsubscribableComponent } from '../../utils/unsubscribable-component';
-import { MusicComponentConfiguration } from '../music/music.component';
+import type { MusicComponentConfiguration } from '../music/music.component';
 
 @Component({
   selector: 'musira-backlog',
@@ -25,7 +26,7 @@ export class BacklogComponent
     backlog: false,
   };
 
-  constructor(private readonly queue: QueueService) {
+  constructor(@Inject(QueueService) private readonly queue: QueueService) {
     super();
   }
 

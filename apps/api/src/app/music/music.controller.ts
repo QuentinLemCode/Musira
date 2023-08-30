@@ -6,23 +6,21 @@ import {
   ServiceUnavailableException,
   UseGuards,
 } from '@nestjs/common';
-import { JwtGuard } from '../auth/jwt.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
 import { MusicSession } from '../music-session/entities/music-session.entity';
-import { UserRole } from '../users/user.entity';
-import { MusicSessionParam } from '../utils/decorators/session-hash-id.decorator';
-import { CurrentMusic, Music } from './music.interface';
+import { JwtGuard } from '../users/jwt/jwt.guard';
+import { SessionCreatorGuard } from '../users/session-creator.guard';
+import { MusicSessionParam } from '../utils/decorators/music-session.decorator';
+import type { CurrentMusic, Music } from './music.interface';
 import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';
 import { SpotifyApiService } from './spotify/spotify-api/spotify-api.service';
 import { SpotifySearchService } from './spotify/spotify-search/spotify-search.service';
-import {
+import type {
   SearchResponse,
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
 
-@Controller('session/:sessionHashId/music')
+@Controller('session/:publicCode/music')
 export class MusicController {
   constructor(
     private readonly spotify: SpotifyApiService,
@@ -39,8 +37,7 @@ export class MusicController {
     return this.mapResults(results);
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Get('start')
   async start(
     @MusicSessionParam() musicSession: MusicSession,
@@ -50,8 +47,7 @@ export class MusicController {
     return this.generateState(musicSession, status.message);
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Get('stop')
   async stop(
     @MusicSessionParam() musicSession: MusicSession,
@@ -78,7 +74,7 @@ export class MusicController {
     return {
       album: track.album.name,
       artist: track.artists.map((artist) => artist.name).join(', '),
-      cover: track.album.images[0].url,
+      cover: track.album?.images?.[0]?.url,
       uri: track.uri,
       title: track.name,
       duration: track.duration_ms,

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, computed } from '@angular/core';
+import { Inject, Injectable, computed } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { MusicSessionsService } from './music-sessions.service';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
 
 export interface SettingsQuery {
   maxVotes: number;
@@ -15,14 +15,15 @@ export class SettingsService {
   private readonly endpoint;
 
   constructor(
-    private readonly http: HttpClient,
+    @Inject(HttpClient) private readonly http: HttpClient,
+    @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
   ) {
     this.endpoint = computed(
       () =>
         environment.serverUrl +
         'session/' +
-        this.session.currentSession()?.id +
+        this.session.currentSession()?.code +
         '/settings',
     );
   }

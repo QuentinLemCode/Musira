@@ -1,12 +1,8 @@
 import { DOCUMENT } from '@angular/common';
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Inject,
-  ViewChild,
-} from '@angular/core';
+import type { AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { toCanvas } from 'qrcode';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
 
 @Component({
   selector: 'musira-dashboard',
@@ -19,14 +15,25 @@ export class DashboardComponent implements AfterViewInit {
 
   serverUrl: string;
 
-  constructor(@Inject(DOCUMENT) document: Document) {
+  constructor(
+    @Inject(DOCUMENT) document: Document,
+    @Inject(MusicSessionsService)
+    private readonly sessions: MusicSessionsService,
+  ) {
     this.serverUrl = document.location.host;
   }
 
   ngAfterViewInit(): void {
-    toCanvas(this.qrcode.nativeElement, 'https://' + this.serverUrl, {
-      errorCorrectionLevel: 'H',
-      scale: 12,
-    });
+    toCanvas(
+      this.qrcode.nativeElement,
+      'https://' +
+        this.serverUrl +
+        '/' +
+        this.sessions.currentSession()?.code ?? '',
+      {
+        errorCorrectionLevel: 'H',
+        scale: 12,
+      },
+    );
   }
 }

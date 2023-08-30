@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { Music as MusicInterface } from './music.interface';
+import type { Music as MusicInterface } from './music.interface';
 import { Queue } from './queue/queue.entity';
 
 @Entity()

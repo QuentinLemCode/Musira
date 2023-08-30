@@ -1,14 +1,14 @@
 import { HttpService } from '@nestjs/axios';
+import type { OnModuleInit } from '@nestjs/common';
 import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  OnModuleInit,
 } from '@nestjs/common';
 import { env } from 'process';
 import { catchError, firstValueFrom, from, map, mergeMap, of } from 'rxjs';
-import { Token, TokenWithCalculatedExpiration } from '../token';
-import { SearchResponse } from '../types/spotify-interfaces';
+import type { Token, TokenWithCalculatedExpiration } from '../token';
+import type { SearchResponse } from '../types/spotify-interfaces';
 
 @Injectable()
 export class SpotifySearchService implements OnModuleInit {

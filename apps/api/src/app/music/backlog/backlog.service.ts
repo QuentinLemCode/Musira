@@ -1,15 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  OnModuleInit,
-} from '@nestjs/common';
+import type { OnModuleInit } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Music } from '../music.entity';
-import { Backlog } from './backlog.entity';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
+import type { MusicSession } from '../../music-session/entities/music-session.entity';
 import { MusicSessionService } from '../../music-session/music-session.service';
+import type { Music } from '../music.entity';
+import { Backlog } from './backlog.entity';
 
 @Injectable()
 export class BacklogService implements OnModuleInit {
@@ -18,8 +14,8 @@ export class BacklogService implements OnModuleInit {
     private readonly musicSessions: MusicSessionService,
   ) {}
 
-  private readonly logger = new Logger('Backlog');
-  private nextInBacklog = new Map<number, Backlog>();
+  // private readonly logger = new Logger('Backlog');
+  private nextInBacklog = new Map<number, Backlog | null>();
 
   async onModuleInit() {
     const activeSessions = await this.musicSessions.getActiveSessions();

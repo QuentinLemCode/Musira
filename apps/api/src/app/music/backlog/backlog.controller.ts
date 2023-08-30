@@ -3,25 +3,23 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles } from '../../auth/roles.decorator';
-import { RolesGuard } from '../../auth/roles.guard';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { UserRole } from '../../users/user.entity';
-import { MusicSessionParam } from '../../utils/decorators/session-hash-id.decorator';
+import { JwtGuard } from '../../users/jwt/jwt.guard';
+import { SessionCreatorGuard } from '../../users/session-creator.guard';
+import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { Music } from '../music.entity';
 import { BacklogService } from './backlog.service';
 
-@Controller('session/:sessionHashId/backlog')
+@Controller('session/:publicCode/backlog')
 export class BacklogController {
   constructor(private readonly backlog: BacklogService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Post()
   pushToBacklog(
     @Body() music: Music,
@@ -30,15 +28,17 @@ export class BacklogController {
     return this.backlog.push(musicSession, music);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Delete(':id')
-  deleteBacklog(@Param('id') id: string) {
-    return this.backlog.delete(id);
+  async deleteBacklog(@Param('id') id: string) {
+    try {
+      await this.backlog.delete(id);
+    } catch (error) {
+      throw new NotFoundException();
+    }
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtGuard, SessionCreatorGuard)
   @Get('')
   getBackLog(@MusicSessionParam() musicSession: MusicSession) {
     return this.backlog.get(musicSession);

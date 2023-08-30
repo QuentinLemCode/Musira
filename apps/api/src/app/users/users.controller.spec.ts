@@ -1,7 +1,16 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from '../auth/auth.service';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { User } from './user.entity';
+import { JwtGuard } from './jwt/jwt.guard';
+import { mockJwtGuard } from '../../test/mock';
+
+// Mocking UsersService
+const mockUsersService = {
+  getAll: jest.fn(),
+  delete: jest.fn(),
+};
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -9,27 +18,49 @@ describe('UsersController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [
-        {
-          provide: UsersService,
-          useValue: {
-            find: () => null,
-            register: () => null,
-          },
-        },
-        {
-          provide: AuthService,
-          useValue: {
-            login: () => null,
-          },
-        },
-      ],
-    }).compile();
+      providers: [{ provide: UsersService, useValue: mockUsersService }],
+    })
+      .overrideGuard(JwtGuard)
+      .useValue(mockJwtGuard)
+      .compile();
 
     controller = module.get<UsersController>(UsersController);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('getAll', () => {
+    it('should return an array of users', async () => {
+      const users: User[] = []; // Provide mock users
+      mockUsersService.getAll.mockResolvedValue(users);
+
+      const result = await controller.getAll();
+
+      expect(result).toEqual(expect.any(Array));
+      expect(result.length).toBe(users.length);
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete a user', async () => {
+      const userId = '123';
+      mockUsersService.delete.mockResolvedValue(undefined);
+      mockUsersService.getAll.mockResolvedValue([]);
+
+      const result = await controller.delete(userId);
+
+      expect(result).toEqual(expect.any(Array));
+    });
+
+    it('should throw NotFoundException for non-existing user', async () => {
+      const userId = '456';
+      mockUsersService.delete.mockRejectedValue(new NotFoundException());
+
+      await expect(controller.delete(userId)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
   });
 });

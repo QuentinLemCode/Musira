@@ -2,10 +2,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
+    "module": "Node16",
     "types": ["node"],
-    "emitDecoratorMetadata": true,
-    "target": "es2021"
+    "target": "es2021",
+    "sourceMap": true
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
   "include": ["**/*.ts", "../../libs/api-interfaces/src/*", "setup-jest.js"]

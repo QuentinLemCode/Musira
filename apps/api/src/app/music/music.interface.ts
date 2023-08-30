@@ -1,5 +1,5 @@
-import { Queue } from './queue/queue.entity';
-import {
+import type { Queue } from './queue/queue.entity';
+import type {
   SpotifyTrackCategory,
   SpotifyURI,
 } from './spotify/types/spotify-interfaces';
@@ -14,7 +14,7 @@ export interface Music {
   title: string;
   album: string;
   uri: SpotifyURI<SpotifyTrackCategory>;
-  cover: string;
+  cover: string | undefined;
   duration: number;
 }
 

@@ -1,0 +1,120 @@
+import { HttpClient } from '@angular/common/http';
+import { Inject, Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
+import type { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
+import type { MusicSessionDto } from '@musira/api-interfaces/sessions/music-session.dto';
+import type { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
+import { EMPTY, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { StorageService } from '../services/storage.service';
+import { CONSTANTS } from '../constants';
+
+interface SessionHistory {
+  musicSession: MusicSessionDto;
+  access_date: Date;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class MusicSessionsService {
+  private readonly endpoint = environment.serverUrl + 'music-session';
+
+  public currentSession = signal<MusicSessionDto | null>(null);
+  public currentSession$ = toObservable(this.currentSession);
+
+  constructor(
+    @Inject(HttpClient) private readonly http: HttpClient,
+    @Inject(Router) private readonly router: Router,
+    @Inject(StorageService) private readonly storage: StorageService,
+  ) {}
+
+  public create(musicSessionDto: CreateMusicSessionDto) {
+    return this.http
+      .post<MusicSessionDto>(this.endpoint, musicSessionDto)
+      .pipe(this.tapCurrentSession);
+  }
+
+  public update(musicSessionDto: UpdateMusicSessionDto, code: string) {
+    return this.http
+      .put<MusicSessionDto>(this.endpoint + `/${code}`, musicSessionDto)
+      .pipe(this.tapCurrentSession);
+  }
+
+  public get(code: number) {
+    return this.http.get<MusicSessionDto>(this.endpoint + `/${code}`);
+  }
+
+  public joinSession(code: number) {
+    return this.get(code).pipe(this.tapCurrentSession);
+  }
+
+  public deleteSession() {
+    const session = this.currentSession();
+    if (!session) return EMPTY;
+    return this.http.delete(this.endpoint + `/${session.code}`).pipe(
+      tap(() => {
+        this.deleteSessionInHistory(session);
+        this.currentSession.set(null);
+      }),
+    );
+  }
+
+  public exitSession() {
+    this.router.navigate(['']);
+    this.currentSession.set(null);
+  }
+
+  public getSessionHistory() {
+    return (
+      this.storage
+        .getLocalItem<SessionHistory[]>(CONSTANTS.SESSION_HISTORY_KEY)
+        ?.reverse()
+        ?.map((session) => ({
+          ...session,
+          access_date: new Date(session.access_date),
+        })) || []
+    );
+  }
+
+  private tapCurrentSession = tap<MusicSessionDto>((musicSession) => {
+    this.currentSession.set(musicSession);
+    this.saveSessionInHistory(musicSession);
+  });
+
+  private saveSessionInHistory(musicSession: MusicSessionDto) {
+    const sessionHistory =
+      this.storage.getLocalItem<SessionHistory[]>(
+        CONSTANTS.SESSION_HISTORY_KEY,
+      ) || [];
+    const existingSessionHistory = sessionHistory.find(
+      (entry) => entry.musicSession.code === musicSession.code,
+    );
+    if (existingSessionHistory) {
+      existingSessionHistory.access_date = new Date();
+    } else {
+      sessionHistory.push({
+        musicSession,
+        access_date: new Date(),
+      });
+    }
+
+    this.storage.setLocalItem(CONSTANTS.SESSION_HISTORY_KEY, sessionHistory);
+  }
+
+  private deleteSessionInHistory(musicSession: MusicSessionDto) {
+    const sessionHistory =
+      this.storage.getLocalItem<SessionHistory[]>(
+        CONSTANTS.SESSION_HISTORY_KEY,
+      ) || [];
+    const existingSessionHistory = sessionHistory.find(
+      (entry) => entry.musicSession.code === musicSession.code,
+    );
+    if (existingSessionHistory) {
+      sessionHistory.splice(sessionHistory.indexOf(existingSessionHistory), 1);
+    }
+
+    this.storage.setLocalItem(CONSTANTS.SESSION_HISTORY_KEY, sessionHistory);
+  }
+}
