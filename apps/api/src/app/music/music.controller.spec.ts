@@ -4,7 +4,7 @@ import {
   mockJwtGuard,
   mockMusicSessionPipe,
   mockSessionCreatorGuard,
-} from '../../test/mock';
+} from '../../test-utils/mock';
 import { MusicSession } from '../music-session/entities/music-session.entity';
 import { JwtGuard } from '../users/jwt/jwt.guard';
 import { SessionCreatorGuard } from '../users/session-creator.guard';

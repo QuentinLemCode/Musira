@@ -8,7 +8,7 @@ import { Music } from '../music.entity';
 import { BacklogController } from './backlog.controller';
 import { BacklogService } from './backlog.service';
 import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
-import { mockMusicSessionPipe } from '../../../test/mock';
+import { mockMusicSessionPipe } from '../../../test-utils/mock';
 
 // Mocking Services and Guards
 const mockBacklogService = {

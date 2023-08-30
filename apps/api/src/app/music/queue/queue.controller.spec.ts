@@ -6,7 +6,7 @@ import { QueueEngineService } from './queue-engine/queue-engine.service';
 import { QueueController } from './queue.controller';
 import { QueueService } from './queue.service';
 import { JwtGuard } from '../../users/jwt/jwt.guard';
-import { mockJwtGuard, mockMusicSessionPipe } from '../../../test/mock';
+import { mockJwtGuard, mockMusicSessionPipe } from '../../../test-utils/mock';
 import { Queue } from './queue.entity';
 import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
 

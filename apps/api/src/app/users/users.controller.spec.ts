@@ -4,7 +4,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { JwtGuard } from './jwt/jwt.guard';
-import { mockJwtGuard } from '../../test/mock';
+import { mockJwtGuard } from '../../test-utils/mock';
 
 // Mocking UsersService
 const mockUsersService = {

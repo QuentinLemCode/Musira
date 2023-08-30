@@ -6,7 +6,7 @@ import { SettingsController, SettingsQuery } from './settings.controller';
 import { SettingsService } from './settings.service';
 import { Settings } from './settings.entity';
 import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
-import { mockMusicSessionPipe } from '../../../test/mock';
+import { mockMusicSessionPipe } from '../../../test-utils/mock';
 
 // Mocking Service
 const mockSettingsService = {

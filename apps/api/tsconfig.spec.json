@@ -13,7 +13,6 @@
     "**/*.d.ts",
     "../../libs/api-interfaces/src/*",
     "setup-jest.js",
-    "src/test/mock.ts",
-    "test/*.ts"
+    "src/test-utils/*.ts"
   ]
 }
