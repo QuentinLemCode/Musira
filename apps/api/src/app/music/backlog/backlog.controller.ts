@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Post,
   UseGuards,
@@ -29,8 +30,12 @@ export class BacklogController {
 
   @UseGuards(JwtGuard, SessionCreatorGuard)
   @Delete(':id')
-  deleteBacklog(@Param('id') id: string) {
-    return this.backlog.delete(id);
+  async deleteBacklog(@Param('id') id: string) {
+    try {
+      await this.backlog.delete(id);
+    } catch (error) {
+      throw new NotFoundException();
+    }
   }
 
   @UseGuards(JwtGuard, SessionCreatorGuard)

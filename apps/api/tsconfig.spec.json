@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "verbatimModuleSyntax": false
   },
   "include": [
     "jest.config.ts",
@@ -11,6 +12,7 @@
     "**/*.spec.ts",
     "**/*.d.ts",
     "../../libs/api-interfaces/src/*",
-    "setup-jest.js"
+    "setup-jest.js",
+    "src/test/mock.ts"
   ]
 }

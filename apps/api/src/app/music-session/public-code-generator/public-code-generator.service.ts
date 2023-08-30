@@ -14,9 +14,6 @@ export class PublicCodeGeneratorService {
   async generatePublicCode(): Promise<number> {
     for (let i = 0; i < 10; i++) {
       const publicCode = this.generateRandomNumber();
-      // const session = await this.musicSessionService.findOneByPublicCode(
-      //   publicCode,
-      // );
       const session = await this.musicSession.findOneBy({ publicCode });
       if (session === null) return publicCode;
     }

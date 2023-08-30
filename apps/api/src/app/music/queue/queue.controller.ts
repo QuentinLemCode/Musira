@@ -12,7 +12,6 @@ import {
 import type { JWTPayload } from 'jose';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { JwtGuard } from '../../users/jwt/jwt.guard';
-import { RolesGuard } from '../../users/roles.guard';
 import { UserRole } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
 import { Jwt } from '../../utils/decorators/jwt.decorator';
@@ -78,7 +77,7 @@ export class QueueController {
     );
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtGuard)
   @Delete(':id')
   async deleteFromQueue(
     @Param('id') id: string,
