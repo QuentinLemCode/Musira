@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { intlFormat } from 'date-fns';
-import { codeToString } from '../../utils/format-code';
+import { codeToString, stringToCode } from '../../utils/format-code';
 import { Router } from '@angular/router';
 import { MusicSessionsService } from '../music-sessions.service';
 
@@ -85,8 +85,9 @@ export class JoinSessionComponent {
   }
 
   private joinSessionRequest(code: string) {
-    this.musicSessions.joinSession(code).subscribe({
-      next: () => this.router.navigate([code]),
+    const publicCode = stringToCode(code);
+    this.musicSessions.joinSession(publicCode).subscribe({
+      next: () => this.router.navigate([publicCode]),
       error: () => (this.joinSessionError = 'Ce code de session est invalide'),
     });
   }

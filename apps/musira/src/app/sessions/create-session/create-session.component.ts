@@ -1,8 +1,7 @@
-import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { firstValueFrom } from 'rxjs';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MusicSessionsService } from '../music-sessions.service';
 
 @Component({
@@ -10,19 +9,15 @@ import { MusicSessionsService } from '../music-sessions.service';
   templateUrl: './create-session.component.html',
   styleUrls: ['./create-session.component.scss'],
 })
-export class CreateSessionComponent implements OnInit {
+export class CreateSessionComponent {
   constructor(
     @Inject(MusicSessionsService)
     private readonly musicSessions: MusicSessionsService,
   ) {}
 
-  createSessionForm!: FormGroup;
-
-  ngOnInit(): void {
-    this.createSessionForm = new FormGroup({
-      name: new FormControl('', [Validators.required, Validators.minLength(3)]),
-    });
-  }
+  createSessionForm = new FormGroup({
+    name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+  });
 
   get name() {
     return this.createSessionForm.get('name');

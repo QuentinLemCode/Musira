@@ -1,9 +1,13 @@
+import { signal } from '@angular/core';
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
-import { MusicSessionComponent } from './music-session.component';
+import {
+  QueueStubComponent,
+  SearchStubComponent,
+} from '../../../tests/components-stubs';
 import { UserService } from '../../user/user.service';
 import { MusicSessionsService } from '../music-sessions.service';
-import { signal } from '@angular/core';
+import { MusicSessionComponent } from './music-session.component';
 
 describe('MusicSessionComponent', () => {
   let component: MusicSessionComponent;
@@ -22,7 +26,11 @@ describe('MusicSessionComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [MusicSessionComponent],
+      declarations: [
+        MusicSessionComponent,
+        QueueStubComponent,
+        SearchStubComponent,
+      ],
       providers: [
         { provide: UserService, useValue: userServiceMock },
         { provide: MusicSessionsService, useValue: musicSessionsServiceMock },
@@ -38,16 +46,12 @@ describe('MusicSessionComponent', () => {
   });
 
   it('should retrieve current session', () => {
-    component.currentSession;
-
-    expect(musicSessionsServiceMock.currentSession).toHaveBeenCalled();
+    const currentSession = component.currentSession;
+    expect(currentSession).toBeNull();
   });
 
   it('should indicate user is not logged in', () => {
     const isLoggedIn = component.isLoggedIn;
-
     expect(isLoggedIn).toBe(false);
   });
-
-  // Add more test cases as needed
 });

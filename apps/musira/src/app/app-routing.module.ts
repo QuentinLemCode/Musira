@@ -47,7 +47,7 @@ const routes: Routes = [
     canActivate: [NotAuthGuard],
   },
   {
-    path: 'dashboard',
+    path: ':sessionId/dashboard',
     component: DashboardComponent,
   },
   {

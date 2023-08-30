@@ -1,34 +1,138 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import type { ComponentFixture } from '@angular/core/testing';
-import { TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { faAdd, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { Subject, throwError } from 'rxjs';
+import { currentMusicFixture, musicFixture } from '../../../tests/fixtures';
+import { MusicApiService } from '../../services/music-api.service';
+import { QueueService } from '../../services/queue.service';
+import { UserService } from '../../user/user.service';
+import type { IconUpdateStatus } from '../music/music.component';
 import { SearchComponent } from './search.component';
+import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
   let fixture: ComponentFixture<SearchComponent>;
 
+  const mockMusicApiService = {
+    search: jest.fn(),
+  };
+
+  const mockQueueService = {
+    push: jest.fn(),
+    pushBacklog: jest.fn(),
+  };
+
+  const mockUserService = {
+    isAdmin: jest.fn().mockReturnValue(true),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SearchComponent],
-      imports: [
-        HttpClientTestingModule,
-        ReactiveFormsModule,
-        FormsModule,
-        FontAwesomeModule,
-        RouterTestingModule,
+      imports: [ReactiveFormsModule, FontAwesomeTestingModule],
+      providers: [
+        { provide: MusicApiService, useValue: mockMusicApiService },
+        { provide: QueueService, useValue: mockQueueService },
+        { provide: UserService, useValue: mockUserService },
       ],
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(SearchComponent);
     component = fixture.componentInstance;
+    component.search = new FormControl('');
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize with empty results, hideResults false, and loading false', () => {
+    expect(component.results).toBeNull();
+    expect(component.hideResults).toBe(false);
+    expect(component.loading).toBe(false);
+  });
+
+  it('should initialize musicConfig based on user role', () => {
+    const expectedMusicConfig = {
+      votable: false,
+      deletable: false,
+      queueable: true,
+      backlog: true,
+    };
+    expect(component.musicConfig).toEqual(expectedMusicConfig);
+  });
+
+  it('should call musicApiService.search and update results on search value changes', () => {
+    jest.useFakeTimers();
+    const mockSearchQuery = 'test';
+    const sub = new Subject();
+    mockMusicApiService.search.mockReturnValue(sub.asObservable());
+    component.search.setValue(mockSearchQuery);
+    jest.advanceTimersByTime(500);
+    sub.next([currentMusicFixture]);
+
+    expect(mockMusicApiService.search).toHaveBeenCalledWith(mockSearchQuery);
+    expect(component.results).toEqual([currentMusicFixture]);
+    expect(component.loading).toBe(false);
+  });
+
+  it('should handle error when musicApiService.search fails', async () => {
+    jest.useFakeTimers();
+    const mockSearchQuery = 'test';
+    const sub = new Subject();
+    mockMusicApiService.search.mockReturnValue(sub.asObservable());
+    component.search.setValue(mockSearchQuery);
+    jest.advanceTimersByTime(500);
+    sub.error(new Error('Search Error'));
+
+    expect(mockMusicApiService.search).toHaveBeenCalledWith(mockSearchQuery);
+    expect(component.results).toBeNull();
+    expect(component.loading).toBe(false);
+    expect(component.error).toBe(SearchComponent.ERROR_MESSAGE);
+  });
+
+  it('should call queueService.push on addToQueue', () => {
+    const mockIconUpdate = {
+      updateLoading: jest.fn(),
+      updateIcon: jest.fn(),
+      completeEmitter: jest.fn(),
+    };
+    const sub = new Subject();
+    mockQueueService.push.mockReturnValue(sub.asObservable());
+
+    component.addToQueue(musicFixture, mockIconUpdate);
+    sub.next({});
+
+    expect(mockQueueService.push).toHaveBeenCalledWith(musicFixture);
+    expect(mockIconUpdate.updateLoading).toHaveBeenCalledWith(true);
+    expect(mockIconUpdate.updateIcon).toHaveBeenCalledWith(faCheck);
+    expect(mockIconUpdate.updateLoading).toHaveBeenCalledWith(false);
+    expect(mockIconUpdate.completeEmitter).toHaveBeenCalled();
+  });
+
+  it('should handle queue-related error in addToQueue', () => {
+    jest.useFakeTimers();
+    const mockIconUpdate: IconUpdateStatus = {
+      updateLoading: jest.fn(),
+      updateIcon: jest.fn(),
+      completeEmitter: jest.fn(),
+    };
+    const mockError = { error: { cause: 'queue' } };
+    mockQueueService.push.mockReturnValue(throwError(mockError));
+
+    component.addToQueue(musicFixture, mockIconUpdate);
+
+    expect(mockQueueService.push).toHaveBeenCalledWith(musicFixture);
+    expect(mockIconUpdate.updateLoading).toHaveBeenCalledWith(false);
+    expect(mockIconUpdate.updateIcon).toHaveBeenCalledWith(faXmark);
+    expect(component.error).toBe(SearchComponent.ALREADY_IN_QUEUE);
+
+    jest.advanceTimersByTime(5000);
+    expect(component.error).toBe('');
+    expect(mockIconUpdate.updateIcon).toHaveBeenCalledWith(faAdd);
   });
 });

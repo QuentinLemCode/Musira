@@ -20,7 +20,7 @@ export class SpotifyStatusComponent
   }
 
   collapsed = false;
-  musicStatus: CurrentMusic;
+  musicStatus: CurrentMusic | undefined;
 
   ngOnInit() {
     this.music

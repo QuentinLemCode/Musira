@@ -1,4 +1,4 @@
-<ul>
+<ul *ngIf="musicStatus !== undefined; else loading">
   <li *ngIf="musicStatus.isSpotifyAccountRegistered">✅ Connecté à Spotify</li>
   <li *ngIf="!musicStatus.isSpotifyAccountRegistered">
     ❌ Non connecté à Spotify
@@ -28,3 +28,5 @@
     </div>
   </li>
 </ul>
+
+<ng-template #loading> Chargement </ng-template>

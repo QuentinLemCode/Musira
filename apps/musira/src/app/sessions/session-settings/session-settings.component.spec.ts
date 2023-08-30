@@ -1,55 +1,104 @@
-import type { ComponentFixture } from '@angular/core/testing';
-import { TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { of } from 'rxjs';
-import { SessionSettingsComponent } from './session-settings.component';
-import { SpotifyDeviceComponent } from './spotify-device/spotify-device.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MusicSessionsService } from '../music-sessions.service';
+import { mockObservable } from '../../../tests/mock';
 import {
   SettingsService,
   type SettingsQuery,
 } from '../../services/settings.service';
+import { MusicSessionsService } from '../music-sessions.service';
+import { SessionSettingsComponent } from './session-settings.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SpotifyDeviceStubComponent } from '../../../tests/components-stubs';
 
 describe('SessionSettingsComponent', () => {
   let component: SessionSettingsComponent;
   let fixture: ComponentFixture<SessionSettingsComponent>;
+  const settingsServiceMock = {
+    get: jest.fn(),
+    setMaxVote: jest.fn(),
+    setMaxQueuableSongPerUser: jest.fn(),
+  };
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [
-        SessionSettingsComponent,
-        SessionSettingsComponent,
-        SpotifyDeviceComponent,
-      ],
-      imports: [
-        RouterTestingModule,
-        ReactiveFormsModule,
-        HttpClientTestingModule,
-        FormsModule,
-      ],
+  const routerMock = {
+    navigate: jest.fn(),
+  };
+
+  const subGet = mockObservable<SettingsQuery>(settingsServiceMock.get);
+
+  const musicSessionsServiceMock = {
+    deleteSession: jest.fn(),
+  };
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, FormsModule],
+      declarations: [SessionSettingsComponent, SpotifyDeviceStubComponent],
       providers: [
-        {
-          provide: MusicSessionsService,
-          useValue: {},
-        },
-        {
-          provide: SettingsService,
-          useValue: {
-            get: () =>
-              of<SettingsQuery>({ maxVotes: 3, maxQueuableSongPerUser: 3 }),
-          },
-        },
+        { provide: SettingsService, useValue: settingsServiceMock },
+        { provide: MusicSessionsService, useValue: musicSessionsServiceMock },
+        { provide: Router, useValue: routerMock },
       ],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(SessionSettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    subGet.next({
+      maxQueuableSongPerUser: 3,
+      maxVotes: 3,
+    });
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize settings on ngOnInit', () => {
+    const settings = { maxVotes: 5, maxQueuableSongPerUser: 3 };
+    settingsServiceMock.get.mockReturnValue(of(settings));
+
+    component.ngOnInit();
+
+    expect(component.maxVote).toBe(settings.maxVotes);
+    expect(component.maxQueuableSongs).toBe(settings.maxQueuableSongPerUser);
+  });
+
+  it('should set max votes', () => {
+    const newMaxVotes = 10;
+    settingsServiceMock.setMaxVote.mockReturnValue(
+      of({ maxVotes: newMaxVotes }),
+    );
+    component.maxVote = newMaxVotes;
+
+    component.setMaxVotes();
+
+    expect(settingsServiceMock.setMaxVote).toHaveBeenCalledWith(newMaxVotes);
+    expect(component.maxVote).toBe(newMaxVotes);
+  });
+
+  it('should set max queuable songs', () => {
+    const newMaxQueuableSongs = 5;
+    settingsServiceMock.setMaxQueuableSongPerUser.mockReturnValue(
+      of({ maxQueuableSongPerUser: newMaxQueuableSongs }),
+    );
+    component.maxQueuableSongs = newMaxQueuableSongs;
+
+    component.setMaxQueuableSongs();
+
+    expect(settingsServiceMock.setMaxQueuableSongPerUser).toHaveBeenCalledWith(
+      newMaxQueuableSongs,
+    );
+    expect(component.maxQueuableSongs).toBe(newMaxQueuableSongs);
+  });
+
+  it('should delete session and navigate to home', () => {
+    musicSessionsServiceMock.deleteSession.mockReturnValue(of(null));
+
+    component.deleteSession();
+
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/']);
+
+    expect(musicSessionsServiceMock.deleteSession).toHaveBeenCalled();
   });
 });

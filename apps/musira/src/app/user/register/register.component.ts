@@ -6,7 +6,7 @@ import type {
   ValidatorFn,
 } from '@angular/forms';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../user.service';
 
@@ -17,7 +17,6 @@ import { UserService } from '../user.service';
 })
 export class RegisterComponent implements OnInit {
   constructor(
-    @Inject(ActivatedRoute) private route: ActivatedRoute,
     @Inject(UserService) private user: UserService,
     @Inject(Router) private router: Router,
   ) {}
@@ -79,7 +78,6 @@ export class RegisterComponent implements OnInit {
           this.router.navigate(['/'], { replaceUrl: true });
         },
         error: (error) => {
-          console.log(error);
           this.loading = false;
           if (error?.error?.cause === 'exist') {
             this.error =

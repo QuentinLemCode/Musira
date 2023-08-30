@@ -1,33 +1,57 @@
-import type { ComponentFixture } from '@angular/core/testing';
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { MusicSessionsService } from '../music-sessions.service';
 import { CreateSessionComponent } from './create-session.component';
-import { MusicSessionsService } from '../../services/music-sessions.service';
-import { SpotifyLoginComponent } from '../../components/spotify-login/spotify-login.component';
+import { ComponentsModule } from '../../components/components.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 describe('CreateSessionComponent', () => {
   let component: CreateSessionComponent;
   let fixture: ComponentFixture<CreateSessionComponent>;
 
+  const mockMusicSessionsService = {
+    create: jest.fn(),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule],
-      declarations: [CreateSessionComponent, SpotifyLoginComponent],
+      declarations: [CreateSessionComponent],
+      imports: [ReactiveFormsModule, ComponentsModule, HttpClientTestingModule],
       providers: [
-        {
-          provide: MusicSessionsService,
-          useValue: {},
-        },
+        { provide: MusicSessionsService, useValue: mockMusicSessionsService },
       ],
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(CreateSessionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize createSessionForm on ngOnInit', () => {
+    expect(component.createSessionForm).toBeInstanceOf(FormGroup);
+    expect(component.createSessionForm.controls.name).toBeTruthy();
+  });
+
+  it('should get name FormControl', () => {
+    expect(component.name).toEqual(component.createSessionForm.get('name'));
+  });
+
+  it('should call musicSessions.create on createSession', async () => {
+    const sessionName = 'Test Session';
+    const createSessionDto = { name: sessionName };
+    const sub = new Subject();
+    const createSessionSpy = mockMusicSessionsService.create.mockReturnValue(
+      sub.asObservable(),
+    );
+    component.createSession(sessionName)();
+    sub.next({});
+    expect(createSessionSpy).toHaveBeenCalledWith(createSessionDto);
   });
 });

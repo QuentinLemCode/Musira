@@ -42,11 +42,11 @@ export class MusicSessionsService {
       .pipe(this.tapCurrentSession);
   }
 
-  public get(code: string) {
+  public get(code: number) {
     return this.http.get<MusicSessionDto>(this.endpoint + `/${code}`);
   }
 
-  public joinSession(code: string) {
+  public joinSession(code: number) {
     return this.get(code).pipe(this.tapCurrentSession);
   }
 

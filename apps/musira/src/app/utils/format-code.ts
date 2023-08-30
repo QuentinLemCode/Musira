@@ -4,4 +4,4 @@ export const codeToString = (code: number) =>
     .substring(6, 9)}`;
 
 export const stringToCode = (code: string) =>
-  Number.parseInt(code.replace('-', ''), 10);
+  Number.parseInt(code.replaceAll('-', ''), 10);
