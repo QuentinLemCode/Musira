@@ -27,6 +27,7 @@ if (environment.production) {
   modules.push(
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'musira'),
+      exclude: ['/api/(.*)'],
     }),
   );
 } else {
