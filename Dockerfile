@@ -1,7 +1,7 @@
 # Build prod
 FROM node:alpine AS build
 
-RUN apk add --update python3 python make g++
+RUN apk add --update python3 make g++
 
 WORKDIR /app
 
