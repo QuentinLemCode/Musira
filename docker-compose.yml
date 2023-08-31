@@ -2,6 +2,31 @@
 version: '3.1'
 
 services:
+  # prod:
+  #   image: musira
+  #   environment:
+  #     - REDIRECT_HOST=http://localhost:4200
+  #     - ORIGIN=http://localhost:4200
+  #     - PORT=4200
+  #     - PREFIX=api
+  #     - DATABASE_HOST=0.0.0.0
+  #     - DATABASE_PORT=3306
+  #     - DATABASE_USER=admin
+  #     - DATABASE_PASSWORD=password
+  #     - DATABASE_NAME=musira
+  #     - DEFAULT_ADMIN_PASSWORD=password
+  #     - JWT_SECRET=secret
+  #     - JWT_EXPIRATION=1h
+  #     - JWT_REFRESH_SECRET=sefefe
+  #     - JWT_REFRESH_EXPIRATION=1y
+  #     - SPOTIFY_CLIENT_ID=288bfd46a6274e378e005d30fb80f1b5
+  #     - SPOTIFY_CLIENT_KEY=ba13244eefda4be4803e585de8a8013d
+  #   ports:
+  #     - 4200:4200
+  #   network_mode: host
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
   db:
     image: mysql:5.5
     restart: unless-stopped
@@ -10,11 +35,18 @@ services:
       MYSQL_USER: admin
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: musira
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      timeout: 20s
+      retries: 10
+      interval: 10s
     ports:
       - 3306:3306
 
   adminer:
     image: adminer
     restart: unless-stopped
+    depends_on:
+      - db
     ports:
       - 8080:8080
