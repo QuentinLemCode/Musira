@@ -1,6 +1,8 @@
 # Build prod
 FROM node:alpine AS build
 
+RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
+
 WORKDIR /app
 
 COPY --chown=node:node . .
