@@ -1,4 +1,6 @@
 # Build prod
+
+# TODO : stop building it here, use a CI/CD pipeline instead
 FROM node:alpine AS build
 
 RUN apk add --update python3 make g++
@@ -6,7 +8,7 @@ RUN apk add --update python3 make g++
 WORKDIR /app
 
 COPY --chown=node:node . .
-RUN npm ci
+RUN npm i
 
 RUN npm run build:prod
 
