@@ -1,6 +1,7 @@
 FROM node:alpine AS production
 
 COPY --chown=node:node dist/apps ./dist
+COPY --chown=node:node node_modules ./node_modules
 
 RUN apk add --no-cache dumb-init
 

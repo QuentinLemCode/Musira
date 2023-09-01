@@ -48,9 +48,10 @@ jobs:
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
-      - run: echo "NODE_ENV=production" >> $GITHUB_ENV
       - run: npm i --ignore-scripts
       - run: npm run build:prod
+      - run: echo "NODE_ENV=production" >> $GITHUB_ENV
+      - run: npm prune
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
