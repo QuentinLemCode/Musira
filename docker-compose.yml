@@ -12,7 +12,7 @@ services:
   #     - DATABASE_HOST=0.0.0.0
   #     - DATABASE_PORT=3306
   #     - DATABASE_USER=admin
-  #     - DATABASE_PASSWORD=password
+  #     - DATABASE_PASSWORD=XXX
   #     - DATABASE_NAME=musira
   #     - DEFAULT_ADMIN_PASSWORD=XXX
   #     - JWT_SECRET=XXX

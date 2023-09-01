@@ -41,7 +41,6 @@
     "cache-manager": "^5.2.3",
     "jose": "^4.14.4",
     "mysql2": "^3.6.0",
-    "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
@@ -103,6 +102,7 @@
     "postcss": "^8.4.5",
     "prettier": "^3.0.3",
     "qrcode": "^1.5.3",
+    "reflect-metadata": "^0.1.13",
     "rxjs": "7.8.1",
     "tailwindcss": "^3.0.2",
     "ts-jest": "29.1.1",
