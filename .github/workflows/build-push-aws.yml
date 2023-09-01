@@ -19,7 +19,7 @@ jobs:
       - run: npm i --ignore-scripts
       - run: npm run build:prod
       - run: echo "NODE_ENV=production" >> $GITHUB_ENV
-      - run: npm prune --production
+      - run: npm prune --omit=dev
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
@@ -36,11 +36,13 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: true
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          # images: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           tags: |
             type=schedule
             type=ref,event=branch
