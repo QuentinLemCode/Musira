@@ -42,7 +42,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          # images: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          images: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}/musira
           tags: |
             type=schedule
             type=ref,event=branch
