@@ -65,10 +65,11 @@ export class LoginComponent {
   async signInWithFB() {
     const user = await this.authService.signIn(
       FacebookLoginProvider.PROVIDER_ID,
+      { scope: 'email,public_profile' },
     );
     if (user) {
       this.userService
-        .socialLogin(new SocialLoginUserDTO(user), user.idToken)
+        .socialLogin(new SocialLoginUserDTO(user), user.authToken)
         .subscribe();
     }
   }
