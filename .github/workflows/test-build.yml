@@ -11,6 +11,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  TZ: Europe/Paris
 
 permissions:
   contents: read
@@ -36,12 +37,9 @@ jobs:
       - run: npx nx affected -t lint --parallel=3
       - run: npx nx affected -t test --parallel=3 --configuration=ci
   build:
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'build') }}
     needs: test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        app: [api, musira]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -50,8 +48,10 @@ jobs:
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
-      - run: npm i
-      - run: npm run build
+      - run: npm i --ignore-scripts
+      - run: npm run build:prod
+      - run: echo "NODE_ENV=production" >> $GITHUB_ENV
+      - run: npm prune --production
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
@@ -69,7 +69,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.app }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/musira
           tags: |
             type=schedule
             type=ref,event=branch
@@ -82,7 +82,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./apps/${{ matrix.app }}/Dockerfile
+          file: ./Dockerfile
           push: true
           platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm/v8,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
