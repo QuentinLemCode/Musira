@@ -1,27 +1,7 @@
-# Build prod
-FROM node:alpine AS build
-
-RUN apk add --update python3 make g++
-
-WORKDIR /app
-
-COPY --chown=node:node . .
-RUN npm ci
-
-RUN npm run build:prod
-
-ENV NODE_ENV production
-
-RUN npm ci --only=production --ignore-scripts && npm cache clean --force
-
-USER node
-
-# Prod
-
 FROM node:alpine AS production
 
-COPY --chown=node:node --from=build /app/node_modules ./node_modules
-COPY --chown=node:node --from=build /app/dist/apps ./dist
+COPY --chown=node:node dist/apps ./dist
+COPY --chown=node:node node_modules ./node_modules
 
 RUN apk add --no-cache dumb-init
 
