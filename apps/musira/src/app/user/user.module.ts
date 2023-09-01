@@ -15,6 +15,12 @@ import { ComponentsModule } from '../components/components.module';
 import { AppRoutingModule } from '../app-routing.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
+const fbLoginOptions = {
+  scope: 'email,public_profile',
+  return_scopes: true,
+  enable_profile_selector: true,
+} as const;
+
 @NgModule({
   declarations: [LoginComponent, RegisterComponent, LoginComponent],
   imports: [
@@ -39,7 +45,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
           },
           {
             id: FacebookLoginProvider.PROVIDER_ID,
-            provider: new FacebookLoginProvider(environment.facebookClientId),
+            provider: new FacebookLoginProvider(
+              environment.facebookClientId,
+              fbLoginOptions,
+            ),
           },
         ],
         onError: (err: unknown) => {
