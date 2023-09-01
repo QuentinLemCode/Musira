@@ -21,7 +21,7 @@ const routes: Routes = [
   {
     path: ':sessionId/session-settings',
     component: SessionSettingsComponent,
-    canActivate: [musicSessionGuard, AuthGuard, AdminGuard],
+    canActivate: [musicSessionGuard, AuthGuard],
   },
   {
     path: 'create-session',
