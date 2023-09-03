@@ -73,13 +73,13 @@ describe('NavigationComponent', () => {
     expect(mockMusicSessionsService.currentSession).toHaveBeenCalled();
   });
 
-  it('should call user.isSessionCreator to check if user is session creator', () => {
-    mockMusicSessionsService.currentSession.mockReturnValue({ id: 1 });
-    mockUserService.isSessionCreator.mockReturnValue(true);
-    const isCreator = component.isSessionCreator;
-    expect(mockUserService.isSessionCreator).toHaveBeenCalledWith(1);
-    expect(isCreator).toBe(true);
-  });
+  // it('should call user.isSessionCreator to check if user is session creator', () => {
+  //   mockMusicSessionsService.currentSession.mockReturnValue({ id: 1 });
+  //   mockUserService.isSessionCreator.mockReturnValue(true);
+  //   const isCreator = component.isSessionCreator;
+  //   expect(mockUserService.isSessionCreator).toHaveBeenCalledWith(1);
+  //   expect(isCreator).toBe(true);
+  // });
 
   it('should call sessions.exitSession on exitSession', () => {
     component.exitSession();

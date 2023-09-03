@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import type { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import type { MusicSessionDto } from '@musira/api-interfaces/sessions/music-session.dto';
 import type { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
+import type { DeletedMusicSessionDto } from '@musira/api-interfaces/sessions/deleted-music-session.dto';
 import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { StorageService } from '../services/storage.service';
@@ -51,20 +52,28 @@ export class MusicSessionsService {
     return this.http.get<MusicSessionDto>(this.endpoint + `/${code}`);
   }
 
+  public getAll() {
+    return this.http.get<MusicSessionDto[]>(this.endpoint);
+  }
+
   public joinSession(code: number) {
     return this.get(code).pipe(this.tapCurrentSession);
   }
 
-  public deleteSession() {
-    const session = this.currentSession();
-    if (!session) return EMPTY;
-    return this.http.delete(this.endpoint + `/${session.code}`).pipe(
-      tap(() => {
-        this.deleteSessionInHistory(session);
-        this.user.deleteSessionCreator(session.code);
-        this.currentSession.set(null);
-      }),
-    );
+  public deleteSession(code?: number) {
+    if (!code) {
+      code = this.currentSession()?.code;
+    }
+    if (code === undefined) return EMPTY;
+    return this.http
+      .delete<DeletedMusicSessionDto>(this.endpoint + `/${code}`)
+      .pipe(
+        tap((result) => {
+          this.deleteSessionInHistory(result.publicCode);
+          this.user.deleteSessionCreator(result.publicCode);
+          this.currentSession.set(null);
+        }),
+      );
   }
 
   public exitSession() {
@@ -109,13 +118,13 @@ export class MusicSessionsService {
     this.storage.setLocalItem(CONSTANTS.SESSION_HISTORY_KEY, sessionHistory);
   }
 
-  private deleteSessionInHistory(musicSession: MusicSessionDto) {
+  private deleteSessionInHistory(code: number) {
     const sessionHistory =
       this.storage.getLocalItem<SessionHistory[]>(
         CONSTANTS.SESSION_HISTORY_KEY,
       ) || [];
     const existingSessionHistory = sessionHistory.find(
-      (entry) => entry.musicSession.code === musicSession.code,
+      (entry) => entry.musicSession.code === code,
     );
     if (existingSessionHistory) {
       sessionHistory.splice(sessionHistory.indexOf(existingSessionHistory), 1);

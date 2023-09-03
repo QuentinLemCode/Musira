@@ -1,3 +1,40 @@
+<h1>Sessions list</h1>
+
+<table class="table-auto">
+  <thead>
+    <tr>
+      Id
+    </tr>
+    <tr>
+      Name
+    </tr>
+    <tr>
+      Code
+    </tr>
+    <tr>
+      Creator
+    </tr>
+    <tr>
+      Linked to spotify
+    </tr>
+    <tr>
+      Actions
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let session of sessionsList">
+      <th>{{ session.id }}</th>
+      <th>{{ session.name }}</th>
+      <th>{{ session.code }}</th>
+      <th>{{ session.creator }}</th>
+      <th>{{ session.linkedToSpotify }}</th>
+      <td>
+        <button (click)="deleteSession(session.id)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 <h1>User list</h1>
 <table class="user-list">
   <thead>
@@ -22,10 +59,8 @@
       <th>{{ user.created_at }}</th>
       <th>{{ user.updated_at }}</th>
       <td class="actions">
-        <ng-container *ngIf="user.role !== 1">
-          <button (click)="deleteUser(user.id)">Delete</button>
-          <button (click)="unlockUser(user.id)">Unlock</button>
-        </ng-container>
+        <button (click)="deleteUser(user.id)">Delete</button>
+        <button (click)="unlockUser(user.id)">Unlock</button>
       </td>
     </tr>
   </tbody>

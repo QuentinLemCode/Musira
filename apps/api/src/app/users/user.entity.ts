@@ -67,7 +67,7 @@ export class User {
   session_participation: MusicSession[];
 
   @OneToMany(() => MusicSession, (session) => session.creator)
-  sessionCreated: MusicSession[];
+  sessionCreated: Promise<MusicSession[]>;
 
   @RelationId((user: User) => user.sessionCreated)
   sessionCreatedIds: number[];

@@ -74,7 +74,7 @@ export class MusicSessionService {
     return this.musicSession.save(session);
   }
 
-  remove(id: number) {
-    return this.musicSession.delete({ id });
+  remove(publicCode: number) {
+    return this.musicSession.delete({ publicCode });
   }
 }

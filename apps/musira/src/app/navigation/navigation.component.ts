@@ -18,6 +18,11 @@ export class NavigationComponent {
     if (user.isLoggedIn) return user.username;
     return null;
   });
+  isAdmin = computed(() => {
+    const user = this.user.loggedUser();
+    if (user.isLoggedIn) return user.isAdmin;
+    return false;
+  });
 
   constructor(
     @Inject(UserService) readonly user: UserService,

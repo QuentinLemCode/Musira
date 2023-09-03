@@ -60,6 +60,14 @@
           </li>
         </ng-container>
 
+        <li *ngIf="isAdmin()">
+          <a
+            [routerLink]="['/admin']"
+            (click)="toggleMenu()"
+            class="block py-2 pl-3 pr-4"
+            >Administration</a
+          >
+
         <li *ngIf="isLogged()">
           <p class="block py-2 pl-3 pr-4">
             <fa-icon [icon]="faUser" class="mr-4"></fa-icon>{{ username() }}

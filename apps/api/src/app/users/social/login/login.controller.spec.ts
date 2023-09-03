@@ -35,7 +35,7 @@ describe('LoginController', () => {
         id: 1,
         created_at: new Date(),
         updated_at: new Date(),
-        sessionCreatedIds: [],
+        sessionCreated: Promise.resolve([]),
         role: 0,
         provider: 'google',
       };
@@ -58,7 +58,7 @@ describe('LoginController', () => {
           user.id,
           user.created_at.toISOString(),
           user.updated_at.toISOString(),
-          user.sessionCreatedIds,
+          [],
           0,
           user.role,
           user.provider,
