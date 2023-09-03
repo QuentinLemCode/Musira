@@ -30,13 +30,20 @@ export class NavigationComponent {
     this.showMenu = !this.showMenu;
   }
 
+  get onLoginOrRegisterPage() {
+    return (
+      this.router.url.includes('/user/login') ||
+      this.router.url.includes('/user/register')
+    );
+  }
+
   get currentSession() {
     return this.sessions.currentSession();
   }
 
   get isSessionCreator() {
     if (!this.currentSession) return false;
-    return this.user.isSessionCreator(this.currentSession.id);
+    return this.user.isSessionCreator(this.currentSession.code);
   }
 
   exitSession() {

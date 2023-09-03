@@ -9,6 +9,7 @@ import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { StorageService } from '../services/storage.service';
 import { CONSTANTS } from '../constants';
+import { UserService } from '../user/user.service';
 
 interface SessionHistory {
   musicSession: MusicSessionDto;
@@ -28,12 +29,16 @@ export class MusicSessionsService {
     @Inject(HttpClient) private readonly http: HttpClient,
     @Inject(Router) private readonly router: Router,
     @Inject(StorageService) private readonly storage: StorageService,
+    @Inject(UserService) private readonly user: UserService,
   ) {}
 
   public create(musicSessionDto: CreateMusicSessionDto) {
-    return this.http
-      .post<MusicSessionDto>(this.endpoint, musicSessionDto)
-      .pipe(this.tapCurrentSession);
+    return this.http.post<MusicSessionDto>(this.endpoint, musicSessionDto).pipe(
+      this.tapCurrentSession,
+      tap((session) => {
+        this.user.addSessionCreator(session.code);
+      }),
+    );
   }
 
   public update(musicSessionDto: UpdateMusicSessionDto, code: string) {
@@ -56,6 +61,7 @@ export class MusicSessionsService {
     return this.http.delete(this.endpoint + `/${session.code}`).pipe(
       tap(() => {
         this.deleteSessionInHistory(session);
+        this.user.deleteSessionCreator(session.code);
         this.currentSession.set(null);
       }),
     );
