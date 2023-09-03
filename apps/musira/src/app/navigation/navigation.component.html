@@ -70,7 +70,7 @@
             >Se déconnecter</a
           >
         </li>
-        <li *ngIf="!isLogged()">
+        <li *ngIf="!isLogged() && !onLoginOrRegisterPage">
           <a
             [routerLink]="['/user/login']"
             (click)="toggleMenu()"
