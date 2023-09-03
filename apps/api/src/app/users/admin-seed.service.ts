@@ -16,11 +16,13 @@ export class AdminSeedService implements OnApplicationBootstrap {
     let admin = await this.users.findOneBy({ role: UserRole.ADMIN });
     if (!admin) {
       const password = process.env.DEFAULT_ADMIN_PASSWORD || 'admin';
+      const email = process.env.DEFAULT_ADMIN_EMAIL || 'admin@musira.fr';
       admin = this.users.create();
       admin.salt = randomBytes(16).toString('base64');
       admin.password = hashPassword(password, admin.salt);
       admin.name = 'admin';
       admin.role = UserRole.ADMIN;
+      admin.email = email;
       this.users.save(admin);
     }
   }

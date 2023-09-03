@@ -1,6 +1,7 @@
 import type { MusicSessionDto } from '@musira/api-interfaces/index';
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
+import type { DeletedMusicSessionDto } from '@musira/api-interfaces/sessions/deleted-music-session.dto';
 import {
   BadRequestException,
   Body,
@@ -8,6 +9,7 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  NotFoundException,
   Patch,
   Post,
   UseGuards,
@@ -23,6 +25,9 @@ import {
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionService } from './music-session.service';
 import { SessionCreatorGuard } from '../users/session-creator.guard';
+import { RolesGuard } from '../users/roles.guard';
+import { Roles } from '../users/roles.decorator';
+import { UserRole } from '../users/user.entity';
 
 @Controller('music-session')
 export class MusicSessionController {
@@ -61,6 +66,8 @@ export class MusicSessionController {
   }
 
   @Get()
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async findAll(): Promise<MusicSessionDto[]> {
     const musicSessions = await this.session.findAll();
     return musicSessions.map((musicSession) => ({
@@ -101,9 +108,36 @@ export class MusicSessionController {
     };
   }
 
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(JwtGuard)
   @Delete(':publicCode')
-  remove(@PublicCode() code: number) {
-    return this.session.remove(code);
+  async remove(
+    @PublicCode() code: number,
+    @Jwt() jwt: JWTPayload,
+  ): Promise<DeletedMusicSessionDto> {
+    if (!jwt.email || typeof jwt.email !== 'string')
+      throw new ForbiddenException('no jwt');
+    const user = await this.users.findByEmail(jwt.email);
+    if (!user) {
+      throw new BadRequestException({
+        cause: 'user',
+        message: 'user not found',
+      });
+    }
+    if (
+      user.role !== UserRole.ADMIN &&
+      !this.users.isCreatorOfSession(user.email, code)
+    ) {
+      throw new ForbiddenException({
+        cause: 'not-creator',
+        message: 'You are not the creator of the session',
+      });
+    }
+    const result = await this.session.remove(code);
+    if (result.affected !== 1)
+      throw new NotFoundException({
+        cause: 'not-found',
+        message: 'session not found',
+      });
+    return { deleted: true, publicCode: code };
   }
 }

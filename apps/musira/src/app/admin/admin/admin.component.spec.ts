@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { UserService } from '../../user/user.service';
 import { AdminComponent } from './admin.component';
+import { MusicSessionsService } from '../../sessions/music-sessions.service';
 
 describe('AdminComponent', () => {
   let component: AdminComponent;
@@ -20,7 +21,15 @@ describe('AdminComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AdminComponent],
-      providers: [{ provide: UserService, useValue: mockUserService }],
+      providers: [
+        { provide: UserService, useValue: mockUserService },
+        {
+          provide: MusicSessionsService,
+          useValue: {
+            getAll: jest.fn().mockReturnValue(of([])),
+          },
+        },
+      ],
     }).compileComponents();
     mockUserService.getAllUsers.mockReturnValue(of(usersList));
   });

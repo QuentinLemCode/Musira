@@ -19,7 +19,7 @@ import { HealthController } from './health/health.controller';
       port: env.DATABASE_PORT ? Number.parseInt(env.DATABASE_PORT, 10) : 3306,
       username: env.DATABASE_USER || 'admin',
       password: env.DATABASE_PASSWORD || 'password',
-      database: env.DATABASE_NAME || 'party-anniversary',
+      database: env.DATABASE_NAME || 'musira',
       autoLoadEntities: true,
       synchronize: true,
       logger: new DatabaseLogger(),

@@ -25,6 +25,17 @@
       "name": "Launch Chrome against localhost",
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Launch my-nest-project",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "serve", "api"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/apps/api",
+      "sourceMaps": true,
+      "trace": true
     }
   ]
 }
