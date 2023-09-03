@@ -6,14 +6,7 @@ import type {
   UserResponseDTO,
 } from '@musira/api-interfaces/index';
 import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
-import {
-  BehaviorSubject,
-  catchError,
-  firstValueFrom,
-  lastValueFrom,
-  tap,
-  throwError,
-} from 'rxjs';
+import { catchError, defer, lastValueFrom, map, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 enum LocalStorageKeys {
@@ -29,33 +22,54 @@ enum LocalStorageKeys {
   REFRESH_TOKEN = 'refresh_token',
 }
 
-export interface UserState {
-  isLoggedIn: boolean;
-  username?: string | null;
-  userId?: string | null;
+interface BaseUserState {
+  username: string;
+  userId: string;
+  token: string;
 }
+
+interface SocialUserState extends BaseUserState {
+  type: 'SOCIAL';
+  provider: string;
+  isAdmin: false;
+}
+
+interface EmailUserState extends BaseUserState {
+  type: 'EMAIL';
+  isAdmin: boolean;
+}
+
+export type UserState =
+  | ({ isLoggedIn: true } & (SocialUserState | EmailUserState))
+  | {
+      isLoggedIn: false;
+    };
+
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private readonly userLoginSubject =
-    new BehaviorSubject<UserResponseDTO | null>(null);
-  public readonly userLogin$ = this.userLoginSubject.asObservable();
-
-  public loggedUser = signal<UserState>({
-    username: this.username,
-    userId: this.userId,
-    isLoggedIn: this.isLoggedIn,
-  });
+  public loggedUser = signal<UserState>(this.userState);
 
   private readonly usersEndpoint = environment.serverUrl + 'users/';
   constructor(
     @Inject(HttpClient) private readonly http: HttpClient,
     @Inject(SocialAuthService) private readonly authService: SocialAuthService,
   ) {
-    this.authService.authState.subscribe((user) => {
-      if (user === null) return;
-      this.socialLogin(new SocialLoginUserDTO(user), user.idToken).subscribe();
+    this.authService.authState.subscribe({
+      next: (user) => {
+        if (user === null) return;
+        this.socialLogin(
+          new SocialLoginUserDTO(user),
+          user.idToken,
+        ).subscribe();
+      },
+    });
+    this.authService.initState.subscribe({
+      next: (state) => {
+        if (!state) return;
+        this.refreshTokenIfExpired().subscribe();
+      },
     });
   }
 
@@ -65,7 +79,6 @@ export class UserService {
       .pipe(
         tap((response) => {
           this.saveLogin(response, token);
-          this.userLoginSubject.next(response);
         }),
       );
   }
@@ -79,7 +92,6 @@ export class UserService {
       .pipe(
         tap((response) => {
           this.saveLogin(response);
-          this.userLoginSubject.next(response);
         }),
       );
   }
@@ -104,8 +116,6 @@ export class UserService {
     this.clearLocalStorage();
     this.loggedUser.set({
       isLoggedIn: false,
-      username: null,
-      userId: null,
     });
   }
 
@@ -124,63 +134,124 @@ export class UserService {
     );
   }
 
-  refreshEmailToken() {
+  refreshTokenIfExpired() {
+    if (!this.isTokenExpired) return of(true);
+    if (!this.loggedUser().isLoggedIn) return of(false);
+    if (this.isEmailLogin) {
+      return this.refreshEmailToken();
+    } else {
+      return this.refreshSocialToken();
+    }
+  }
+
+  isSessionCreator(sessionId: number) {
+    const sessions = localStorage
+      .getItem(LocalStorageKeys.SESSIONS_CREATOR)
+      ?.split(';');
+    return sessions?.includes(sessionId.toString()) ?? false;
+  }
+
+  private refreshEmailToken() {
     const body = {
-      token: this.savedRefreshToken,
+      token: this.refreshToken,
     };
     return this.http
       .post<EmailRefreshResponseDTO>(this.usersEndpoint + 'email/refresh', body)
       .pipe(
         tap((refresh) => this.saveRefresh(refresh)),
+        map(() => true),
         catchError((err) => {
           this.clearLocalStorage();
-          return throwError(() => err);
+          this.loggedUser.set({
+            isLoggedIn: false,
+          });
+          console.error(err);
+          return of(false);
         }),
       );
   }
 
-  async refreshSocialToken() {
+  private refreshSocialToken() {
     const provider = this.provider;
     if (provider === null) {
       throw new Error('No provider found');
     }
-    return this.authService.refreshAuthToken(provider);
+    return defer(async () => {
+      try {
+        await this.authService.refreshAuthToken(provider);
+      } catch {
+        this.clearLocalStorage();
+        this.loggedUser.set({
+          isLoggedIn: false,
+        });
+        return false;
+      }
+      return true;
+    });
   }
 
-  get provider(): string | null {
+  private get userState(): UserState {
+    if (!this.username || !this.userId || !this.type || !this.token) {
+      return {
+        isLoggedIn: false,
+      };
+    }
+    const state = {
+      username: this.username,
+      userId: this.userId,
+      token: this.token,
+    };
+    if (this.type === 'EMAIL') {
+      return {
+        ...state,
+        type: this.type,
+        isAdmin: this.isAdmin,
+        isLoggedIn: true,
+      };
+    }
+    if (this.type === 'SOCIAL' && this.provider) {
+      return {
+        ...state,
+        type: this.type,
+        provider: this.provider,
+        isAdmin: false,
+        isLoggedIn: true,
+      };
+    }
+    return {
+      isLoggedIn: false,
+    };
+  }
+
+  private get provider(): string | null {
     return localStorage.getItem(LocalStorageKeys.PROVIDER);
   }
 
-  get isSocialLogin(): boolean {
+  private get isSocialLogin(): boolean {
     return this.type === 'SOCIAL';
   }
 
-  get isEmailLogin(): boolean {
+  private get isEmailLogin(): boolean {
     return this.type === 'EMAIL';
   }
 
-  get type(): string | null {
-    return localStorage.getItem(LocalStorageKeys.TYPE);
-  }
-
-  get username(): string | null {
-    if (this.isLoggedIn) {
-      return localStorage.getItem(LocalStorageKeys.USERNAME);
+  private get type(): 'EMAIL' | 'SOCIAL' | null {
+    const item = localStorage.getItem(LocalStorageKeys.TYPE);
+    if (item === 'EMAIL' || item === 'SOCIAL') {
+      return item;
     }
     return null;
   }
 
-  get userId(): string | null {
+  private get username(): string | null {
+    return localStorage.getItem(LocalStorageKeys.USERNAME);
+  }
+
+  private get userId(): string | null {
     return localStorage.getItem(LocalStorageKeys.USER_ID);
   }
 
-  get isLoggedIn(): boolean {
-    const authToken = this.getToken();
-    if (authToken === null) return false;
-    return true;
-  }
-
-  get expires_at(): number | null {
+  private get expires_at(): number | null {
     const lsItem = localStorage.getItem(LocalStorageKeys.EXPIRES_AT);
     if (lsItem === null) {
       return null;
@@ -188,51 +259,20 @@ export class UserService {
     return +lsItem;
   }
 
-  get savedRefreshToken(): string | null {
+  private get refreshToken(): string | null {
     return localStorage.getItem(LocalStorageKeys.REFRESH_TOKEN);
   }
 
-  async refreshTokenIfExpired(): Promise<boolean> {
-    if (!this.isTokenExpired) return true;
-    if (this.isEmailLogin) {
-      try {
-        await firstValueFrom(this.refreshEmailToken());
-        return true;
-      } catch {
-        return false;
-      }
-    }
-    try {
-      await this.refreshSocialToken();
-    } catch {
-      return false;
-    }
-    return true;
-  }
-
-  getToken() {
+  private get token() {
     return localStorage.getItem(LocalStorageKeys.TOKEN);
   }
 
-  isTokenExpired() {
+  private get isTokenExpired() {
     return !this.expires_at || this.expires_at <= this.now();
   }
 
-  isAdmin() {
-    if (!this.isLoggedIn) {
-      return false;
-    }
-    return localStorage.getItem(LocalStorageKeys.ROLE) === 'admin';
-  }
-
-  isSessionCreator(sessionId: number) {
-    if (!this.isLoggedIn) {
-      return false;
-    }
-    const sessions = localStorage
-      .getItem(LocalStorageKeys.SESSIONS_CREATOR)
-      ?.split(';');
-    return sessions?.includes(sessionId.toString()) ?? false;
+  private get isAdmin() {
+    return localStorage.getItem(LocalStorageKeys.ROLE) === '1';
   }
 
   private emailLogout() {
@@ -255,6 +295,7 @@ export class UserService {
     localStorage.setItem(LocalStorageKeys.TOKEN, refresh.token);
     localStorage.setItem(LocalStorageKeys.REFRESH_TOKEN, refresh.refreshToken);
     localStorage.setItem(LocalStorageKeys.EXPIRES_AT, '' + refresh.expiresAt);
+    this.loggedUser.set(this.userState);
   }
 
   private saveLogin(login: UserResponseDTO, token?: string) {
@@ -276,10 +317,6 @@ export class UserService {
       localStorage.setItem(LocalStorageKeys.REFRESH_TOKEN, login.refreshToken);
       localStorage.setItem(LocalStorageKeys.EMAIL, login.email);
     }
-    this.loggedUser.set({
-      isLoggedIn: true,
-      userId: login.id.toString(),
-      username: login.name,
-    });
+    this.loggedUser.set(this.userState);
   }
 }

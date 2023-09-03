@@ -2,13 +2,12 @@ import {
   FacebookLoginProvider,
   SocialAuthService,
 } from '@abacritt/angularx-social-login';
-import { Component, Inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, Inject, effect } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
 import { UserService } from '../user.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'musira-login',
@@ -18,12 +17,12 @@ import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 export class LoginComponent {
   constructor(
     @Inject(SocialAuthService) private readonly authService: SocialAuthService,
-    @Inject(UserService) private readonly userService: UserService,
+    @Inject(UserService) private readonly users: UserService,
     @Inject(Router) private readonly router: Router,
   ) {
-    this.userService.userLogin$.pipe(takeUntilDestroyed()).subscribe((user) => {
-      if (user === null) return;
-      this.router.navigate(['/']);
+    effect(() => {
+      console.log(this.users.loggedUser());
+      if (this.users.loggedUser().isLoggedIn) this.router.navigate(['/']);
     });
   }
 
@@ -49,7 +48,7 @@ export class LoginComponent {
       return;
     }
     this.loading = true;
-    this.userService
+    this.users
       .emailLogin(this.form.value.email, this.form.value.password)
       .subscribe({
         next: () => {
@@ -68,7 +67,7 @@ export class LoginComponent {
       { scope: 'email,public_profile' },
     );
     if (user) {
-      this.userService
+      this.users
         .socialLogin(new SocialLoginUserDTO(user), user.authToken)
         .subscribe();
     }

@@ -3,8 +3,8 @@ import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { emailRefreshFixture } from '../../tests/fixtures';
 import { mockObservable } from '../../tests/mock';
 import { UserService } from '../user/user.service';
 import { JwtInterceptor } from './jwt.interceptor';
@@ -13,12 +13,11 @@ describe('JwtInterceptor', () => {
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
   const userServiceMock = {
-    getToken: jest.fn(),
-    isEmailLogin: true,
-    refreshEmailToken: jest.fn(),
+    loggedUser: signal({ isLoggedIn: true, token: 'fakeToken' }),
+    refreshTokenIfExpired: jest.fn(),
   };
 
-  const subRefresh = mockObservable(userServiceMock.refreshEmailToken);
+  const subRefresh = mockObservable(userServiceMock.refreshTokenIfExpired);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -38,8 +37,6 @@ describe('JwtInterceptor', () => {
   });
 
   it('should add Authorization header with token', () => {
-    userServiceMock.getToken.mockReturnValue('fakeToken');
-
     httpClient.get('/api/data').subscribe((response) => {
       expect(response).toBeTruthy();
     });
@@ -50,8 +47,6 @@ describe('JwtInterceptor', () => {
   });
 
   it('should handle 401 error and refresh token', () => {
-    userServiceMock.getToken.mockReturnValue('fakeToken');
-
     httpClient.get('/api/data').subscribe((response) => {
       expect(response).toBeTruthy();
     });
@@ -61,16 +56,16 @@ describe('JwtInterceptor', () => {
       status: 401,
     });
 
-    subRefresh.next(emailRefreshFixture);
+    subRefresh.next(true);
 
     const newReq = httpMock.expectOne('/api/data');
-    expect(newReq.request.headers.get('Authorization')).toBe('Bearer token');
+    expect(newReq.request.headers.get('Authorization')).toBe(
+      'Bearer fakeToken',
+    );
     newReq.flush({});
   });
 
   it('should handle other errors', () => {
-    userServiceMock.getToken.mockReturnValue('fakeToken');
-
     httpClient.get('/api/data').subscribe({
       error: (error) => {
         expect(error).toBeTruthy();
@@ -84,7 +79,7 @@ describe('JwtInterceptor', () => {
   });
 
   it('should not add Authorization header without token', () => {
-    userServiceMock.getToken.mockReturnValue(null);
+    userServiceMock.loggedUser.set({ isLoggedIn: false, token: '' });
 
     httpClient.get('/api/data').subscribe((response) => {
       expect(response).toBeTruthy();

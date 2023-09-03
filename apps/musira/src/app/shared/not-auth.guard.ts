@@ -16,7 +16,7 @@ export class NotAuthGuard {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (this.user.isLoggedIn === false) {
+    if (this.user.loggedUser().isLoggedIn === false) {
       return true;
     }
     return this.router.navigate(['/']);

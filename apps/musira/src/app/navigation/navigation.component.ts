@@ -13,7 +13,11 @@ export class NavigationComponent {
   showMenu = false;
   isLogged = computed(() => this.user.loggedUser().isLoggedIn);
   faUser = faUser;
-  username = computed(() => this.user.loggedUser().username);
+  username = computed(() => {
+    const user = this.user.loggedUser();
+    if (user.isLoggedIn) return user.username;
+    return null;
+  });
 
   constructor(
     @Inject(UserService) readonly user: UserService,

@@ -27,17 +27,18 @@ export class QueueComponent extends UnsubscribableComponent implements OnInit {
 
   musicConfig: MusicComponentConfiguration = {
     votable: false,
-    deletable: this.user.isAdmin(),
+    deletable: false,
     queueable: false,
     backlog: false,
   };
 
   getMusicConfig(queue: Queue) {
+    const user = this.user.loggedUser();
     const isQueuedByUser =
-      this.user.isLoggedIn && queue.user.id === +(this.user.userId ?? 0);
+      user.isLoggedIn && queue.user.id === +(user.userId ?? 0);
     return {
-      votable: this.isEngineStarted && this.user.isLoggedIn,
-      deletable: isQueuedByUser || this.user.isAdmin(),
+      votable: this.isEngineStarted && user.isLoggedIn,
+      deletable: isQueuedByUser || (user.isLoggedIn && user.isAdmin),
       queueable: false,
       backlog: false,
     };

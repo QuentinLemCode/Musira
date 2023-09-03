@@ -9,6 +9,8 @@ import { UserService } from '../../user/user.service';
 import type { IconUpdateStatus } from '../music/music.component';
 import { SearchComponent } from './search.component';
 import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
+import { signal } from '@angular/core';
+import { MusicSessionsService } from '../../sessions/music-sessions.service';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
@@ -24,7 +26,12 @@ describe('SearchComponent', () => {
   };
 
   const mockUserService = {
-    isAdmin: jest.fn().mockReturnValue(true),
+    loggedUser: signal({ isLoggedIn: true, isAdmin: true }),
+    isSessionCreator: jest.fn().mockImplementation(() => true),
+  };
+
+  const mockSessionService = {
+    currentSession: signal({ id: 1 }),
   };
 
   beforeEach(async () => {
@@ -35,6 +42,7 @@ describe('SearchComponent', () => {
         { provide: MusicApiService, useValue: mockMusicApiService },
         { provide: QueueService, useValue: mockQueueService },
         { provide: UserService, useValue: mockUserService },
+        { provide: MusicSessionsService, useValue: mockSessionService },
       ],
     }).compileComponents();
   });

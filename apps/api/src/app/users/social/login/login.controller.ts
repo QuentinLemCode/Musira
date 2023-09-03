@@ -31,7 +31,7 @@ export class LoginController {
       user.id,
       user.created_at.toISOString(),
       user.updated_at.toISOString(),
-      user.sessionCreatedIds,
+      user.sessionCreatedIds || [],
       0,
       user.role,
       user.provider,
