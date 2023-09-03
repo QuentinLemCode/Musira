@@ -64,8 +64,8 @@ export class UserService {
       .post<UserResponseDTO>(this.usersEndpoint + 'social/login', user)
       .pipe(
         tap((response) => {
-          this.userLoginSubject.next(response);
           this.saveLogin(response, token);
+          this.userLoginSubject.next(response);
         }),
       );
   }
@@ -78,8 +78,8 @@ export class UserService {
       })
       .pipe(
         tap((response) => {
-          this.userLoginSubject.next(response);
           this.saveLogin(response);
+          this.userLoginSubject.next(response);
         }),
       );
   }
