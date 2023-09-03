@@ -26,6 +26,7 @@ const routes: Routes = [
   {
     path: 'create-session',
     component: CreateSessionComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: 'spotify-auth',
@@ -60,7 +61,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { enableTracing: false })],
+  imports: [RouterModule.forRoot(routes, { enableTracing: true })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

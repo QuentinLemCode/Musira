@@ -24,6 +24,6 @@ export class MusicSessionComponent {
   }
 
   get isLoggedIn() {
-    return this.user.isLoggedIn;
+    return this.user.loggedUser().isLoggedIn;
   }
 }
