@@ -17,7 +17,7 @@ describe('MusicSessionComponent', () => {
 
   beforeEach(async () => {
     userServiceMock = {
-      isLoggedIn: false, // Set the initial state as needed
+      loggedUser: signal({ isLoggedIn: false }),
     };
 
     musicSessionsServiceMock = {

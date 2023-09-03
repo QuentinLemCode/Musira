@@ -19,15 +19,16 @@ export class JwtInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    const token = this.users.getToken();
-    if (!token) {
+    const loggedUser = this.users.loggedUser();
+    if (!loggedUser.isLoggedIn) {
       return next.handle(request);
     }
+    const token = loggedUser.token;
     request = this.cloneRequest(request, token);
     return next.handle(request).pipe(
       catchError((error) => {
+        console.log(error);
         if (
-          this.users.isEmailLogin &&
           error instanceof HttpErrorResponse &&
           !request.url.includes('users/email/login') &&
           !request.url.includes('users/email/refresh') &&
@@ -41,9 +42,15 @@ export class JwtInterceptor implements HttpInterceptor {
   }
 
   private refreshToken(request: HttpRequest<unknown>, next: HttpHandler) {
-    return this.users.refreshEmailToken().pipe(
-      switchMap((userLogin) => {
-        request = this.cloneRequest(request, userLogin.token);
+    console.log('refreshing token');
+    return this.users.refreshTokenIfExpired().pipe(
+      switchMap(() => {
+        const loggedUser = this.users.loggedUser();
+        if (loggedUser.isLoggedIn === false) {
+          console.error('not logged in');
+          return next.handle(request);
+        }
+        request = this.cloneRequest(request, loggedUser.token);
         return next.handle(request);
       }),
     );

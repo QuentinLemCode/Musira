@@ -11,8 +11,10 @@ describe('UserService', () => {
   let userService: UserService;
   let httpMock: HttpTestingController;
   const subAuth = new Subject<SocialUser>();
+  const subAuthState = new Subject<boolean>();
   const authServiceMock: Partial<SocialAuthService> = {
     signOut: jest.fn(),
+    initState: subAuthState.asObservable(),
     authState: subAuth.asObservable(),
     refreshAuthToken: jest.fn(),
   };

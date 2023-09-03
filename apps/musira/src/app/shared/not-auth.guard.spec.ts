@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { NotAuthGuard } from './not-auth.guard';
 import { UserService } from '../user/user.service';
+import { signal } from '@angular/core';
 
 describe('NotAuthGuard', () => {
   let notAuthGuard: NotAuthGuard;
@@ -9,7 +10,7 @@ describe('NotAuthGuard', () => {
     navigate: jest.fn(),
   };
   const userServiceMock = {
-    isLoggedIn: false,
+    loggedUser: signal({ isLoggedIn: false }),
   };
 
   beforeEach(() => {
@@ -29,8 +30,6 @@ describe('NotAuthGuard', () => {
   });
 
   it('should allow access if not logged in', () => {
-    userServiceMock.isLoggedIn = false;
-
     const result = notAuthGuard.canActivate();
 
     expect(result).toBe(true);
@@ -38,7 +37,7 @@ describe('NotAuthGuard', () => {
   });
 
   it('should navigate to home if logged in', () => {
-    userServiceMock.isLoggedIn = true;
+    userServiceMock.loggedUser.set({ isLoggedIn: true });
 
     notAuthGuard.canActivate();
 

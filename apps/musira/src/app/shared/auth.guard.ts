@@ -11,7 +11,7 @@ export class AuthGuard {
     @Inject(Router) private router: Router,
   ) {}
   canActivate() {
-    if (this.user.isLoggedIn !== true) {
+    if (this.user.loggedUser().isLoggedIn !== true) {
       return this.router.navigate(['user', 'login']);
     }
     return true;
