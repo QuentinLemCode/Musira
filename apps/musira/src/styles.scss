@@ -27,6 +27,7 @@ body {
   & > * {
     grid-column: 2;
   }
+
   & > footer {
     margin-top: 4rem;
     padding: 2rem 1rem 1.5rem 1rem;
@@ -38,9 +39,11 @@ body {
 a,
 a:visited {
   color: var(--primary-link);
+
   &:hover {
     color: var(--primary-link-hover);
   }
+
   cursor: pointer;
 }
 
@@ -63,6 +66,7 @@ input {
   &:disabled {
     background: var(--disabled);
   }
+
   &::placeholder {
     font-weight: 500;
     font-size: 16px;
@@ -78,30 +82,26 @@ img {
 }
 
 button {
-  background: var(--primary);
+  background-color: var(--primary);
   border-radius: 30px;
-  border: none;
   cursor: pointer;
   color: #191919;
 
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
   padding: 15px 30px;
-  gap: 10px;
 
-  justify-content: center;
-  font-family: Poppins;
-
-  font-style: normal;
   font-weight: 700;
   font-size: 16px;
-  line-height: 24px;
-  &:hover {
-    background: var(--primary-hover);
-  }
-  &:disabled {
-    background-color: var(--disabled);
+
+  &[type='submit'] {
+    background-color: var(--primary);
+
+    &:hover {
+      background: var(--primary-hover);
+    }
+
+    &:disabled {
+      background-color: var(--disabled);
+    }
   }
 }
 
