@@ -113,7 +113,7 @@ describe('LoginComponent', () => {
 
   it('should sign in with Facebook', async () => {
     const userMock = {
-      idToken: 'fakeToken',
+      authToken: 'fakeToken',
     } as SocialUser;
     jest
       .spyOn(authService, 'signIn')
@@ -124,6 +124,7 @@ describe('LoginComponent', () => {
 
     expect(authService.signIn).toHaveBeenCalledWith(
       FacebookLoginProvider.PROVIDER_ID,
+      { scope: 'email,public_profile' },
     );
     expect(userServiceMock.socialLogin).toHaveBeenCalledWith(
       expect.any(SocialLoginUserDTO),
