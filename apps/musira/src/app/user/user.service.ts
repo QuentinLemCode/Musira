@@ -1,5 +1,8 @@
-import { SocialAuthService } from '@abacritt/angularx-social-login';
-import { HttpClient } from '@angular/common/http';
+import {
+  GoogleLoginProvider,
+  SocialAuthService,
+} from '@abacritt/angularx-social-login';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Inject, Injectable, signal } from '@angular/core';
 import type {
   EmailRefreshResponseDTO,
@@ -65,12 +68,7 @@ export class UserService {
         ).subscribe();
       },
     });
-    this.authService.initState.subscribe({
-      next: (state) => {
-        if (!state) return;
-        this.refreshTokenIfExpired().subscribe();
-      },
-    });
+    this.refreshTokenIfExpired().subscribe();
   }
 
   socialLogin(user: SocialLoginUserDTO, token: string) {
@@ -78,7 +76,7 @@ export class UserService {
       .post<UserResponseDTO>(this.usersEndpoint + 'social/login', user)
       .pipe(
         tap((response) => {
-          this.saveLogin(response, token);
+          this.saveLogin(response, token, this.getExpiresAtFromToken(token));
         }),
       );
   }
@@ -135,13 +133,12 @@ export class UserService {
   }
 
   refreshTokenIfExpired() {
-    if (!this.isTokenExpired) return of(true);
     if (!this.loggedUser().isLoggedIn) return of(false);
     if (this.isEmailLogin) {
+      if (!this.isTokenExpired) return of(true);
       return this.refreshEmailToken();
-    } else {
-      return this.refreshSocialToken();
     }
+    return of(true);
   }
 
   isSessionCreator(sessionId: number) {
@@ -178,6 +175,14 @@ export class UserService {
     }
   }
 
+  private getExpiresAtFromToken(token: string) {
+    const payload = token.split('.')[1];
+    if (!payload) throw new Error('No payload found');
+    const decodedPayload = atob(payload);
+    const expiresAt: string = JSON.parse(decodedPayload).exp;
+    return Number.parseInt(expiresAt, 10);
+  }
+
   private refreshEmailToken() {
     const body = {
       token: this.refreshToken,
@@ -206,7 +211,7 @@ export class UserService {
     return defer(async () => {
       try {
         await this.authService.refreshAuthToken(provider);
-      } catch {
+      } catch (error) {
         this.clearLocalStorage();
         this.loggedUser.set({
           isLoggedIn: false,
@@ -325,21 +330,26 @@ export class UserService {
     this.loggedUser.set(this.userState);
   }
 
-  private saveLogin(login: UserResponseDTO, token?: string) {
+  private saveLogin(
+    login: UserResponseDTO,
+    token?: string,
+    expires_at?: number,
+  ) {
     localStorage.setItem(LocalStorageKeys.USERNAME, login.name);
     localStorage.setItem(LocalStorageKeys.USER_ID, '' + login.id);
     localStorage.setItem(
       LocalStorageKeys.SESSIONS_CREATOR,
       login.sessionCreatedIds.join(';'),
     );
-    localStorage.setItem(LocalStorageKeys.EXPIRES_AT, '' + login.expiresAt);
     localStorage.setItem(LocalStorageKeys.TYPE, login.type);
     localStorage.setItem(LocalStorageKeys.ROLE, '' + login.role);
     if (login.type === 'SOCIAL' && token) {
       localStorage.setItem(LocalStorageKeys.TOKEN, token);
       localStorage.setItem(LocalStorageKeys.PROVIDER, login.provider);
+      localStorage.setItem(LocalStorageKeys.EXPIRES_AT, '' + expires_at);
     }
     if (login.type === 'EMAIL') {
+      localStorage.setItem(LocalStorageKeys.EXPIRES_AT, '' + login.expiresAt);
       localStorage.setItem(LocalStorageKeys.TOKEN, login.token);
       localStorage.setItem(LocalStorageKeys.REFRESH_TOKEN, login.refreshToken);
       localStorage.setItem(LocalStorageKeys.EMAIL, login.email);

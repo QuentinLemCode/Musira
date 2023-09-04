@@ -4,7 +4,6 @@ interface BaseUserInterface {
   created_at: string;
   updated_at: string;
   sessionCreatedIds: number[];
-  expiresAt: number;
   role: number;
 }
 
@@ -29,7 +28,6 @@ export class SocialUserResponseDTO implements SocialUserResponseInterface {
     public created_at: string,
     public updated_at: string,
     public sessionCreatedIds: number[],
-    public expiresAt: number,
     public role: number,
     public provider: string,
     public type: 'SOCIAL' = 'SOCIAL',

@@ -21,7 +21,6 @@ export class LoginComponent {
     @Inject(Router) private readonly router: Router,
   ) {
     effect(() => {
-      console.log(this.users.loggedUser());
       if (this.users.loggedUser().isLoggedIn) this.router.navigate(['/']);
     });
   }
