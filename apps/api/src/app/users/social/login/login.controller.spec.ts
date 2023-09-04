@@ -59,7 +59,6 @@ describe('LoginController', () => {
           user.created_at.toISOString(),
           user.updated_at.toISOString(),
           [],
-          0,
           user.role,
           user.provider,
           'SOCIAL',
