@@ -1,8 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { intlFormat } from 'date-fns';
 import { codeToString, stringToCode } from '../../utils/format-code';
-import { Router } from '@angular/router';
 import { MusicSessionsService } from '../music-sessions.service';
 
 @Component({
@@ -63,6 +63,10 @@ export class JoinSessionComponent {
       .sort((a, b) => b.access_date.getTime() - a.access_date.getTime());
   }
 
+  get hasSessionHistory() {
+    return this.sessionHistory.length > 0;
+  }
+
   formatDate(date: Date) {
     return intlFormat(
       new Date(date),
@@ -88,7 +92,10 @@ export class JoinSessionComponent {
     const publicCode = stringToCode(code);
     this.musicSessions.joinSession(publicCode).subscribe({
       next: () => this.router.navigate([publicCode]),
-      error: () => (this.joinSessionError = 'Ce code de session est invalide'),
+      error: () => {
+        this.musicSessions.deleteSessionInHistory(publicCode);
+        this.joinSessionError = 'Ce code de session est invalide';
+      },
     });
   }
 }
