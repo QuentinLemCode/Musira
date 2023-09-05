@@ -6,7 +6,7 @@ import type {
   UserResponseDTO,
 } from '@musira/api-interfaces/index';
 import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
-import { catchError, defer, lastValueFrom, map, of, tap } from 'rxjs';
+import { catchError, defer, interval, lastValueFrom, map, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 enum LocalStorageKeys {
@@ -65,7 +65,14 @@ export class UserService {
         ).subscribe();
       },
     });
-    this.refreshTokenIfExpired().subscribe();
+    if (this.isTokenExpired) {
+      this.refreshEmailToken().subscribe();
+    }
+    interval(1000 * 60 * 30).subscribe({
+      next: () => {
+        this.refreshTokenFromServer().subscribe();
+      },
+    });
   }
 
   socialLogin(user: SocialLoginUserDTO, token: string) {
@@ -106,7 +113,7 @@ export class UserService {
   }
 
   async logout() {
-    if (this.isSocialLogin) await this.authService.signOut();
+    if (this.isSocialLogin) await this.authService.signOut(true);
     if (this.isEmailLogin) await this.emailLogout();
     this.clearLocalStorage();
     this.loggedUser.set({
@@ -129,10 +136,9 @@ export class UserService {
     );
   }
 
-  refreshTokenIfExpired() {
+  private refreshTokenFromServer() {
     if (!this.loggedUser().isLoggedIn) return of(false);
     if (this.isEmailLogin) {
-      if (!this.isTokenExpired) return of(true);
       return this.refreshEmailToken();
     }
     return of(true);
