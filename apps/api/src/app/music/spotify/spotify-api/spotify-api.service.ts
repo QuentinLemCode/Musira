@@ -27,7 +27,7 @@ import { MusicSessionService } from '../../../music-session/music-session.servic
 export type PlaybackState =
   | {
       registered: true;
-      currentPlayback: CurrentPlaybackResponse;
+      currentPlayback: CurrentPlaybackResponse | undefined;
     }
   | {
       registered: false;
@@ -46,6 +46,10 @@ export type APIResult<T = void> = {
   cause?: APIErrorTypes;
   data?: T;
 };
+
+interface PlaybackStateCache {
+  currentPlayback: CurrentPlaybackResponse | undefined;
+}
 
 @Injectable()
 export class SpotifyApiService implements OnModuleInit {
@@ -142,13 +146,13 @@ export class SpotifyApiService implements OnModuleInit {
     }
 
     if (!noCache) {
-      const playerCache = await this.cache.get<
-        CurrentPlaybackResponse | undefined
-      >('player');
+      const playerCache = await this.cache.get<PlaybackStateCache | undefined>(
+        'player',
+      );
       if (playerCache) {
         return this.success({
           registered: true,
-          currentPlayback: playerCache,
+          currentPlayback: playerCache.currentPlayback,
         });
       }
     }
@@ -168,7 +172,10 @@ export class SpotifyApiService implements OnModuleInit {
         .pipe(
           retry({ count: 5, delay: 100 }),
           tap(async (response) => {
-            await this.cache.set('player', response.data, 1000);
+            const playerCache: PlaybackStateCache = {
+              currentPlayback: response.data,
+            };
+            await this.cache.set('player', playerCache, 2000);
           }),
           map((response) => {
             return this.success({

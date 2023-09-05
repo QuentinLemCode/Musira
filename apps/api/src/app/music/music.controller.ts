@@ -88,7 +88,7 @@ export class MusicController {
     }
     const playback = response.data;
     if (!playback.registered) return;
-    if (playback.currentPlayback.item?.type !== 'track') return;
+    if (playback.currentPlayback?.item?.type !== 'track') return;
     return this.mapTrackItemToMusic(playback.currentPlayback.item);
   }
 

@@ -141,7 +141,7 @@ export class QueueEngineService {
     forwarded = false,
   ) {
     const playState = await this.getPlayState(musicSession);
-    if (!playState) return;
+    if (!playState || !playState.currentPlayback) return;
 
     if (!playState.currentPlayback.item) {
       this.logger.log(
@@ -174,7 +174,7 @@ export class QueueEngineService {
     queue: Queue | Backlog,
   ) {
     const playState = await this.getPlayState(musicSession);
-    if (!playState) return;
+    if (!playState || !playState.currentPlayback) return;
 
     if (queue instanceof Queue) await this.queues.setFinished(queue);
     const currentMusic = playState.currentPlayback;
@@ -222,7 +222,7 @@ export class QueueEngineService {
     queue: Queue | Backlog,
   ) {
     const playState = await this.getPlayState(musicSession);
-    if (!playState) return;
+    if (!playState || !playState.currentPlayback) return;
 
     const currentMusic = playState.currentPlayback;
     if (currentMusic.item?.uri !== queue.music.uri) {
@@ -249,7 +249,7 @@ export class QueueEngineService {
       throw new ServiceUnavailableException();
     }
     const playState = response.data;
-    if (!playState.registered || !playState.currentPlayback.is_playing) {
+    if (!playState.registered || !playState.currentPlayback?.is_playing) {
       const error = playState.registered
         ? 'Music not playing'
         : 'Spotify not registered';
