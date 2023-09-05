@@ -99,7 +99,7 @@
     "jest-preset-angular": "13.1.1",
     "lint-staged": "^14.0.1",
     "nx": "16.7.4",
-    "postcss": "^8.4.5",
+    "postcss": "^8.4.29",
     "prettier": "^3.0.3",
     "qrcode": "^1.5.3",
     "reflect-metadata": "^0.1.13",
