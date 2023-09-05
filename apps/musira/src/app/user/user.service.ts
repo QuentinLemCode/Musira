@@ -51,7 +51,7 @@ export type UserState =
 export class UserService {
   public loggedUser = signal<UserState>(this.userState);
 
-  private readonly usersEndpoint = environment.serverUrl + 'users/';
+  private readonly usersEndpoint = environment.serverUrl + 'users';
   constructor(
     @Inject(HttpClient) private readonly http: HttpClient,
     @Inject(SocialAuthService) private readonly authService: SocialAuthService,
@@ -77,7 +77,7 @@ export class UserService {
 
   socialLogin(user: SocialLoginUserDTO, token: string) {
     return this.http
-      .post<UserResponseDTO>(this.usersEndpoint + 'social/login', user)
+      .post<UserResponseDTO>(this.usersEndpoint + '/social/login', user)
       .pipe(
         tap((response) => {
           this.saveLogin(response, token, this.getExpiresAtFromToken(token));
@@ -87,7 +87,7 @@ export class UserService {
 
   emailLogin(email: string, password: string) {
     return this.http
-      .post<UserResponseDTO>(this.usersEndpoint + 'email/login', {
+      .post<UserResponseDTO>(this.usersEndpoint + '/email/login', {
         email,
         password,
       })
@@ -100,7 +100,7 @@ export class UserService {
 
   emailRegister(email: string, username: string, password: string) {
     return this.http
-      .post<UserResponseDTO>(this.usersEndpoint + 'email/register', {
+      .post<UserResponseDTO>(this.usersEndpoint + '/email/register', {
         email,
         username,
         password,
@@ -126,12 +126,12 @@ export class UserService {
   }
 
   delete(id: number) {
-    return this.http.delete<UserResponseDTO[]>(this.usersEndpoint + id);
+    return this.http.delete<UserResponseDTO[]>(this.usersEndpoint + '/' + id);
   }
 
   unlock(id: number) {
     return this.http.post<UserResponseDTO[]>(
-      this.usersEndpoint + 'email/unlock/' + id,
+      this.usersEndpoint + '/email/unlock/' + id,
       {},
     );
   }
@@ -191,7 +191,10 @@ export class UserService {
       token: this.refreshToken,
     };
     return this.http
-      .post<EmailRefreshResponseDTO>(this.usersEndpoint + 'email/refresh', body)
+      .post<EmailRefreshResponseDTO>(
+        this.usersEndpoint + '/email/refresh',
+        body,
+      )
       .pipe(
         tap((refresh) => this.saveRefresh(refresh)),
         map(() => true),
@@ -312,7 +315,7 @@ export class UserService {
 
   private emailLogout() {
     return lastValueFrom(
-      this.http.post(this.usersEndpoint + 'email/logout/' + this.userId, ''),
+      this.http.post(this.usersEndpoint + '/email/logout/' + this.userId, ''),
     );
   }
 
