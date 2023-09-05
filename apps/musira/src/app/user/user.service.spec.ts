@@ -27,6 +27,10 @@ describe('UserService', () => {
         { provide: SocialAuthService, useValue: authServiceMock },
       ],
     });
+    localStorage.setItem(
+      'expires_at',
+      Math.floor(new Date().valueOf() / 1000) + 60 * 60 + '',
+    );
 
     userService = TestBed.inject(UserService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -50,7 +54,7 @@ describe('UserService', () => {
     });
 
     const req = httpMock.expectOne(
-      `${userService['usersEndpoint']}email/login`,
+      `${userService['usersEndpoint']}/email/login`,
     );
     expect(req.request.method).toBe('POST');
     req.flush(mockResponse);
