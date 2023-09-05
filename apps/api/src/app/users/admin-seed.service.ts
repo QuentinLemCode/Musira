@@ -14,7 +14,7 @@ export class AdminSeedService implements OnApplicationBootstrap {
   ) {}
   async onApplicationBootstrap() {
     let admin = await this.users.findOneBy({ role: UserRole.ADMIN });
-    if (!admin) {
+    if (!admin || !admin.password || !admin.email) {
       const password = process.env.DEFAULT_ADMIN_PASSWORD || 'admin';
       const email = process.env.DEFAULT_ADMIN_EMAIL || 'admin@musira.fr';
       admin = this.users.create();
