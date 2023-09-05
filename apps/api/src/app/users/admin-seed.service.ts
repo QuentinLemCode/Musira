@@ -14,7 +14,7 @@ export class AdminSeedService implements OnApplicationBootstrap {
   ) {}
   async onApplicationBootstrap() {
     let admin = await this.users.findOneBy({ role: UserRole.ADMIN });
-    if (!admin || !admin.password || !admin.email) {
+    if (!admin) {
       const password = process.env.DEFAULT_ADMIN_PASSWORD || 'admin';
       const email = process.env.DEFAULT_ADMIN_EMAIL || 'admin@musira.fr';
       admin = this.users.create();
@@ -23,6 +23,9 @@ export class AdminSeedService implements OnApplicationBootstrap {
       admin.name = 'admin';
       admin.role = UserRole.ADMIN;
       admin.email = email;
+      this.users.save(admin);
+    } else if (!admin.email) {
+      admin.email = process.env.DEFAULT_ADMIN_EMAIL || 'admin@musira.fr';
       this.users.save(admin);
     }
   }
