@@ -3,13 +3,13 @@ import { Inject, Injectable, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import type { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
+import type { DeletedMusicSessionDto } from '@musira/api-interfaces/sessions/deleted-music-session.dto';
 import type { MusicSessionDto } from '@musira/api-interfaces/sessions/music-session.dto';
 import type { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
-import type { DeletedMusicSessionDto } from '@musira/api-interfaces/sessions/deleted-music-session.dto';
 import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { StorageService } from '../services/storage.service';
 import { CONSTANTS } from '../constants';
+import { StorageService } from '../services/storage.service';
 import { UserService } from '../user/user.service';
 
 interface SessionHistory {
@@ -32,8 +32,16 @@ export class MusicSessionsService {
     @Inject(StorageService) private readonly storage: StorageService,
     @Inject(UserService) private readonly user: UserService,
   ) {
-    // when not in a session, delete currentSession
-    // this.router.getCurrentNavigation()?.extras.state?.code &&
+    this.router.events.subscribe({
+      next: (event) => {
+        if (event.type === 14) {
+          const code = event.snapshot.paramMap.get('sessionId');
+          if (!code) {
+            this.currentSession.set(null);
+          }
+        }
+      },
+    });
   }
 
   public create(musicSessionDto: CreateMusicSessionDto) {
