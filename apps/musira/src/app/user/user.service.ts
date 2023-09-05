@@ -1,8 +1,5 @@
-import {
-  GoogleLoginProvider,
-  SocialAuthService,
-} from '@abacritt/angularx-social-login';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
+import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, signal } from '@angular/core';
 import type {
   EmailRefreshResponseDTO,

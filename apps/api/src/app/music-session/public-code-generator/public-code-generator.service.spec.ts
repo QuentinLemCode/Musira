@@ -40,7 +40,7 @@ describe('PublicCodeGeneratorService', () => {
   });
 
   it('should generate a public code', async () => {
-    const publicCode = 223456788;
+    const publicCode = 111111111;
     mockRepository.findOneBy.mockResolvedValue(null);
     const result = await service.generatePublicCode();
     expect(result).toBe(publicCode);
