@@ -15,6 +15,7 @@ describe('JoinSessionComponent', () => {
   const mockMusicSessionsService = {
     joinSession: jest.fn(),
     getSessionHistory: jest.fn().mockReturnValue([]),
+    deleteSessionInHistory: jest.fn(),
   };
 
   let router: Router;

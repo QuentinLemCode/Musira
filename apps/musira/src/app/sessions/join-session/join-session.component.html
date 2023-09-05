@@ -42,7 +42,7 @@
   <div class="error" *ngIf="joinSessionError">{{ joinSessionError }}</div>
 </main>
 
-<h2 class="mt-16 mb-8">Historique des sessions</h2>
+<h2 class="mt-16 mb-8" *ngIf="hasSessionHistory">Historique des sessions</h2>
 <div class="grid grid-cols-3 gap-4">
   <a
     *ngFor="let session of sessionHistory"
@@ -64,4 +64,3 @@
     </div>
   </a>
 </div>
-<ul></ul>

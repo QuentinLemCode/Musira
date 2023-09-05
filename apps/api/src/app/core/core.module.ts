@@ -5,7 +5,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { env } from 'process';
 import { UsersModule } from '../users/users.module';
-import DatabaseLogger from './database.logger';
 import { HealthController } from './health/health.controller';
 
 @Global()
@@ -22,8 +21,8 @@ import { HealthController } from './health/health.controller';
       database: env.DATABASE_NAME || 'musira',
       autoLoadEntities: true,
       synchronize: true,
-      logger: new DatabaseLogger(),
-      logging: 'all',
+      logging: ['error', 'warn'],
+      maxQueryExecutionTime: 1000,
     }),
     ScheduleModule.forRoot(),
     UsersModule,

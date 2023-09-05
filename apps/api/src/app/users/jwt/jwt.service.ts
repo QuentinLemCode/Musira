@@ -81,7 +81,11 @@ export class JwtService {
 
   async generateEmailToken(user: User) {
     const issuer = env.ORIGIN || 'email';
-    const token = await new SignJWT({ email: user.email, iss: issuer })
+    const token = await new SignJWT({
+      email: user.email,
+      iss: issuer,
+      role: user.role,
+    })
       .setProtectedHeader({ alg: this.jwtAlgorithm })
       .setIssuedAt()
       .setExpirationTime('1h')

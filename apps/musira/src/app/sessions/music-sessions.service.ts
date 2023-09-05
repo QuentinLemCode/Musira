@@ -31,7 +31,10 @@ export class MusicSessionsService {
     @Inject(Router) private readonly router: Router,
     @Inject(StorageService) private readonly storage: StorageService,
     @Inject(UserService) private readonly user: UserService,
-  ) {}
+  ) {
+    // when not in a session, delete currentSession
+    // this.router.getCurrentNavigation()?.extras.state?.code &&
+  }
 
   public create(musicSessionDto: CreateMusicSessionDto) {
     return this.http.post<MusicSessionDto>(this.endpoint, musicSessionDto).pipe(
@@ -93,6 +96,21 @@ export class MusicSessionsService {
     );
   }
 
+  public deleteSessionInHistory(code: number) {
+    const sessionHistory =
+      this.storage.getLocalItem<SessionHistory[]>(
+        CONSTANTS.SESSION_HISTORY_KEY,
+      ) || [];
+    const existingSessionHistory = sessionHistory.find(
+      (entry) => entry.musicSession.code === code,
+    );
+    if (existingSessionHistory) {
+      sessionHistory.splice(sessionHistory.indexOf(existingSessionHistory), 1);
+    }
+
+    this.storage.setLocalItem(CONSTANTS.SESSION_HISTORY_KEY, sessionHistory);
+  }
+
   private tapCurrentSession = tap<MusicSessionDto>((musicSession) => {
     this.currentSession.set(musicSession);
     this.saveSessionInHistory(musicSession);
@@ -113,21 +131,6 @@ export class MusicSessionsService {
         musicSession,
         access_date: new Date(),
       });
-    }
-
-    this.storage.setLocalItem(CONSTANTS.SESSION_HISTORY_KEY, sessionHistory);
-  }
-
-  private deleteSessionInHistory(code: number) {
-    const sessionHistory =
-      this.storage.getLocalItem<SessionHistory[]>(
-        CONSTANTS.SESSION_HISTORY_KEY,
-      ) || [];
-    const existingSessionHistory = sessionHistory.find(
-      (entry) => entry.musicSession.code === code,
-    );
-    if (existingSessionHistory) {
-      sessionHistory.splice(sessionHistory.indexOf(existingSessionHistory), 1);
     }
 
     this.storage.setLocalItem(CONSTANTS.SESSION_HISTORY_KEY, sessionHistory);

@@ -21,8 +21,20 @@ export class PublicCodeGeneratorService {
   }
 
   private generateRandomNumber() {
-    const floor = Math.pow(10, this.publicCodeLength - 1);
-    const ceil = Math.pow(10, this.publicCodeLength) - 1;
-    return Math.floor(floor + Math.random() * ceil);
+    const chars = '0123456789';
+    const buffer: string[] = [];
+
+    for (let i = 0; i < this.publicCodeLength; i++) {
+      buffer.push(chars[Math.floor(Math.random() * chars.length)] || '0');
+    }
+
+    const result = Number.parseInt(buffer.join(''), 10);
+    if (result.toString().length < this.publicCodeLength) {
+      return Number.parseInt(
+        result.toString().padEnd(this.publicCodeLength, '0'),
+        10,
+      );
+    }
+    return result;
   }
 }

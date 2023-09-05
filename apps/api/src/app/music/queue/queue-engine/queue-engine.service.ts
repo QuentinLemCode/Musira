@@ -42,6 +42,7 @@ export class QueueEngineService {
   private readonly logger = new Logger('QueueEngine');
   private readonly SONG_START_SCHEDULER_NAME = 'music-start';
   private readonly SONG_END_SCHEDULER_NAME = 'music-end';
+  private readonly FORWARD_MUSIC_RESTART_ENGINE = 'forward-restart';
 
   private static readonly START_ENGINE_FAIL =
     'No queue found or spotify account not registered : unable to start the engine';
@@ -126,16 +127,33 @@ export class QueueEngineService {
     }
     await this.spotify.play(musicSession, queue.music.uri);
     await this.queues.setPlaying(queue);
-    this.launchEngine(musicSession, queue);
+    const nextQueue: Queue = queue;
+    this.startTimeout(10000, this.FORWARD_MUSIC_RESTART_ENGINE, () =>
+      this.launchEngine(musicSession, nextQueue, true),
+    );
   }
 
   // Engines related functions
 
-  private async launchEngine(musicSession: MusicSession, queue: Queue) {
+  private async launchEngine(
+    musicSession: MusicSession,
+    queue: Queue,
+    forwarded = false,
+  ) {
     const playState = await this.getPlayState(musicSession);
     if (!playState) return;
 
-    this.logger.log('Engine started');
+    if (!playState.currentPlayback.item) {
+      this.logger.log(
+        `No music playing on Spotify, stopping engine for session ${musicSession.publicCode} ${musicSession.name}`,
+      );
+    }
+
+    if (!forwarded) {
+      this.logger.log(
+        `Engine started for session ${musicSession.publicCode} ${musicSession.name}`,
+      );
+    }
 
     const timeoutEndOfSong = this.calculateWhenBeforeCurrentSongFinish(
       playState.currentPlayback,
@@ -162,7 +180,7 @@ export class QueueEngineService {
     const currentMusic = playState.currentPlayback;
     if (currentMusic.item?.uri !== queue.music.uri) {
       this.logger.log(
-        'End of song : Current playing music is not the same as the one in the queue, stopping engine',
+        `End of song : Current playing music (${currentMusic.item?.name}) is not the same as the one in the queue (${queue.music.title}), stopping engine for session ${musicSession.publicCode} ${musicSession.name}`,
       );
       return this.stop();
     }
@@ -171,14 +189,17 @@ export class QueueEngineService {
     if (nextQueue !== null) {
       await this.spotify.addToQueue(musicSession, nextQueue.music.uri);
       this.logger.log(
-        'End of song : added music to spotify queue ' +
-          nextQueue.music.toString(),
+        `End of song : added music to spotify queue ${nextQueue.music.toString()} for session ${
+          musicSession.publicCode
+        } ${musicSession.name}`,
       );
     } else {
       const poppedBacklog = await this.backlog.pop(musicSession);
       if (!poppedBacklog) return this.stop();
       backlog = poppedBacklog;
-      this.logger.log('End of song : Retrieve music from backlog');
+      this.logger.log(
+        `End of song : Retrieve music from backlog for session ${musicSession.publicCode} ${musicSession.name}`,
+      );
       await this.spotify.addToQueue(musicSession, backlog.music.uri);
     }
     const timeoutBeginNextSong = this.calculateWhenNextSongBegin(
@@ -206,7 +227,7 @@ export class QueueEngineService {
     const currentMusic = playState.currentPlayback;
     if (currentMusic.item?.uri !== queue.music.uri) {
       this.logger.log(
-        'Start of song : Current playing music is not the same as the one in the queue, stopping engine',
+        `Start of song : Current playing music is not the same as the one in the queue, stopping engine for session ${musicSession.publicCode} ${musicSession.name}`,
         'Expecting ' + queue.music.toString(),
       );
       return this.stop();
@@ -232,7 +253,10 @@ export class QueueEngineService {
       const error = playState.registered
         ? 'Music not playing'
         : 'Spotify not registered';
-      this.logger.warn(error + ', stopping engine');
+      this.logger.warn(
+        error +
+          `, stopping engine for session ${musicSession.publicCode} ${musicSession.name}`,
+      );
       this.stop();
       return null;
     }
@@ -250,6 +274,7 @@ export class QueueEngineService {
   private deleteTimeouts() {
     this.stopTimeout(this.SONG_END_SCHEDULER_NAME);
     this.stopTimeout(this.SONG_START_SCHEDULER_NAME);
+    this.stopTimeout(this.FORWARD_MUSIC_RESTART_ENGINE);
   }
 
   private stopTimeout(name: string) {

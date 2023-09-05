@@ -41,7 +41,9 @@ export class MusicSessionService {
   }
 
   findAll() {
-    return this.musicSession.find();
+    return this.musicSession.find({
+      relations: ['creator'],
+    });
   }
 
   findOne(id: number): Promise<MusicSession | null> {
