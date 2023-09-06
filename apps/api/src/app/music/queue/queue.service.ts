@@ -91,6 +91,28 @@ export class QueueService {
     return queue;
   }
 
+  async updatePriority(userId: number) {
+    const otherQueues = await this.queue.find({
+      where: {
+        userId: userId,
+        status: Raw("'0'"),
+      },
+      order: {
+        priority: 'ASC',
+        created_at: 'ASC',
+      },
+      relations: ['user'],
+    });
+    otherQueues.forEach(async (queue, index) => {
+      const user = queue.user;
+      if (user.role === UserRole.ADMIN) {
+        queue.priority = 0;
+      }
+      queue.priority = index + 1;
+    });
+    return this.queue.save(otherQueues);
+  }
+
   async getQueue(queueOrId: Queue | number | string) {
     let queue: Queue | undefined;
     if (typeof queueOrId === 'string' || typeof queueOrId === 'number') {
@@ -182,26 +204,5 @@ export class QueueService {
       .addOrderBy('queue.priority', 'ASC')
       .addOrderBy('queue.created_at', 'ASC')
       .getMany();
-  }
-
-  private async updatePriority(userId: number) {
-    const otherQueues = await this.queue.find({
-      where: {
-        userId: userId,
-      },
-      order: {
-        priority: 'ASC',
-        created_at: 'ASC',
-      },
-      relations: ['user'],
-    });
-    otherQueues.forEach(async (queue, index) => {
-      const user = await queue.user;
-      if (user.role === UserRole.ADMIN) {
-        queue.priority = 0;
-      }
-      queue.priority = index + 1;
-    });
-    return this.queue.save(otherQueues);
   }
 }
