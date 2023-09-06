@@ -1,9 +1,10 @@
 import type { OnInit } from '@angular/core';
-import { Component, HostListener, Inject } from '@angular/core';
+import { Component, HostListener, Inject, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import {
   faAdd,
   faCheck,
+  faClose,
   faSearch,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -39,25 +40,29 @@ export class SearchComponent extends UnsubscribableComponent implements OnInit {
     "Cette musique est déjà dans la file d'attente";
   static readonly ALREADY_IN_BACKLOG = 'Cette musique est déjà dans le backlog';
 
+  @Input()
+  forBacklog = false;
+
   search = new FormControl<string>('');
   results: Music[] | null = null;
-  hideResults = false;
+  resultsHidden = false;
   loading = false;
   error = '';
   currentSession = this.session.currentSession();
   musicConfig: MusicComponentConfiguration = {
     votable: false,
     deletable: false,
-    queueable: true,
+    queueable: !this.forBacklog,
     backlog: this.currentSession
-      ? this.user.isSessionCreator(this.currentSession.id)
+      ? this.user.isSessionCreator(this.currentSession.code)
       : false,
   };
   iconSearch = faSearch;
+  iconClose = faClose;
 
   @HostListener('window:popstate', ['$event'])
   onPopState() {
-    this.hideResults = true;
+    this.resultsHidden = true;
   }
 
   constructor(
@@ -107,8 +112,12 @@ export class SearchComponent extends UnsubscribableComponent implements OnInit {
       });
   }
 
+  hideResults() {
+    this.resultsHidden = true;
+  }
+
   showResults() {
-    this.hideResults = false;
+    this.resultsHidden = false;
   }
 
   addToQueue(music: Music, updateIcon: IconUpdateStatus) {

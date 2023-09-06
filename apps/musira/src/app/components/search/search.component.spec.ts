@@ -60,7 +60,7 @@ describe('SearchComponent', () => {
 
   it('should initialize with empty results, hideResults false, and loading false', () => {
     expect(component.results).toBeNull();
-    expect(component.hideResults).toBe(false);
+    expect(component.resultsHidden).toBe(false);
     expect(component.loading).toBe(false);
   });
 

@@ -58,6 +58,7 @@ export class BacklogService implements OnModuleInit {
     }
     const backlog = new Backlog();
     backlog.music = music;
+    backlog.music_session = musicSession;
     await this.backlog.save(backlog);
   }
 

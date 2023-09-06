@@ -12,7 +12,7 @@
     </ul>
   </li>
   <li
-    class="cursor-pointer"
+    class="cursor-pointer underline"
     *ngIf="musicStatus.engineStarted"
     (click)="collapsed = !collapsed"
   >
@@ -25,6 +25,19 @@
     ❌ Gestion de la playlist arrếté
     <div class="ml-4">
       <a (click)="startEngine()">Lancer la gestion de la playlist</a>
+    </div>
+  </li>
+  <li class="cursor-pointer underline" *ngIf="backlog">
+    ✅ Titres présent en réserve
+  </li>
+  <li *ngIf="!backlog">
+    ❌ Ancun titre en réserve
+    <div class="ml-4">
+      <a
+        [routerLink]="['/', currentSessionCode, 'session-settings']"
+        fragment="backlog"
+        >Ajouter des titres à la réserve</a
+      >
     </div>
   </li>
 </ul>
