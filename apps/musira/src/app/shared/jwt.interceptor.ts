@@ -4,25 +4,21 @@ import type {
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import type { Observable } from 'rxjs';
-import { UserService } from '../user/user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(@Inject(UserService) private users: UserService) {}
-
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    const loggedUser = this.users.loggedUser();
-    if (!loggedUser.isLoggedIn) {
+    const token = this.getTokenFromLocalStorage();
+    if (!token) {
       return next.handle(request);
     }
-    const token = loggedUser.token;
     request = this.cloneRequest(request, token);
     return next.handle(request);
   }
@@ -33,5 +29,9 @@ export class JwtInterceptor implements HttpInterceptor {
         Authorization: 'Bearer ' + token,
       },
     });
+  }
+
+  private getTokenFromLocalStorage() {
+    return localStorage.getItem('token');
   }
 }
