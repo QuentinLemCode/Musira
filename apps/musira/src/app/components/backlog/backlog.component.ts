@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { interval } from 'rxjs';
+import { interval, type Observer } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import type { FullBacklog } from '../../services/music-api.interface';
 import { QueueService } from '../../services/queue.service';
@@ -24,22 +24,24 @@ export class BacklogComponent {
   };
 
   constructor(@Inject(QueueService) private readonly queue: QueueService) {
+    const subsribeParam: Partial<Observer<FullBacklog[]>> = {
+      next: (backlog) => {
+        this.backlog = backlog;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error(error);
+        this.loading = false;
+        this.error = "Erreur lors de l'obtention de la file d'attente";
+      },
+    };
+    this.queue.getFullBacklog().subscribe(subsribeParam);
     interval(20000)
       .pipe(
         takeUntilDestroyed(),
         mergeMap(() => this.queue.getFullBacklog()),
       )
-      .subscribe({
-        next: (backlog) => {
-          this.backlog = backlog;
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error(error);
-          this.loading = false;
-          this.error = "Erreur lors de l'obtention de la file d'attente";
-        },
-      });
+      .subscribe(subsribeParam);
   }
 
   delete(id: number) {

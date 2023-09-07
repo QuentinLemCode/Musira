@@ -12,12 +12,12 @@
     </ul>
   </li>
   <li
-    class="cursor-pointer underline"
+    class="cursor-pointer"
     *ngIf="musicStatus.engineStarted"
     (click)="collapsed = !collapsed"
   >
-    ✅ Gestion de la playlist
-    <div *ngIf="collapsed" class="ml-4">
+    ✅ <span class="underline">Gestion de la playlist</span>
+    <div *ngIf="collapsed" class="ml-4 mt-2 mb-2 text-xl">
       <a (click)="stopEngine()">Arrêter la gestion de la playlist</a>
     </div>
   </li>
@@ -26,7 +26,7 @@
     *ngIf="!musicStatus.engineStarted"
     (click)="collapsed = !collapsed"
   >
-    ❌ Gestion de la playlist arrếté
+    ❌ <span class="underline">Gestion de la playlist arrếté</span>
     <div class="ml-4 mt-2 mb-2 text-xl">
       <a (click)="startEngine()">Lancer la gestion de la playlist</a>
     </div>
