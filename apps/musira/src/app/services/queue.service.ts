@@ -1,17 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, computed } from '@angular/core';
 import type { Subscription } from 'rxjs';
-import { ReplaySubject, combineLatest, timer } from 'rxjs';
+import { ReplaySubject, combineLatest, of, timer } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
 import type {
   Backlog,
+  FullBacklog,
   Music,
   Queue,
   QueueResponse,
 } from './music-api.interface';
 import { VisibilityService } from './visibility.service';
-import { MusicSessionsService } from '../sessions/music-sessions.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +22,11 @@ export class QueueService {
   private readonly backlogEndpoint;
   private readonly $queue = new ReplaySubject<Queue[]>(1);
   private readonly $backlog = new ReplaySubject<Backlog | null>(1);
+
+  private cacheFullBacklog: null | {
+    timestamp: number;
+    backlog: FullBacklog[];
+  };
 
   private $polling?: Subscription;
 
@@ -80,11 +86,24 @@ export class QueueService {
   }
 
   getFullBacklog() {
-    return this.http.get<Backlog[]>(this.backlogEndpoint());
+    if (
+      !this.cacheFullBacklog ||
+      this.cacheFullBacklog.timestamp > Date.now() - 10000
+    ) {
+      return this.http.get<FullBacklog[]>(this.backlogEndpoint()).pipe(
+        tap((backlog) => {
+          this.cacheFullBacklog = {
+            timestamp: Date.now(),
+            backlog,
+          };
+        }),
+      );
+    }
+    return of(this.cacheFullBacklog.backlog);
   }
 
   pushBacklog(music: Music) {
-    return this.http.post(this.backlogEndpoint(), music);
+    return this.http.post<FullBacklog[]>(this.backlogEndpoint(), music);
   }
 
   forward(id: string | number) {

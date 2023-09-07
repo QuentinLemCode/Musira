@@ -1,9 +1,9 @@
-import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
-import { mergeMap, takeUntil, tap } from 'rxjs/operators';
-import type { Backlog } from '../../services/music-api.interface';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { interval } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import type { FullBacklog } from '../../services/music-api.interface';
 import { QueueService } from '../../services/queue.service';
-import { UnsubscribableComponent } from '../../utils/unsubscribable-component';
 import type { MusicComponentConfiguration } from '../music/music.component';
 
 @Component({
@@ -11,11 +11,8 @@ import type { MusicComponentConfiguration } from '../music/music.component';
   templateUrl: './backlog.component.html',
   styleUrls: ['./backlog.component.scss'],
 })
-export class BacklogComponent
-  extends UnsubscribableComponent
-  implements OnInit
-{
-  backlog: Backlog[] | null = null;
+export class BacklogComponent {
+  backlog: FullBacklog[] | null = null;
   loading = true;
   error = '';
 
@@ -27,15 +24,10 @@ export class BacklogComponent
   };
 
   constructor(@Inject(QueueService) private readonly queue: QueueService) {
-    super();
-  }
-
-  ngOnInit(): void {
-    this.queue
-      .getFullBacklog()
+    interval(20000)
       .pipe(
-        takeUntil(this.$destroy),
-        tap(() => (this.error = '')),
+        takeUntilDestroyed(),
+        mergeMap(() => this.queue.getFullBacklog()),
       )
       .subscribe({
         next: (backlog) => {

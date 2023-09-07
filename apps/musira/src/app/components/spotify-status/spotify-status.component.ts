@@ -1,6 +1,9 @@
 import { Component, Inject, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import type { Backlog, CurrentMusic } from '../../services/music-api.interface';
+import type {
+  CurrentMusic,
+  FullBacklog,
+} from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
@@ -24,12 +27,10 @@ export class SpotifyStatusComponent {
         next: (status) => (this.musicStatus = status),
       });
 
-    this.queue
-      .getBacklog()
-      .pipe(takeUntilDestroyed())
-      .subscribe({
-        next: (backlog) => (this.backlog = backlog),
-      });
+    // TODO : make it dynamic
+    this.queue.getFullBacklog().subscribe({
+      next: (backlog) => (this.backlog = backlog),
+    });
 
     effect(() => {
       this.currentSessionCode = this.sessions.currentSession()?.code;
@@ -39,13 +40,29 @@ export class SpotifyStatusComponent {
   currentSessionCode: number | undefined;
   collapsed = false;
   musicStatus: CurrentMusic | undefined;
-  backlog: Backlog | undefined | null;
+  backlog: FullBacklog[] | undefined;
+  error = '';
 
   startEngine() {
-    this.music.startEngine().subscribe();
+    this.music.startEngine().subscribe({
+      next: (status) => {
+        this.musicStatus = status;
+        this.collapsed = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = 'Erreur lors du démarrage. Essayez de rafraîchir la page';
+      },
+    });
   }
 
   stopEngine() {
-    this.music.stopEngine().subscribe();
+    this.music.stopEngine().subscribe({
+      next: (status) => (this.musicStatus = status),
+      error: (err) => {
+        console.error(err);
+        this.error = "Erreur lors de l'arrêt. Essayez de rafraîchir la page.";
+      },
+    });
   }
 }

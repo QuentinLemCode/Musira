@@ -21,25 +21,29 @@
       <a (click)="stopEngine()">Arrêter la gestion de la playlist</a>
     </div>
   </li>
-  <li *ngIf="!musicStatus.engineStarted">
+  <li
+    class="cursor-pointer"
+    *ngIf="!musicStatus.engineStarted"
+    (click)="collapsed = !collapsed"
+  >
     ❌ Gestion de la playlist arrếté
-    <div class="ml-4">
+    <div class="ml-4 mt-2 mb-2 text-xl">
       <a (click)="startEngine()">Lancer la gestion de la playlist</a>
     </div>
   </li>
-  <li class="cursor-pointer underline" *ngIf="backlog">
-    ✅ Titres présent en réserve
-  </li>
-  <li *ngIf="!backlog">
+  <li *ngIf="backlog && backlog.length > 0">✅ Titres présent en réserve</li>
+  <li *ngIf="!backlog || backlog.length === 0">
     ❌ Ancun titre en réserve
     <div class="ml-4">
       <a
         [routerLink]="['/', currentSessionCode, 'session-settings']"
         fragment="backlog"
+        class="ml-4 mt-2 mb-2 text-xl"
         >Ajouter des titres à la réserve</a
       >
     </div>
   </li>
 </ul>
+<p *ngIf="error">{{ error }}</p>
 
 <ng-template #loading> Chargement </ng-template>

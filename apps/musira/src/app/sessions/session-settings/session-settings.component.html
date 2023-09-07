@@ -20,6 +20,10 @@
   ></musira-music>
 
   <h1 id="backlog">Réserve de titres :</h1>
+  <p>
+    Lorsqu'il n'y a plus de musique dans la playlist, un titre au hasard passera
+    depuis cette réserve.
+  </p>
   <musira-search [forBacklog]="true"></musira-search>
   <musira-backlog></musira-backlog>
 </div>
@@ -40,7 +44,7 @@
   class="flex flex-row flex-nowrap justify-evenly items-baseline mb-2"
 >
   <label for="maxVotes">Nombre de votes pour passer une musique :</label>
-  <input type="number" name="maxVotes" [(ngModel)]="maxVote" />
+  <input class="w-24" type="number" name="maxVotes" [(ngModel)]="maxVote" />
   <button (click)="setMaxVotes()">Sauvegarder</button>
 </div>
 <p *ngIf="maxVotesSaveStatus" class="text-center">{{ maxVotesSaveStatus }}</p>
@@ -50,7 +54,12 @@
   class="flex flex-row flex-nowrap justify-evenly items-baseline"
 >
   <label for="maxSongs">Nombre maximum de musique par utilisateur :</label>
-  <input type="number" name="maxSongs" [(ngModel)]="maxQueuableSongs" />
+  <input
+    class="w-24"
+    type="number"
+    name="maxSongs"
+    [(ngModel)]="maxQueuableSongs"
+  />
   <button (click)="setMaxQueuableSongs()">Sauvegarder</button>
 </div>
 <p *ngIf="maxQueuableSongsSaveStatus" class="text-center">

@@ -1,5 +1,11 @@
-import type { OnInit } from '@angular/core';
-import { Component, HostListener, Inject, Input } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  Inject,
+  Input,
+  type OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import {
   faAdd,
@@ -15,7 +21,6 @@ import {
   distinctUntilChanged,
   filter,
   mergeMap,
-  takeUntil,
   tap,
 } from 'rxjs/operators';
 import type { Music } from '../../services/music-api.interface';
@@ -23,7 +28,6 @@ import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
 import { UserService } from '../../user/user.service';
-import { UnsubscribableComponent } from '../../utils/unsubscribable-component';
 import type {
   IconUpdateStatus,
   MusicComponentConfiguration,
@@ -34,14 +38,13 @@ import type {
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
 })
-export class SearchComponent extends UnsubscribableComponent implements OnInit {
+export class SearchComponent implements OnInit {
   static readonly ERROR_MESSAGE = "Une erreur s'est produite, désolé 😫";
   static readonly ALREADY_IN_QUEUE =
     "Cette musique est déjà dans la file d'attente";
   static readonly ALREADY_IN_BACKLOG = 'Cette musique est déjà dans le backlog';
 
-  @Input()
-  forBacklog = false;
+  @Input() forBacklog = false;
 
   search = new FormControl<string>('');
   results: Music[] | null = null;
@@ -52,11 +55,10 @@ export class SearchComponent extends UnsubscribableComponent implements OnInit {
   musicConfig: MusicComponentConfiguration = {
     votable: false,
     deletable: false,
-    queueable: !this.forBacklog,
-    backlog: this.currentSession
-      ? this.user.isSessionCreator(this.currentSession.code)
-      : false,
+    queueable: true,
+    backlog: false,
   };
+
   iconSearch = faSearch;
   iconClose = faClose;
 
@@ -72,13 +74,9 @@ export class SearchComponent extends UnsubscribableComponent implements OnInit {
     @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
   ) {
-    super();
-  }
-
-  ngOnInit(): void {
     this.search.valueChanges
       .pipe(
-        takeUntil(this.$destroy),
+        takeUntilDestroyed(),
         filter<string | null, string>(
           (query): query is string => typeof query === 'string',
         ),
@@ -110,6 +108,13 @@ export class SearchComponent extends UnsubscribableComponent implements OnInit {
           this.error = SearchComponent.ERROR_MESSAGE;
         },
       });
+  }
+
+  ngOnInit(): void {
+    if (this.forBacklog) {
+      this.musicConfig.queueable = false;
+      this.musicConfig.backlog = true;
+    }
   }
 
   hideResults() {

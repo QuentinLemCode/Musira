@@ -60,6 +60,7 @@ export class BacklogService implements OnModuleInit {
     backlog.music = music;
     backlog.music_session = musicSession;
     await this.backlog.save(backlog);
+    return this.backlog.find();
   }
 
   delete(id: string | number) {
