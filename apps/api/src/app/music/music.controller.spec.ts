@@ -98,6 +98,7 @@ describe('MusicController', () => {
               popularity: 100,
               preview_url: 'https://p.scdn.co/mp3-preview/aze',
               track_number: 1,
+              is_playable: true,
             },
           ],
           href: 'https://api.spotify.com/v1/search?query=track%3Atrack+artist%3Aartist&type=track&offset=0&limit=20',
