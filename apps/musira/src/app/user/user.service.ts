@@ -113,7 +113,11 @@ export class UserService {
   }
 
   async logout() {
-    if (this.isSocialLogin) await this.authService.signOut(true);
+    try {
+      if (this.isSocialLogin) await this.authService.signOut(true);
+    } catch (error) {
+      console.error(error);
+    }
     if (this.isEmailLogin) await this.emailLogout();
     this.clearLocalStorage();
     this.loggedUser.set({

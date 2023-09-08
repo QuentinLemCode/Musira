@@ -1,15 +1,21 @@
 import type { OnModuleInit } from '@nestjs/common';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { MusicSession } from '../../music-session/entities/music-session.entity';
 import { MusicSessionService } from '../../music-session/music-session.service';
 import type { Music } from '../music.entity';
+import { SpotifyApiService } from '../spotify/spotify-api/spotify-api.service';
 import { Backlog } from './backlog.entity';
 
 @Injectable()
 export class BacklogService implements OnModuleInit {
   constructor(
+    private readonly spotify: SpotifyApiService,
     @InjectRepository(Backlog) private readonly backlog: Repository<Backlog>,
     private readonly musicSessions: MusicSessionService,
   ) {}
@@ -75,6 +81,34 @@ export class BacklogService implements OnModuleInit {
       return nominatedBacklog;
     }
     return this.nextInBacklog.get(musicSession.id);
+  }
+
+  async import(spotifyPlaylistId: string, musicSession: MusicSession) {
+    const playlist = await this.spotify.getPlaylistFromId(
+      spotifyPlaylistId,
+      musicSession,
+    );
+    if (!playlist || playlist.status === 'error')
+      throw new NotFoundException({
+        cause: 'not-found',
+        message: 'playlist not found',
+      });
+
+    playlist.data?.tracks.items.map(async (item) => {
+      if (!item.track) return;
+      if (!item.track.artists[0]) return;
+      if (!item.track.album.images[0]) return;
+      const music: Music = {
+        album: item.track.album.name,
+        artist: item.track.artists[0].name,
+        cover: item.track.album.images[0].url,
+        duration: item.track.duration_ms,
+        uri: item.track.uri,
+        title: item.track.name,
+        queue: [],
+      };
+      this.push(musicSession, music);
+    });
   }
 
   private findInBacklog(musicSession: MusicSession, uri: string) {
