@@ -5,8 +5,9 @@ import type {
   UserResponseDTO,
 } from '@musira/api-interfaces/index';
 import { mergeMap } from 'rxjs/operators';
-import { UserService } from '../../user/user.service';
+import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
+import { UserService } from '../../user/user.service';
 
 @Component({
   selector: 'musira-admin',
@@ -25,6 +26,8 @@ export class AdminComponent implements OnInit {
     @Inject(UserService) private readonly users: UserService,
     @Inject(MusicSessionsService)
     private readonly sessions: MusicSessionsService,
+    @Inject(QueueService)
+    private readonly queue: QueueService,
   ) {}
 
   ngOnInit(): void {
@@ -50,7 +53,7 @@ export class AdminComponent implements OnInit {
       this.error = 'Invalid session code or playlist id';
       return;
     }
-    this.sessions.importPlaylist(code, this.spotifyPlaylistId).subscribe({
+    this.queue.importPlaylist(code, this.spotifyPlaylistId).subscribe({
       error: (err) => {
         this.error = JSON.stringify(err);
       },

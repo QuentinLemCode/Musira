@@ -707,7 +707,7 @@ type ListOfCurrentUsersPlaylistsResponse =
  * GET /v1/users/{user_id}/playlists/{playlist_id}
  * https://developer.spotify.com/web-api/get-playlist/
  */
-type SinglePlaylistResponse = PlaylistObjectFull;
+export type SinglePlaylistResponse = PlaylistObjectFull;
 
 /**
  * Get a playlist's tracks

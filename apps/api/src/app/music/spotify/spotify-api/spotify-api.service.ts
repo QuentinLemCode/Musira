@@ -18,6 +18,7 @@ import type { SpotifyRefreshToken, SpotifyToken } from '../token';
 import type { Cache } from 'cache-manager';
 import type {
   CurrentPlaybackResponse,
+  SinglePlaylistResponse,
   SpotifyTrackCategory,
   SpotifyURI,
 } from '../types/spotify-interfaces';
@@ -260,6 +261,23 @@ export class SpotifyApiService implements OnModuleInit {
             }
           }),
         ),
+    );
+  }
+
+  async getPlaylistFromId(
+    spotifyPlaylistId: string,
+    musicSession: MusicSession,
+  ): Promise<APIResult<SinglePlaylistResponse | void>> {
+    return firstValueFrom(
+      this.http
+        .get<SinglePlaylistResponse>(
+          `https://api.spotify.com/v1/playlists/${spotifyPlaylistId}`,
+          {
+            headers:
+              await this.getAuthorizationHeaderForCurrentPlayer(musicSession),
+          },
+        )
+        .pipe(this.pipeResponse()),
     );
   }
 
