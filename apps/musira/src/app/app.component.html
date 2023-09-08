@@ -1,8 +1,8 @@
-<header>
+<header *ngIf="!isDashboard">
   <musira-navigation></musira-navigation>
 </header>
 <router-outlet></router-outlet>
-<footer>
+<footer *ngIf="!isDashboard">
   <p>
     Développé avec ❤️ par QuentinLemCode
     <a class="icon-link" href="https://twitter.com/QuentinLemCode"

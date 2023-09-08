@@ -13,7 +13,14 @@
       Pour cela, connecte-toi sur <strong>{{ serverUrl }}</strong> ou scanne le
       QR Code ci-dessous
     </p>
-    <canvas #qrcode></canvas>
+    <h1 class="italic text-center">#{{ formattedSessionCode }}</h1>
+    <div class="flex justify-center">
+      <canvas #qrcode></canvas>
+    </div>
   </div>
-  <musira-queue></musira-queue>
+  <div>
+    <h1>🎉 {{ currentSession?.name }}</h1>
+    <h3 class="text-lg">Oranisé par {{ currentSession?.creator }}</h3>
+    <musira-queue></musira-queue>
+  </div>
 </div>

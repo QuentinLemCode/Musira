@@ -4,19 +4,26 @@
   [formControl]="search"
   placeholder="Rechercher une musique"
 />
-<span class="search-icon"
+<span class="search-icon" *ngIf="results === null || resultsHidden"
   ><fa-icon
     [icon]="iconSearch"
     [ngClass]="loading ? 'fa-beat-fade' : ''"
   ></fa-icon
 ></span>
 
+<span
+  class="search-icon cursor-pointer"
+  *ngIf="results !== null && !resultsHidden"
+>
+  <fa-icon [icon]="iconClose" (click)="hideResults()"></fa-icon>
+</span>
+
 <p *ngIf="error">{{ error }}</p>
 
 <div
-  *ngIf="!hideResults"
+  *ngIf="!resultsHidden"
   id="search-results"
-  [ngClass]="hideResults || results === null ? 'hide' : 'show'"
+  [ngClass]="resultsHidden || results === null ? 'hide' : 'show'"
 >
   <musira-music
     *ngFor="let music of results"

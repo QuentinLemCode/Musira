@@ -1,7 +1,10 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { currentMusicFixture } from '../../../tests/fixtures';
 import { mockObservable } from '../../../tests/mock';
 import { MusicApiService } from '../../services/music-api.service';
+import { QueueService } from '../../services/queue.service';
+import { MusicSessionsService } from '../../sessions/music-sessions.service';
 import { SpotifyStatusComponent } from './spotify-status.component';
 
 describe('SpotifyStatusComponent', () => {
@@ -14,6 +17,18 @@ describe('SpotifyStatusComponent', () => {
     stopEngine: jest.fn(),
   };
 
+  const mockQueueService = {
+    get: jest.fn(),
+    getFullBacklog: jest.fn(),
+  };
+
+  const subGet = mockObservable(mockQueueService.get);
+  const subGetFullBacklog = mockObservable(mockQueueService.getFullBacklog);
+
+  const sessionMock = {
+    currentSession: signal(null),
+  };
+
   const subStatus = mockObservable(mockMusicApiService.getStatus);
   const subStart = mockObservable(mockMusicApiService.startEngine);
   const subStop = mockObservable(mockMusicApiService.stopEngine);
@@ -21,7 +36,11 @@ describe('SpotifyStatusComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SpotifyStatusComponent],
-      providers: [{ provide: MusicApiService, useValue: mockMusicApiService }],
+      providers: [
+        { provide: MusicApiService, useValue: mockMusicApiService },
+        { provide: QueueService, useValue: mockQueueService },
+        { provide: MusicSessionsService, useValue: sessionMock },
+      ],
     }).compileComponents();
   });
 

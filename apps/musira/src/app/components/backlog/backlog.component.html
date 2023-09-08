@@ -7,5 +7,6 @@
     [music]="item.music"
     [config]="musicConfig"
     (delete)="delete(item.id)"
+    [message]="'Joué ' + item.play_count + ' fois'"
   ></musira-music>
 </ng-container>
