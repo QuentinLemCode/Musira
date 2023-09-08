@@ -4,6 +4,7 @@ import * as qrcode from 'qrcode';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
 import { DashboardComponent } from './dashboard.component';
 import { QueueStubComponent } from '../../tests/components-stubs';
+import { DashboardService } from '../services/dashboard.service';
 
 jest.mock('qrcode', () => ({
   toCanvas: jest.fn(),
@@ -22,6 +23,15 @@ describe('DashboardComponent', () => {
       declarations: [DashboardComponent, QueueStubComponent],
       providers: [
         { provide: MusicSessionsService, useValue: mockMusicSessionsService },
+        {
+          provide: DashboardService,
+          useValue: {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            enable: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            disable: () => {},
+          },
+        },
       ],
     }).compileComponents();
   });

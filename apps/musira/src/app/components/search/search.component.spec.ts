@@ -50,7 +50,7 @@ describe('SearchComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchComponent);
     component = fixture.componentInstance;
-    component.search = new FormControl('');
+    component.resultsHidden = false;
     fixture.detectChanges();
   });
 
@@ -69,7 +69,7 @@ describe('SearchComponent', () => {
       votable: false,
       deletable: false,
       queueable: true,
-      backlog: true,
+      backlog: false,
     };
     expect(component.musicConfig).toEqual(expectedMusicConfig);
   });
