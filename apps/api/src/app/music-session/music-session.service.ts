@@ -5,8 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 import { MusicSession } from './entities/music-session.entity';
-import { Settings } from './settings/settings.entity';
 import { PublicCodeGeneratorService } from './public-code-generator/public-code-generator.service';
+import { Settings } from './settings/settings.entity';
 
 @Injectable()
 export class MusicSessionService {

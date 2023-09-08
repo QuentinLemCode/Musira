@@ -102,6 +102,15 @@ export class QueueService {
     return of(this.cacheFullBacklog.backlog);
   }
 
+  public importPlaylist(code: number, spotifyPlaylistId: string) {
+    return this.http.post(
+      environment.serverUrl + 'session/' + code + '/backlog/import',
+      {
+        spotifyPlaylistId,
+      },
+    );
+  }
+
   pushBacklog(music: Music) {
     return this.http.post<FullBacklog[]>(this.backlogEndpoint(), music);
   }

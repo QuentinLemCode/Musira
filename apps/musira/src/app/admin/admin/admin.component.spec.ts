@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { UserService } from '../../user/user.service';
 import { AdminComponent } from './admin.component';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
+import { QueueService } from '../../services/queue.service';
 
 describe('AdminComponent', () => {
   let component: AdminComponent;
@@ -28,6 +29,10 @@ describe('AdminComponent', () => {
           useValue: {
             getAll: jest.fn().mockReturnValue(of([])),
           },
+        },
+        {
+          provide: QueueService,
+          useValue: {},
         },
       ],
     }).compileComponents();
