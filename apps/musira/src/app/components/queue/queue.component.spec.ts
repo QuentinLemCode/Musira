@@ -93,7 +93,7 @@ describe('QueueComponent', () => {
       expect(mockMusicApiService.getStatus).toHaveBeenCalled();
 
       expect(component.queues).toEqual([]);
-      expect(component.playing).toEqual(queueFixture);
+      expect(component.playing).toEqual(currentMusicFixture.currentPlay);
       expect(component.backlog).toEqual(backlogFixture);
       expect(component.isEngineStarted).toEqual(true);
       expect(component.loading).toBe(false);

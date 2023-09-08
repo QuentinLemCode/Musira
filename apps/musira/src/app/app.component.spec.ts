@@ -1,11 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { NavigationModule } from './navigation/navigation.module';
+import { DashboardService } from './services/dashboard.service';
 import { UserService } from './user/user.service';
-import { signal } from '@angular/core';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -25,7 +27,10 @@ describe('AppComponent', () => {
         NavigationModule,
         RouterTestingModule,
       ],
-      providers: [{ provide: UserService, useValue: mockUserService }],
+      providers: [
+        { provide: UserService, useValue: mockUserService },
+        { provide: DashboardService, useValue: { dashboard$: of(false) } },
+      ],
     }).compileComponents();
   });
 

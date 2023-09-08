@@ -64,7 +64,7 @@ export class SpotifyApiService implements OnModuleInit {
 
   private readonly logger = new Logger('SpotifyAPI');
 
-  private static readonly INTERVAL_RENEW_TOKEN_TIME = 1000 * 1000; // 1000 seconds
+  private static readonly INTERVAL_RENEW_TOKEN_TIME = 1000 * 1000; // 800 seconds
   private static readonly INTERVAL_RENEW_TOKEN_NAME = 'renew-token';
 
   private readonly formUrlContentTypeHeader = {

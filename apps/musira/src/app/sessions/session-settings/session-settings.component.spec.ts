@@ -10,6 +10,8 @@ import { MusicSessionsService } from '../music-sessions.service';
 import { SessionSettingsComponent } from './session-settings.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SpotifyDeviceStubComponent } from '../../../tests/components-stubs';
+import { MusicApiService } from '../../services/music-api.service';
+import type { CurrentMusic } from '../../services/music-api.interface';
 
 describe('SessionSettingsComponent', () => {
   let component: SessionSettingsComponent;
@@ -30,6 +32,11 @@ describe('SessionSettingsComponent', () => {
     deleteSession: jest.fn(),
   };
 
+  const musicApiMock = {
+    getStatus: jest.fn(),
+  };
+  const subGetMusic = mockObservable<CurrentMusic>(musicApiMock.getStatus);
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, FormsModule],
@@ -37,10 +44,12 @@ describe('SessionSettingsComponent', () => {
       providers: [
         { provide: SettingsService, useValue: settingsServiceMock },
         { provide: MusicSessionsService, useValue: musicSessionsServiceMock },
+        { provide: MusicApiService, useValue: musicApiMock },
         { provide: Router, useValue: routerMock },
       ],
     });
-
+    const settings = { maxVotes: 5, maxQueuableSongPerUser: 3 };
+    settingsServiceMock.get.mockReturnValue(of(settings));
     fixture = TestBed.createComponent(SessionSettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -55,13 +64,8 @@ describe('SessionSettingsComponent', () => {
   });
 
   it('should initialize settings on ngOnInit', () => {
-    const settings = { maxVotes: 5, maxQueuableSongPerUser: 3 };
-    settingsServiceMock.get.mockReturnValue(of(settings));
-
-    component.ngOnInit();
-
-    expect(component.maxVote).toBe(settings.maxVotes);
-    expect(component.maxQueuableSongs).toBe(settings.maxQueuableSongPerUser);
+    expect(component.maxVote).toBe(5);
+    expect(component.maxQueuableSongs).toBe(3);
   });
 
   it('should set max votes', () => {

@@ -50,6 +50,9 @@ export class MusicComponent implements OnInit {
   @Input()
   backlog = false;
 
+  @Input()
+  message = '';
+
   @Output()
   vote = new EventEmitter<IconUpdateStatus>();
 

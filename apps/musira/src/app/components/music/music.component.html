@@ -8,8 +8,9 @@
     <div *ngIf="username" class="adder">
       Ajouté par {{ username | titlecase }}
     </div>
-    <div *ngIf="backlog" class="adder">
-      Musique selectionné sur le formulaire
+    <div *ngIf="backlog" class="adder">Musique de la réserve</div>
+    <div *ngIf="message" class="adder">
+      {{ message }}
     </div>
   </div>
   <div class="vote" *ngIf="config?.votable">

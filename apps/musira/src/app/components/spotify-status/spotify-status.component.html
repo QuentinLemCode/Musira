@@ -16,17 +16,39 @@
     *ngIf="musicStatus.engineStarted"
     (click)="collapsed = !collapsed"
   >
-    ✅ Gestion de la playlist
-    <div *ngIf="collapsed" class="ml-4">
+    ✅ <span class="underline">Gestion de la playlist</span>
+    <div *ngIf="collapsed" class="ml-4 mt-2 mb-2 text-xl">
       <a (click)="stopEngine()">Arrêter la gestion de la playlist</a>
     </div>
   </li>
-  <li *ngIf="!musicStatus.engineStarted">
-    ❌ Gestion de la playlist arrếté
+  <li
+    class="cursor-pointer"
+    *ngIf="!musicStatus.engineStarted"
+    (click)="collapsed = !collapsed"
+  >
+    ❌ <span class="underline">Gestion de la playlist arrếté</span>
+    <div class="ml-4 mt-2 mb-2 text-xl">
+      <a *ngIf="!isQueueEmpty; else addSongMessage" (click)="startEngine()"
+        >Lancer la gestion de la playlist</a
+      >
+    </div>
+  </li>
+  <li *ngIf="backlog && backlog.length > 0">✅ Titres présent en réserve</li>
+  <li *ngIf="!backlog || backlog.length === 0">
+    ❌ Ancun titre en réserve
     <div class="ml-4">
-      <a (click)="startEngine()">Lancer la gestion de la playlist</a>
+      <a
+        [routerLink]="['/', currentSessionCode, 'session-settings']"
+        fragment="backlog"
+        class="ml-4 mt-2 mb-2 text-xl"
+        >Ajouter des titres à la réserve</a
+      >
     </div>
   </li>
 </ul>
+<p *ngIf="error">{{ error }}</p>
 
 <ng-template #loading> Chargement </ng-template>
+<ng-template #addSongMessage>
+  Ajouter des titres en files d'attente avant de lancer la gestion de playlist
+</ng-template>
