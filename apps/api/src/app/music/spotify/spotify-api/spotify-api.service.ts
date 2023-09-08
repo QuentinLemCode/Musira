@@ -275,6 +275,10 @@ export class SpotifyApiService implements OnModuleInit {
           {
             headers:
               await this.getAuthorizationHeaderForCurrentPlayer(musicSession),
+            params: {
+              market: 'FR',
+              limit: 400,
+            },
           },
         )
         .pipe(this.pipeResponse()),

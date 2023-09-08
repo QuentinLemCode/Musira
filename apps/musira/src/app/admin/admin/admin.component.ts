@@ -54,6 +54,9 @@ export class AdminComponent implements OnInit {
       return;
     }
     this.queue.importPlaylist(code, this.spotifyPlaylistId).subscribe({
+      next: (result) => {
+        this.error = JSON.stringify(result);
+      },
       error: (err) => {
         this.error = JSON.stringify(err);
       },

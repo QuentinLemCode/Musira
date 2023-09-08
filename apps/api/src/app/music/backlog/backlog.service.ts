@@ -88,27 +88,34 @@ export class BacklogService implements OnModuleInit {
       spotifyPlaylistId,
       musicSession,
     );
-    if (!playlist || playlist.status === 'error')
+    if (!playlist || playlist.status === 'error' || !playlist.data)
       throw new NotFoundException({
         cause: 'not-found',
         message: 'playlist not found',
       });
 
-    playlist.data?.tracks.items.map(async (item) => {
-      if (!item.track) return;
-      if (!item.track.artists[0]) return;
-      if (!item.track.album.images[0]) return;
-      const music: Music = {
-        album: item.track.album.name,
-        artist: item.track.artists[0].name,
-        cover: item.track.album.images[0].url,
-        duration: item.track.duration_ms,
-        uri: item.track.uri,
-        title: item.track.name,
-        queue: [],
-      };
-      this.push(musicSession, music);
-    });
+    let count = 0;
+
+    await Promise.all(
+      playlist.data.tracks.items.map((item) => {
+        if (!item.track) return Promise.resolve();
+        if (!item.track.artists[0]) return Promise.resolve();
+        if (!item.track.album.images[0]) return Promise.resolve();
+        if (!item.track.is_playable) return Promise.resolve();
+        const music: Music = {
+          album: item.track.album.name,
+          artist: item.track.artists[0].name,
+          cover: item.track.album.images[0].url,
+          duration: item.track.duration_ms,
+          uri: item.track.uri,
+          title: item.track.name,
+          queue: [],
+        };
+        count += 1;
+        return this.push(musicSession, music);
+      }),
+    );
+    return { added: count };
   }
 
   private findInBacklog(musicSession: MusicSession, uri: string) {
