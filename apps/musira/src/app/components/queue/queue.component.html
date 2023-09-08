@@ -4,10 +4,7 @@
 <ng-container *ngIf="queues !== null">
   <ng-container *ngIf="playing">
     <h3>En cours de lecture</h3>
-    <musira-music
-      [music]="playing.music"
-      [username]="playing.user.name"
-    ></musira-music>
+    <musira-music [music]="playing" [username]="playingUser"></musira-music>
     <hr />
   </ng-container>
   <h3>File d'attente</h3>

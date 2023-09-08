@@ -87,8 +87,8 @@ export class MusicController {
       throw new ServiceUnavailableException();
     }
     const playback = response.data;
-    if (!playback.registered) return;
-    if (playback.currentPlayback?.item?.type !== 'track') return;
+    if (!playback.registered) return null;
+    if (playback.currentPlayback?.item?.type !== 'track') return null;
     return this.mapTrackItemToMusic(playback.currentPlayback.item);
   }
 
@@ -103,7 +103,9 @@ export class MusicController {
       return { isSpotifyAccountRegistered, engineStarted, message };
     }
     const queue = await this.queue.get(musicSession);
-    const currentPlay = (await this.currentPlay(musicSession)) || null;
+    const currentPlay = engineStarted
+      ? await this.currentPlay(musicSession)
+      : null;
     return {
       isSpotifyAccountRegistered,
       queue,

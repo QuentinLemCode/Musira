@@ -104,7 +104,8 @@ export class QueueEngineService {
     const queue = await this.queues.vote(queueOrId, user);
     const voteCount = queue.forward_vote_users.length;
     if (voteCount >= (await musicSession.settings).maxVotes) {
-      return this.next(musicSession, queue);
+      await this.next(musicSession, queue);
+      await this.queues.updatePriority(queue.userId);
     }
   }
 

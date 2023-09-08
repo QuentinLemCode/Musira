@@ -15,6 +15,7 @@ import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
 import { UserModule } from './user/user.module';
 import { CommonModule } from '@angular/common';
 import { NavigationModule } from './navigation/navigation.module';
+import { DashboardService } from './services/dashboard.service';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { NavigationModule } from './navigation/navigation.module';
       useClass: JwtInterceptor,
       multi: true,
     },
+    DashboardService,
   ],
   bootstrap: [AppComponent],
 })

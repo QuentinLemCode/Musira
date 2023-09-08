@@ -69,3 +69,11 @@ export interface Backlog {
   music: Music;
   id: number;
 }
+
+export interface FullBacklog extends Backlog {
+  created_at: string;
+  deleted_at: string | null;
+  updated_at: string;
+  id: number;
+  play_count: number;
+}

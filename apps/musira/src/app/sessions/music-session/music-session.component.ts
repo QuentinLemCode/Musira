@@ -26,4 +26,8 @@ export class MusicSessionComponent {
   get isLoggedIn() {
     return this.user.loggedUser().isLoggedIn;
   }
+
+  get isCreator() {
+    return this.user.isSessionCreator(this.currentSession?.code || 0);
+  }
 }
