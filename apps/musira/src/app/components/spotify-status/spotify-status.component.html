@@ -28,7 +28,9 @@
   >
     ❌ <span class="underline">Gestion de la playlist arrếté</span>
     <div class="ml-4 mt-2 mb-2 text-xl">
-      <a (click)="startEngine()">Lancer la gestion de la playlist</a>
+      <a *ngIf="!isQueueEmpty; else addSongMessage" (click)="startEngine()"
+        >Lancer la gestion de la playlist</a
+      >
     </div>
   </li>
   <li *ngIf="backlog && backlog.length > 0">✅ Titres présent en réserve</li>
@@ -47,3 +49,6 @@
 <p *ngIf="error">{{ error }}</p>
 
 <ng-template #loading> Chargement </ng-template>
+<ng-template #addSongMessage>
+  Ajouter des titres en files d'attente avant de lancer la gestion de playlist
+</ng-template>

@@ -38,6 +38,8 @@ export class MusicSessionsService {
           const code = event.snapshot.paramMap.get('sessionId');
           if (!code) {
             this.currentSession.set(null);
+          } else {
+            this.joinSession(Number.parseInt(code, 10)).subscribe();
           }
         }
       },

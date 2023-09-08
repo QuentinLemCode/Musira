@@ -27,6 +27,15 @@ export class SpotifyStatusComponent {
         next: (status) => (this.musicStatus = status),
       });
 
+    this.queue
+      .get()
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (queue) => {
+          this.isQueueEmpty = queue.length === 0;
+        },
+      });
+
     // TODO : make it dynamic
     this.queue.getFullBacklog().subscribe({
       next: (backlog) => (this.backlog = backlog),
@@ -37,6 +46,7 @@ export class SpotifyStatusComponent {
     });
   }
 
+  isQueueEmpty = false;
   currentSessionCode: number | undefined;
   collapsed = false;
   musicStatus: CurrentMusic | undefined;

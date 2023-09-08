@@ -1,12 +1,11 @@
-import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
-import { takeUntil, tap } from 'rxjs/operators';
-import type { Backlog, Queue } from '../../services/music-api.interface';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { tap } from 'rxjs/operators';
+import type { Backlog, Music, Queue } from '../../services/music-api.interface';
 import { Status } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { UserService } from '../../user/user.service';
-import { UnsubscribableComponent } from '../../utils/unsubscribable-component';
 import type {
   IconUpdateStatus,
   MusicComponentConfiguration,
@@ -17,9 +16,10 @@ import type {
   templateUrl: './queue.component.html',
   styleUrls: ['./queue.component.scss'],
 })
-export class QueueComponent extends UnsubscribableComponent implements OnInit {
+export class QueueComponent {
   queues: Queue[] | null = null;
-  playing: Queue | null = null;
+  playing: Music | null = null;
+  playingUser = '';
   backlog: Backlog | null = null;
   loading = true;
   error = '';
@@ -49,14 +49,10 @@ export class QueueComponent extends UnsubscribableComponent implements OnInit {
     @Inject(UserService) private readonly user: UserService,
     @Inject(MusicApiService) private readonly music: MusicApiService,
   ) {
-    super();
-  }
-
-  ngOnInit(): void {
     this.queue
       .get()
       .pipe(
-        takeUntil(this.$destroy),
+        takeUntilDestroyed(),
         tap(() => (this.error = '')),
       )
       .subscribe({
@@ -74,7 +70,7 @@ export class QueueComponent extends UnsubscribableComponent implements OnInit {
     this.queue
       .getBacklog()
       .pipe(
-        takeUntil(this.$destroy),
+        takeUntilDestroyed(),
         tap(() => (this.error = '')),
       )
       .subscribe({
@@ -85,10 +81,11 @@ export class QueueComponent extends UnsubscribableComponent implements OnInit {
 
     this.music
       .getStatus()
-      .pipe(takeUntil(this.$destroy))
+      .pipe(takeUntilDestroyed())
       .subscribe({
         next: (status) => {
           this.isEngineStarted = status.engineStarted;
+          this.playing = status.currentPlay || null;
         },
       });
   }
@@ -128,8 +125,10 @@ export class QueueComponent extends UnsubscribableComponent implements OnInit {
     if (indexPlaying !== -1) {
       const [playing] = queues.splice(indexPlaying, 1);
       if (playing) {
-        this.playing = playing;
+        this.playingUser = playing.user.name;
       }
+    } else {
+      this.playingUser = '';
     }
     this.queues = queues;
   }

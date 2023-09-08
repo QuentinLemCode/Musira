@@ -68,7 +68,8 @@ export class BacklogService implements OnModuleInit {
   }
 
   async getNominatedBacklog(musicSession: MusicSession) {
-    if (!this.nextInBacklog.has(musicSession.id)) {
+    const next = this.nextInBacklog.get(musicSession.id);
+    if (!next) {
       const nominatedBacklog = await this.nominateFromBacklog(musicSession);
       this.nextInBacklog.set(musicSession.id, nominatedBacklog);
       return nominatedBacklog;
