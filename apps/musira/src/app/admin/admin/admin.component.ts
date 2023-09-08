@@ -17,6 +17,10 @@ export class AdminComponent implements OnInit {
   usersList: UserResponseDTO[] = [];
   sessionsList: MusicSessionDto[] = [];
 
+  sessionCode = '';
+  spotifyPlaylistId = '';
+  error = '';
+
   constructor(
     @Inject(UserService) private readonly users: UserService,
     @Inject(MusicSessionsService)
@@ -32,6 +36,23 @@ export class AdminComponent implements OnInit {
     this.sessions.getAll().subscribe({
       next: (sessions) => {
         this.sessionsList = sessions;
+      },
+    });
+  }
+
+  importPlaylist() {
+    const code = parseInt(this.sessionCode, 10);
+    if (
+      this.sessionCode.length !== 9 ||
+      Number.isNaN(code) ||
+      !this.spotifyPlaylistId
+    ) {
+      this.error = 'Invalid session code or playlist id';
+      return;
+    }
+    this.sessions.importPlaylist(code, this.spotifyPlaylistId).subscribe({
+      error: (err) => {
+        this.error = JSON.stringify(err);
       },
     });
   }

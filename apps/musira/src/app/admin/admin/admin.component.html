@@ -65,3 +65,15 @@
     </tr>
   </tbody>
 </table>
+
+<h1>Import playlist into session backlog</h1>
+<label>
+  Session code
+  <input [(ngModel)]="sessionCode" />
+</label>
+<label>
+  Spotify Playlist id
+  <input [(ngModel)]="spotifyPlaylistId" />
+</label>
+<button (click)="importPlaylist()">Import</button>
+<p *ngIf="error">{{ error }}</p>

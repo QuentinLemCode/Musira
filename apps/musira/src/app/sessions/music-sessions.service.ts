@@ -119,6 +119,12 @@ export class MusicSessionsService {
     this.storage.setLocalItem(CONSTANTS.SESSION_HISTORY_KEY, sessionHistory);
   }
 
+  public importPlaylist(code: number, spotifyPlaylistId: string) {
+    return this.http.post(this.endpoint + `/${code}/import`, {
+      spotifyPlaylistId,
+    });
+  }
+
   private tapCurrentSession = tap<MusicSessionDto>((musicSession) => {
     this.currentSession.set(musicSession);
     this.saveSessionInHistory(musicSession);
