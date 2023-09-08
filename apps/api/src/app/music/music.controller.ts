@@ -65,8 +65,9 @@ export class MusicController {
 
   private mapResults(results: SearchResponse): Music[] {
     return (
-      results?.tracks?.items?.map((track) => this.mapTrackItemToMusic(track)) ||
-      []
+      results?.tracks?.items
+        ?.filter((track) => track.is_playable)
+        .map((track) => this.mapTrackItemToMusic(track)) || []
     );
   }
 
