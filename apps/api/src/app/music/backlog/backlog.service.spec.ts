@@ -4,6 +4,7 @@ import { BacklogService } from './backlog.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Backlog } from './backlog.entity';
 import { MusicSessionService } from '../../music-session/music-session.service';
+import { SpotifyApiService } from '../spotify/spotify-api/spotify-api.service';
 
 describe('BacklogService', () => {
   let service: BacklogService;
@@ -19,6 +20,7 @@ describe('BacklogService', () => {
           },
         },
         { provide: MusicSessionService, useValue: {} },
+        { provide: SpotifyApiService, useValue: {} },
       ],
     }).compile();
 
