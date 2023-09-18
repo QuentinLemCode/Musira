@@ -18,7 +18,7 @@ jobs:
       - run: echo "NODE_ENV=production" >> $GITHUB_ENV
       - run: npm prune --omit=dev
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: arm,arm64
       - name: Set up Docker Buildx
