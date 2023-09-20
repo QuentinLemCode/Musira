@@ -40,11 +40,11 @@ jobs:
         run: ssh server 'docker login ghcr.io -u ${{ secrets.GHCR_USER }} -p ${{ secrets.GHCR_TOKEN }}'
 
       - name: Pull updated images
-        run: ssh server 'docker-compose pull'
+        run: ssh server 'docker compose pull'
 
       - name: Launch updated container
         if: ${{ always() }}
-        run: ssh server 'docker-compose up -d --no-deps'
+        run: ssh server 'docker compose up -d --no-deps'
 
       - name: Clean old images
         run: ssh server 'sleep 2m; docker image prune -f'
