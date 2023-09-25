@@ -70,7 +70,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@nestjs/schematics": "10.0.2",
-    "@nestjs/testing": "10.2.5",
+    "@nestjs/testing": "10.2.6",
     "@nx/angular": "16.8.1",
     "@nx/cypress": "16.8.1",
     "@nx/eslint-plugin": "16.8.1",
