@@ -40,7 +40,7 @@
     "axios": "^1.5.1",
     "cache-manager": "^5.2.4",
     "jose": "^4.15.4",
-    "mysql2": "^3.6.1",
+    "mysql2": "^3.6.2",
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
