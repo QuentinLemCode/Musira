@@ -37,7 +37,7 @@
     "@nestjs/schedule": "^4.0.0",
     "@nestjs/serve-static": "^4.0.0",
     "@nestjs/typeorm": "^10.0.0",
-    "axios": "^1.5.1",
+    "axios": "^1.6.0",
     "cache-manager": "^5.2.4",
     "jose": "^5.0.1",
     "mysql2": "^3.6.2",
