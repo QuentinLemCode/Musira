@@ -39,7 +39,7 @@
     "@nestjs/typeorm": "^10.0.0",
     "axios": "^1.6.0",
     "cache-manager": "^5.2.4",
-    "jose": "^5.0.1",
+    "jose": "^5.0.2",
     "mysql2": "^3.6.2",
     "typeorm": "^0.3.17"
   },
