@@ -28,7 +28,7 @@
     "@fastify/formbody": "^7.4.0",
     "@fastify/static": "^6.12.0",
     "@nestjs/axios": "^3.0.1",
-    "@nestjs/cache-manager": "^2.1.0",
+    "@nestjs/cache-manager": "^2.1.1",
     "@nestjs/common": "10.2.8",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "10.2.8",
