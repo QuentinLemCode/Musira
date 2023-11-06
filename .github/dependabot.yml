@@ -17,7 +17,7 @@ updates:
       - dependency-name: '@nx/cypress'
       - dependency-name: '@nx/eslint-plugin'
       - dependency-name: '@nx/nest'
-      - dependency-name: '@nx/linter'
+      - dependency-name: '@nx/eslint'
       - dependency-name: '@nx/angular'
       - dependency-name: '@nx/jest'
       - dependency-name: '@nx/node'

@@ -43,3 +43,5 @@ Thumbs.db
 *.env
 
 apps/musira-e2e/cypress/downloads
+
+.nx/cache
