@@ -22,9 +22,6 @@ describe('SpotifyStatusComponent', () => {
     getFullBacklog: jest.fn(),
   };
 
-  const subGet = mockObservable(mockQueueService.get);
-  const subGetFullBacklog = mockObservable(mockQueueService.getFullBacklog);
-
   const sessionMock = {
     currentSession: signal(null),
   };

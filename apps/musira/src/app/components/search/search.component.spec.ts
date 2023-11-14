@@ -1,16 +1,16 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
 import { faAdd, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Subject, throwError } from 'rxjs';
 import { currentMusicFixture, musicFixture } from '../../../tests/fixtures';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
+import { MusicSessionsService } from '../../sessions/music-sessions.service';
 import { UserService } from '../../user/user.service';
 import type { IconUpdateStatus } from '../music/music.component';
 import { SearchComponent } from './search.component';
-import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
-import { signal } from '@angular/core';
-import { MusicSessionsService } from '../../sessions/music-sessions.service';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;

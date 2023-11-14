@@ -1,17 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
+import { SpotifyDeviceStubComponent } from '../../../tests/components-stubs';
 import { mockObservable } from '../../../tests/mock';
+import { MusicApiService } from '../../services/music-api.service';
 import {
   SettingsService,
   type SettingsQuery,
 } from '../../services/settings.service';
 import { MusicSessionsService } from '../music-sessions.service';
 import { SessionSettingsComponent } from './session-settings.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SpotifyDeviceStubComponent } from '../../../tests/components-stubs';
-import { MusicApiService } from '../../services/music-api.service';
-import type { CurrentMusic } from '../../services/music-api.interface';
 
 describe('SessionSettingsComponent', () => {
   let component: SessionSettingsComponent;
@@ -35,7 +34,6 @@ describe('SessionSettingsComponent', () => {
   const musicApiMock = {
     getStatus: jest.fn(),
   };
-  const subGetMusic = mockObservable<CurrentMusic>(musicApiMock.getStatus);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
