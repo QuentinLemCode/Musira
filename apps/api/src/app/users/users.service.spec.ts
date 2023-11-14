@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { EmailUser } from './user.email.entity';
 import { User } from './user.entity';
 import { SocialLoginUser } from './user.social-login.entity';
@@ -20,9 +19,9 @@ const mockRepository = {
 
 describe('UsersService', () => {
   let service: UsersService;
-  let usersRepository: Repository<User>;
-  let emailUsersRepository: Repository<EmailUser>;
-  let socialUsersRepository: Repository<SocialLoginUser>;
+  // let usersRepository: Repository<User>;
+  // let emailUsersRepository: Repository<EmailUser>;
+  // let socialUsersRepository: Repository<SocialLoginUser>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -44,13 +43,13 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
-    emailUsersRepository = module.get<Repository<EmailUser>>(
-      getRepositoryToken(EmailUser),
-    );
-    socialUsersRepository = module.get<Repository<SocialLoginUser>>(
-      getRepositoryToken(SocialLoginUser),
-    );
+    // usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    // emailUsersRepository = module.get<Repository<EmailUser>>(
+    //   getRepositoryToken(EmailUser),
+    // );
+    // socialUsersRepository = module.get<Repository<SocialLoginUser>>(
+    //   getRepositoryToken(SocialLoginUser),
+    // );
   });
 
   it('should be defined', () => {
