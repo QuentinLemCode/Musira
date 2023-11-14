@@ -33,6 +33,7 @@
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "10.2.8",
     "@nestjs/mapped-types": "^2.0.3",
+    "@nestjs/passport": "^10.0.2",
     "@nestjs/platform-fastify": "^10.2.8",
     "@nestjs/schedule": "^4.0.0",
     "@nestjs/serve-static": "^4.0.0",
@@ -41,6 +42,8 @@
     "cache-manager": "^5.2.4",
     "jose": "^5.1.0",
     "mysql2": "^3.6.3",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
@@ -81,6 +84,7 @@
     "@schematics/angular": "17.0.0",
     "@types/jest": "29.5.8",
     "@types/node": "^20.9.0",
+    "@types/passport-local": "^1.0.38",
     "@types/qrcode": "^1.5.5",
     "@typescript-eslint/eslint-plugin": "6.11.0",
     "@typescript-eslint/parser": "6.11.0",
