@@ -1,9 +1,3 @@
-import {
-  FacebookLoginProvider,
-  GoogleLoginProvider,
-  GoogleSigninButtonModule,
-  SocialLoginModule,
-} from '@abacritt/angularx-social-login';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -30,31 +24,9 @@ describe('LoginComponent', () => {
         RouterTestingModule,
         ReactiveFormsModule,
         FontAwesomeTestingModule,
-        SocialLoginModule,
-        GoogleSigninButtonModule,
       ],
       declarations: [LoginComponent],
-      providers: [
-        { provide: UserService, useValue: userServiceMock },
-        {
-          provide: 'SocialAuthServiceConfig',
-          useValue: {
-            providers: [
-              {
-                id: GoogleLoginProvider.PROVIDER_ID,
-                provider: new GoogleLoginProvider(''),
-              },
-              {
-                id: FacebookLoginProvider.PROVIDER_ID,
-                provider: new FacebookLoginProvider(''),
-              },
-            ],
-            onError: (err: unknown) => {
-              console.error(err);
-            },
-          },
-        },
-      ],
+      providers: [{ provide: UserService, useValue: userServiceMock }],
     });
 
     fixture = TestBed.createComponent(LoginComponent);

@@ -1,9 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
 import { of } from 'rxjs';
-import { SpotifyDeviceStubComponent } from '../../../tests/components-stubs';
+import {
+  HomeStubComponent,
+  SpotifyDeviceStubComponent,
+  SpotifyStatusStubComponent,
+} from '../../../tests/components-stubs';
 import { mockObservable } from '../../../tests/mock';
+import type { CurrentMusic } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import {
   SettingsService,
@@ -11,18 +17,16 @@ import {
 } from '../../services/settings.service';
 import { MusicSessionsService } from '../music-sessions.service';
 import { SessionSettingsComponent } from './session-settings.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('SessionSettingsComponent', () => {
   let component: SessionSettingsComponent;
   let fixture: ComponentFixture<SessionSettingsComponent>;
+
   const settingsServiceMock = {
     get: jest.fn(),
     setMaxVote: jest.fn(),
     setMaxQueuableSongPerUser: jest.fn(),
-  };
-
-  const routerMock = {
-    navigate: jest.fn(),
   };
 
   const subGet = mockObservable<SettingsQuery>(settingsServiceMock.get);
@@ -34,16 +38,29 @@ describe('SessionSettingsComponent', () => {
   const musicApiMock = {
     getStatus: jest.fn(),
   };
+  const subStatus = mockObservable<CurrentMusic>(musicApiMock.getStatus);
+
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, FormsModule],
-      declarations: [SessionSettingsComponent, SpotifyDeviceStubComponent],
+      imports: [
+        ReactiveFormsModule,
+        FormsModule,
+        FontAwesomeTestingModule,
+        RouterTestingModule.withRoutes([
+          { path: '', component: HomeStubComponent },
+        ]),
+      ],
+      declarations: [
+        SessionSettingsComponent,
+        SpotifyDeviceStubComponent,
+        SpotifyStatusStubComponent,
+      ],
       providers: [
         { provide: SettingsService, useValue: settingsServiceMock },
         { provide: MusicSessionsService, useValue: musicSessionsServiceMock },
         { provide: MusicApiService, useValue: musicApiMock },
-        { provide: Router, useValue: routerMock },
       ],
     });
     const settings = { maxVotes: 5, maxQueuableSongPerUser: 3 };
@@ -55,6 +72,11 @@ describe('SessionSettingsComponent', () => {
       maxQueuableSongPerUser: 3,
       maxVotes: 3,
     });
+    subStatus.next({
+      isSpotifyAccountRegistered: false,
+      engineStarted: false,
+    });
+    router = TestBed.inject(Router);
   });
 
   it('should create', () => {
@@ -96,10 +118,13 @@ describe('SessionSettingsComponent', () => {
 
   it('should delete session and navigate to home', () => {
     musicSessionsServiceMock.deleteSession.mockReturnValue(of(null));
+    jest
+      .spyOn(router, 'navigate')
+      .mockImplementation(() => Promise.resolve(true));
 
     component.deleteSession();
 
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/']);
+    expect(router.navigate).toHaveBeenCalledWith(['/']);
 
     expect(musicSessionsServiceMock.deleteSession).toHaveBeenCalled();
   });

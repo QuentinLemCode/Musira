@@ -4,6 +4,7 @@ import { UserService } from '../../user/user.service';
 import { AdminComponent } from './admin.component';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
 import { QueueService } from '../../services/queue.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 describe('AdminComponent', () => {
   let component: AdminComponent;
@@ -22,6 +23,7 @@ describe('AdminComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AdminComponent],
+      imports: [FormsModule, ReactiveFormsModule],
       providers: [
         { provide: UserService, useValue: mockUserService },
         {

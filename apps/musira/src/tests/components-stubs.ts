@@ -20,3 +20,6 @@ export class SpotifyStatusStubComponent {}
 
 @Component({ selector: 'musira-spotify-device', template: '' })
 export class SpotifyDeviceStubComponent {}
+
+@Component({ selector: 'musira-home', template: '' })
+export class HomeStubComponent {}

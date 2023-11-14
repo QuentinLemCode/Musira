@@ -22,6 +22,9 @@ describe('SpotifyStatusComponent', () => {
     getFullBacklog: jest.fn(),
   };
 
+  const subQueue = mockObservable(mockQueueService.get);
+  const subFullbacklog = mockObservable(mockQueueService.getFullBacklog);
+
   const sessionMock = {
     currentSession: signal(null),
   };
@@ -46,6 +49,8 @@ describe('SpotifyStatusComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     subStatus.next(currentMusicFixture);
+    subQueue.next([]);
+    subFullbacklog.next([]);
   });
 
   it('should create the component', () => {
