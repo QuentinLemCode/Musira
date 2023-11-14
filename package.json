@@ -44,9 +44,8 @@
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
-    "@abacritt/angularx-social-login": "^2.1.0",
     "@angular-devkit/architect": "0.1700.0",
-    "@angular-devkit/build-angular": "17.0.0",
+    "@angular-devkit/build-angular": "^17.0.0",
     "@angular-devkit/core": "17.0.0",
     "@angular-devkit/schematics": "17.0.0",
     "@angular-eslint/eslint-plugin": "17.0.1",
@@ -63,7 +62,7 @@
     "@angular/platform-browser": "17.0.2",
     "@angular/platform-browser-dynamic": "17.0.2",
     "@angular/router": "17.0.2",
-    "@fortawesome/angular-fontawesome": "^0.13.0",
+    "@fortawesome/angular-fontawesome": "^0.14.0",
     "@fortawesome/fontawesome-common-types": "^6.4.2",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-brands-svg-icons": "^6.4.2",
@@ -73,6 +72,7 @@
     "@nestjs/testing": "10.2.8",
     "@nx/angular": "17.1.2",
     "@nx/cypress": "17.1.2",
+    "@nx/eslint": "17.1.2",
     "@nx/eslint-plugin": "17.1.2",
     "@nx/jest": "17.1.2",
     "@nx/nest": "17.1.2",
@@ -108,8 +108,7 @@
     "ts-node": "10.9.1",
     "tslib": "^2.6.2",
     "typescript": "5.2.2",
-    "zone.js": "0.14.2",
-    "@nx/eslint": "17.1.2"
+    "zone.js": "^0.14.2"
   },
   "engines": {
     "node": "v21.1.0"

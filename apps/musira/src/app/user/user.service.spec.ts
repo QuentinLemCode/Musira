@@ -1,31 +1,18 @@
-import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
 import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Subject } from 'rxjs';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
   let userService: UserService;
   let httpMock: HttpTestingController;
-  const subAuth = new Subject<SocialUser>();
-  const subAuthState = new Subject<boolean>();
-  const authServiceMock: Partial<SocialAuthService> = {
-    signOut: jest.fn(),
-    initState: subAuthState.asObservable(),
-    authState: subAuth.asObservable(),
-    refreshAuthToken: jest.fn(),
-  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [
-        UserService,
-        { provide: SocialAuthService, useValue: authServiceMock },
-      ],
+      providers: [UserService],
     });
     localStorage.setItem(
       'expires_at',

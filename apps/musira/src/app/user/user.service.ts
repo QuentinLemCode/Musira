@@ -1,4 +1,3 @@
-import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, signal } from '@angular/core';
 import type {
@@ -6,7 +5,7 @@ import type {
   UserResponseDTO,
 } from '@musira/api-interfaces/index';
 import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
-import { catchError, defer, interval, lastValueFrom, map, of, tap } from 'rxjs';
+import { catchError, interval, lastValueFrom, map, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 enum LocalStorageKeys {
@@ -52,19 +51,7 @@ export class UserService {
   public loggedUser = signal<UserState>(this.userState);
 
   private readonly usersEndpoint = environment.serverUrl + 'users';
-  constructor(
-    @Inject(HttpClient) private readonly http: HttpClient,
-    @Inject(SocialAuthService) private readonly authService: SocialAuthService,
-  ) {
-    this.authService.authState.subscribe({
-      next: (user) => {
-        if (user === null) return;
-        this.socialLogin(
-          new SocialLoginUserDTO(user),
-          user.idToken,
-        ).subscribe();
-      },
-    });
+  constructor(@Inject(HttpClient) private readonly http: HttpClient) {
     if (this.isTokenExpired) {
       this.refreshEmailToken().subscribe();
     }
@@ -113,11 +100,6 @@ export class UserService {
   }
 
   async logout() {
-    try {
-      if (this.isSocialLogin) await this.authService.signOut(true);
-    } catch (error) {
-      console.error(error);
-    }
     if (this.isEmailLogin) await this.emailLogout();
     this.clearLocalStorage();
     this.loggedUser.set({
@@ -211,25 +193,6 @@ export class UserService {
           return of(false);
         }),
       );
-  }
-
-  private refreshSocialToken() {
-    const provider = this.provider;
-    if (provider === null) {
-      throw new Error('No provider found');
-    }
-    return defer(async () => {
-      try {
-        await this.authService.refreshAuthToken(provider);
-      } catch (error) {
-        this.clearLocalStorage();
-        this.loggedUser.set({
-          isLoggedIn: false,
-        });
-        return false;
-      }
-      return true;
-    });
   }
 
   private get userState(): UserState {
