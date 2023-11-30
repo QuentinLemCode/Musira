@@ -80,7 +80,7 @@
     "@nx/workspace": "17.1.2",
     "@schematics/angular": "17.0.3",
     "@types/jest": "29.5.10",
-    "@types/node": "^20.10.0",
+    "@types/node": "^20.10.1",
     "@types/qrcode": "^1.5.5",
     "@typescript-eslint/eslint-plugin": "6.13.1",
     "@typescript-eslint/parser": "6.13.1",
