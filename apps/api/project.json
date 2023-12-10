@@ -5,7 +5,7 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/webpack:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api",
@@ -14,7 +14,8 @@
         "assets": ["apps/api/src/assets"],
         "target": "node",
         "compiler": "tsc",
-        "sourceMap": true
+        "sourceMap": true,
+        "webpackConfig": "apps/api/webpack.config.js"
       },
       "configurations": {
         "production": {

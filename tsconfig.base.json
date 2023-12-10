@@ -4,11 +4,10 @@
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
+    "target": "ESNext",
     "module": "esnext",
     "lib": ["es2017", "dom"],
     "skipLibCheck": true,
@@ -33,7 +32,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "strictPropertyInitialization": false,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": false
   },
   "exclude": ["node_modules", "tmp"]
 }

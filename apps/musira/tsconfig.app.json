@@ -4,6 +4,7 @@
     "outDir": "../../dist/out-tsc",
     "types": [],
     "target": "ES2022",
+    "moduleResolution": "Bundler",
     "useDefineForClassFields": false
   },
   "files": ["src/main.ts", "src/polyfills.ts"],
