@@ -1,10 +1,10 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { UnlockController } from './unlock.controller';
-import { UsersService } from '../../users.service';
+import { UsersService } from '../../../users/users.service';
 import { mockJwtGuard } from '../../../../test-utils/mock';
-import { RolesGuard } from '../../roles.guard';
-import { JwtGuard } from '../../jwt/jwt.guard';
+import { RolesGuard } from '../../../users/roles.guard';
+import { JwtGuard } from '../../../users/jwt/jwt.guard';
 
 describe('UnlockController', () => {
   let controller: UnlockController;

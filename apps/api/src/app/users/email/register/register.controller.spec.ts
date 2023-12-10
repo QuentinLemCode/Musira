@@ -2,8 +2,8 @@ import { EmailUserResponseDTO } from '@musira/api-interfaces/index';
 import { EmailRegisterInterface } from '@musira/api-interfaces/user/email.dto';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { JwtService } from '../../jwt/jwt.service';
-import { UsersService } from '../../users.service';
+import { JwtService } from '../../../users/jwt/jwt.service';
+import { UsersService } from '../../../users/users.service';
 import { RegisterController } from './register.controller';
 
 describe('RegisterController', () => {

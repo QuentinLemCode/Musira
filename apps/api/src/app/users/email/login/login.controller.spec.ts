@@ -1,8 +1,8 @@
 import { EmailUserResponseDTO } from '@musira/api-interfaces/index';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { JwtService } from '../../jwt/jwt.service';
-import { UsersService } from '../../users.service';
+import { JwtService } from '../../../users/jwt/jwt.service';
+import { UsersService } from '../../../users/users.service';
 import { LoginController } from './login.controller';
 
 // Mocking Services

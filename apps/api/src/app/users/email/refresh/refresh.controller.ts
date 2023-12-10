@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
-import { JwtService } from '../../jwt/jwt.service';
+import { JwtService } from '../../../users/jwt/jwt.service';
 import { EmailRefreshResponseDTO } from '@musira/api-interfaces/index';
 
 @Controller('users/email/refresh')

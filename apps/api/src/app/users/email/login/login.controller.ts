@@ -1,10 +1,10 @@
 import { Body, Controller, NotFoundException, Post } from '@nestjs/common';
-import { UsersService } from '../../users.service';
+import { UsersService } from '../../../users/users.service';
 import {
   type EmailLoginInterface,
   EmailUserResponseDTO,
 } from '@musira/api-interfaces/index';
-import { JwtService } from '../../jwt/jwt.service';
+import { JwtService } from '../../../users/jwt/jwt.service';
 
 @Controller('users/email/login')
 export class LoginController {
