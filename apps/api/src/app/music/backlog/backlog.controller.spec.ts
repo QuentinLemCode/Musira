@@ -1,14 +1,14 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
-import { SessionCreatorGuard } from '../../users/session-creator.guard';
-import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
-import { Music } from '../music.entity';
-import { BacklogController } from './backlog.controller';
-import { BacklogService } from './backlog.service';
-import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
-import { mockMusicSessionPipe } from '../../../test-utils/mock';
+import { MusicSession } from '../../music-session/entities/music-session.entity.js';
+import { JwtGuard } from '../../users/jwt/jwt.guard.js';
+import { SessionCreatorGuard } from '../../users/session-creator.guard.js';
+import { MusicSessionParam } from '../../utils/decorators/music-session.decorator.js';
+import { Music } from '../music.entity.js';
+import { BacklogController } from './backlog.controller.js';
+import { BacklogService } from './backlog.service.js';
+import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe.js';
+import { mockMusicSessionPipe } from '../../../test-utils/mock.js';
 
 // Mocking Services and Guards
 const mockBacklogService = {

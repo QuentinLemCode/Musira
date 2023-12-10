@@ -3,8 +3,8 @@ import { Inject, Injectable, signal } from '@angular/core';
 import type {
   EmailRefreshResponseDTO,
   UserResponseDTO,
-} from '@musira/api-interfaces/index';
-import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
+} from '#api-interfaces/user/user.dto';
+import { SocialLoginUserDTO } from '#api-interfaces/user/social.dto';
 import { catchError, interval, lastValueFrom, map, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 

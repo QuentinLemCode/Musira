@@ -1,7 +1,9 @@
-import type { MusicSessionDto } from '@musira/api-interfaces/index';
-import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
-import type { DeletedMusicSessionDto } from '@musira/api-interfaces/sessions/deleted-music-session.dto';
-import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
+import type {
+  CreateMusicSessionDto,
+  DeletedMusicSessionDto,
+  MusicSessionDto,
+  UpdateMusicSessionDto,
+} from '#api-interfaces/index.js';
 import {
   BadRequestException,
   Body,
@@ -15,19 +17,19 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { type JWTPayload } from 'jose';
-import { JwtGuard } from '../users/jwt/jwt.guard';
-import { Roles } from '../users/roles.decorator';
-import { RolesGuard } from '../users/roles.guard';
-import { SessionCreatorGuard } from '../users/session-creator.guard';
-import { UserRole } from '../users/user.entity';
-import { UsersService } from '../users/users.service';
-import { Jwt } from '../utils/decorators/jwt.decorator';
+import { JwtGuard } from '../users/jwt/jwt.guard.js';
+import { Roles } from '../users/roles.decorator.js';
+import { RolesGuard } from '../users/roles.guard.js';
+import { SessionCreatorGuard } from '../users/session-creator.guard.js';
+import { UserRole } from '../users/user.entity.js';
+import { UsersService } from '../users/users.service.js';
+import { Jwt } from '../utils/decorators/jwt.decorator.js';
 import {
   MusicSessionParam,
   PublicCode,
-} from '../utils/decorators/music-session.decorator';
-import { MusicSession } from './entities/music-session.entity';
-import { MusicSessionService } from './music-session.service';
+} from '../utils/decorators/music-session.decorator.js';
+import { MusicSession } from './entities/music-session.entity.js';
+import { MusicSessionService } from './music-session.service.js';
 
 @Controller('music-session')
 export class MusicSessionController {

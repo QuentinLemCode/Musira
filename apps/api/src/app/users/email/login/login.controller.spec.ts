@@ -1,9 +1,9 @@
-import { EmailUserResponseDTO } from '@musira/api-interfaces/index';
+import { EmailUserResponseDTO } from '#api-interfaces/index.js';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { JwtService } from '../../jwt/jwt.service';
-import { UsersService } from '../../users.service';
-import { LoginController } from './login.controller';
+import { JwtService } from '../../jwt/jwt.service.js';
+import { UsersService } from '../../users.service.js';
+import { LoginController } from './login.controller.js';
 
 // Mocking Services
 const mockUsersService = {

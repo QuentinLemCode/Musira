@@ -9,17 +9,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { MusicSessionService } from '../../music-session/music-session.service';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
-import { SessionCreatorGuard } from '../../users/session-creator.guard';
-import type { User } from '../../users/user.entity';
-import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
-import { UserFromRequest } from '../../utils/decorators/user-from-request.decorator';
-import { isResponseError } from '../../utils/type-guards';
-import { type SpotifyOAuthDTO } from '../music.interface';
-import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
-import { SpotifyApiService } from './spotify-api/spotify-api.service';
+import { MusicSession } from '../../music-session/entities/music-session.entity.js';
+import { MusicSessionService } from '../../music-session/music-session.service.js';
+import { JwtGuard } from '../../users/jwt/jwt.guard.js';
+import { SessionCreatorGuard } from '../../users/session-creator.guard.js';
+import type { User } from '../../users/user.entity.js';
+import { MusicSessionParam } from '../../utils/decorators/music-session.decorator.js';
+import { UserFromRequest } from '../../utils/decorators/user-from-request.decorator.js';
+import { isResponseError } from '../../utils/type-guards.js';
+import { type SpotifyOAuthDTO } from '../music.interface.js';
+import { QueueEngineService } from '../queue/queue-engine/queue-engine.service.js';
+import { SpotifyApiService } from './spotify-api/spotify-api.service.js';
 
 @Controller('spotify')
 export class SpotifyLoginController {

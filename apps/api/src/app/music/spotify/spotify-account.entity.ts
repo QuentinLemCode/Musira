@@ -5,7 +5,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
+import { MusicSession } from '../../music-session/entities/music-session.entity.js';
 
 @Entity()
 export class SpotifyAccount {

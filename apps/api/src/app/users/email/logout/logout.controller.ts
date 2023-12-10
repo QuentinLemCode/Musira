@@ -1,5 +1,5 @@
 import { BadRequestException, Controller, Param, Post } from '@nestjs/common';
-import { UsersService } from '../../users.service';
+import { UsersService } from '../../users.service.js';
 
 @Controller('users/email/logout')
 export class LogoutController {

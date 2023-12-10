@@ -4,22 +4,22 @@ import {
   mockJwtGuard,
   mockMusicSessionPipe,
   mockSessionCreatorGuard,
-} from '../../test-utils/mock';
-import { MusicSession } from '../music-session/entities/music-session.entity';
-import { JwtGuard } from '../users/jwt/jwt.guard';
-import { SessionCreatorGuard } from '../users/session-creator.guard';
-import { MusicSessionPipe } from '../utils/pipes/music-session.pipe';
-import { MusicController } from './music.controller';
-import { CurrentMusic, Music } from './music.interface';
-import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
-import { QueueService } from './queue/queue.service';
-import { SpotifyApiService } from './spotify/spotify-api/spotify-api.service';
-import { SpotifySearchService } from './spotify/spotify-search/spotify-search.service';
+} from '../../test-utils/mock.js';
+import { MusicSession } from '../music-session/entities/music-session.entity.js';
+import { JwtGuard } from '../users/jwt/jwt.guard.js';
+import { SessionCreatorGuard } from '../users/session-creator.guard.js';
+import { MusicSessionPipe } from '../utils/pipes/music-session.pipe.js';
+import { MusicController } from './music.controller.js';
+import { CurrentMusic, Music } from './music.interface.js';
+import { QueueEngineService } from './queue/queue-engine/queue-engine.service.js';
+import { QueueService } from './queue/queue.service.js';
+import { SpotifyApiService } from './spotify/spotify-api/spotify-api.service.js';
+import { SpotifySearchService } from './spotify/spotify-search/spotify-search.service.js';
 import {
   AlbumObjectSimplified,
   ArtistObjectSimplified,
   SearchResponse,
-} from './spotify/types/spotify-interfaces';
+} from './spotify/types/spotify-interfaces.js';
 
 describe('MusicController', () => {
   let musicController: MusicController;

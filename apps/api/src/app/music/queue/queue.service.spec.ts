@@ -2,18 +2,18 @@ import { ScheduleModule } from '@nestjs/schedule';
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MusicSessionService } from '../../music-session/music-session.service';
-import type { Music } from '../music.entity';
+import { MusicSessionService } from '../../music-session/music-session.service.js';
+import type { Music } from '../music.entity.js';
 import type {
   APIResult,
   SpotifyApiService,
-} from '../spotify/spotify-api/spotify-api.service';
+} from '../spotify/spotify-api/spotify-api.service.js';
 import type {
   CurrentPlaybackResponse,
   TrackObjectFull,
-} from '../spotify/types/spotify-interfaces';
-import { Queue, Status } from './queue.entity';
-import { QueueService } from './queue.service';
+} from '../spotify/types/spotify-interfaces.js';
+import { Queue, Status } from './queue.entity.js';
+import { QueueService } from './queue.service.js';
 
 describe('QueueService', () => {
   let service: QueueService;

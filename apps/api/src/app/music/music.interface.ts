@@ -1,8 +1,8 @@
-import type { Queue } from './queue/queue.entity';
+import type { Queue } from './queue/queue.entity.js';
 import type {
   SpotifyTrackCategory,
   SpotifyURI,
-} from './spotify/types/spotify-interfaces';
+} from './spotify/types/spotify-interfaces.js';
 
 export interface SpotifyOAuthDTO {
   code: string;

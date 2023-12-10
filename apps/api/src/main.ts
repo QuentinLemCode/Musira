@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { env } from 'process';
-import { AppModule } from './app/app.module';
+import { AppModule } from './app/app.module.js';
 
 const getLogger = (): LogLevel[] | LoggerService => {
   if (process.env.NODE_ENV === 'production') {

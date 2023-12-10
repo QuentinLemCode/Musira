@@ -4,8 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { env } from 'process';
-import { UsersModule } from '../users/users.module';
-import { HealthController } from './health/health.controller';
+import { UsersModule } from '../users/users.module.js';
+import { HealthController } from './health/health.controller.js';
 
 @Global()
 @Module({

@@ -13,11 +13,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Backlog } from '../../music/backlog/backlog.entity';
-import { Queue } from '../../music/queue/queue.entity';
-import { SpotifyAccount } from '../../music/spotify/spotify-account.entity';
-import { User } from '../../users/user.entity';
-import { Settings } from '../settings/settings.entity';
+import { Backlog } from '../../music/backlog/backlog.entity.js';
+import { Queue } from '../../music/queue/queue.entity.js';
+import { SpotifyAccount } from '../../music/spotify/spotify-account.entity.js';
+import { User } from '../../users/user.entity.js';
+import { Settings } from '../settings/settings.entity.js';
 
 @Entity()
 export class MusicSession {

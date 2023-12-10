@@ -5,11 +5,11 @@ import {
   type ForwardReference,
   Logger,
 } from '@nestjs/common';
-import { CoreModule } from './core/core.module';
-import { MusicModule } from './music/music.module';
-import { MusicSessionModule } from './music-session/music-session.module';
-import { UsersModule } from './users/users.module';
-import { environment } from '../environments/environment';
+import { CoreModule } from './core/core.module.js';
+import { MusicModule } from './music/music.module.js';
+import { MusicSessionModule } from './music-session/music-session.module.js';
+import { UsersModule } from './users/users.module.js';
+import { environment } from '../environments/environment.js';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 

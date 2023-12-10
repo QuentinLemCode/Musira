@@ -1,11 +1,11 @@
 import {
   SocialLoginUserDTO,
   SocialUserResponseDTO,
-} from '@musira/api-interfaces/index';
+} from '#api-interfaces/index.js';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from '../../users.service';
-import { LoginController } from './login.controller';
+import { UsersService } from '../../users.service.js';
+import { LoginController } from './login.controller.js';
 
 // Mocking Services
 const mockUsersService = {

@@ -1,8 +1,8 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { jwtVerify } from 'jose';
-import { UsersService } from '../users.service';
-import { JwtService } from './jwt.service';
+import { UsersService } from '../users.service.js';
+import { JwtService } from './jwt.service.js';
 
 // Mocking the UsersService
 const mockUsersService = {

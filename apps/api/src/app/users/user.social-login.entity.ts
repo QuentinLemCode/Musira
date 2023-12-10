@@ -1,6 +1,6 @@
 import { ChildEntity, Column } from 'typeorm';
-import { User } from './user.entity';
-import type { SocialLoginUserInterface } from '@musira/api-interfaces/index';
+import { User } from './user.entity.js';
+import type { SocialLoginUserInterface } from '#api-interfaces/index.js';
 
 @ChildEntity()
 export class SocialLoginUser extends User implements SocialLoginUserInterface {

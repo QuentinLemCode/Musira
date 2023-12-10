@@ -3,7 +3,7 @@ import { Component, Inject } from '@angular/core';
 import type {
   MusicSessionDto,
   UserResponseDTO,
-} from '@musira/api-interfaces/index';
+} from '#api-interfaces/index';
 import { mergeMap } from 'rxjs/operators';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';

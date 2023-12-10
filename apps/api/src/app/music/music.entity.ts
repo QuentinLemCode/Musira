@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import type { Music as MusicInterface } from './music.interface';
-import { Queue } from './queue/queue.entity';
+import type { Music as MusicInterface } from './music.interface.js';
+import { Queue } from './queue/queue.entity.js';
 
 @Entity()
 export class Music implements MusicInterface {

@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { UsersService } from '../../users/users.service';
-import { BacklogService } from '../backlog/backlog.service';
-import { QueueEngineService } from './queue-engine/queue-engine.service';
-import { QueueController } from './queue.controller';
-import { QueueService } from './queue.service';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
-import { mockJwtGuard, mockMusicSessionPipe } from '../../../test-utils/mock';
-import { Queue } from './queue.entity';
-import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
+import { MusicSession } from '../../music-session/entities/music-session.entity.js';
+import { UsersService } from '../../users/users.service.js';
+import { BacklogService } from '../backlog/backlog.service.js';
+import { QueueEngineService } from './queue-engine/queue-engine.service.js';
+import { QueueController } from './queue.controller.js';
+import { QueueService } from './queue.service.js';
+import { JwtGuard } from '../../users/jwt/jwt.guard.js';
+import { mockJwtGuard, mockMusicSessionPipe } from '../../../test-utils/mock.js';
+import { Queue } from './queue.entity.js';
+import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe.js';
 
 // Mocking Services
 const mockQueueService = {

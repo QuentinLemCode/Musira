@@ -1,8 +1,8 @@
 import type { CanActivate, ExecutionContext } from '@nestjs/common';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { JWTPayload } from 'jose';
-import { publicCodeFromRequest } from '../utils/decorators/music-session.decorator';
-import { UsersService } from './users.service';
+import { publicCodeFromRequest } from '../utils/decorators/music-session.decorator.js';
+import { UsersService } from './users.service.js';
 
 @Injectable()
 export class SessionCreatorGuard implements CanActivate {

@@ -1,12 +1,14 @@
-import type { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
-import type { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../users/user.entity';
-import { MusicSession } from './entities/music-session.entity';
-import { PublicCodeGeneratorService } from './public-code-generator/public-code-generator.service';
-import { Settings } from './settings/settings.entity';
+import { User } from '../users/user.entity.js';
+import { MusicSession } from './entities/music-session.entity.js';
+import { PublicCodeGeneratorService } from './public-code-generator/public-code-generator.service.js';
+import { Settings } from './settings/settings.entity.js';
+import type {
+  CreateMusicSessionDto,
+  UpdateMusicSessionDto,
+} from '#api-interfaces/index.js';
 
 @Injectable()
 export class MusicSessionService {

@@ -8,22 +8,22 @@ import {
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import type { AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { Cache } from 'cache-manager';
+import type axios from 'node_modules/axios/index.cjs';
 import { env } from 'process';
 import { catchError, firstValueFrom, map, of, pipe, retry, tap } from 'rxjs';
 import { Repository } from 'typeorm';
-import { querystring } from '../../../utils/querystring';
-import { SpotifyAccount } from '../spotify-account.entity';
-import type { SpotifyRefreshToken, SpotifyToken } from '../token';
-import type { Cache } from 'cache-manager';
+import type { MusicSession } from '../../../music-session/entities/music-session.entity.js';
+import { MusicSessionService } from '../../../music-session/music-session.service.js';
+import { querystring } from '../../../utils/querystring.js';
+import { SpotifyAccount } from '../spotify-account.entity.js';
+import type { SpotifyRefreshToken, SpotifyToken } from '../token.js';
 import type {
   CurrentPlaybackResponse,
   SinglePlaylistResponse,
   SpotifyTrackCategory,
   SpotifyURI,
-} from '../types/spotify-interfaces';
-import type { MusicSession } from '../../../music-session/entities/music-session.entity';
-import { MusicSessionService } from '../../../music-session/music-session.service';
+} from '../types/spotify-interfaces.js';
 
 export type PlaybackState =
   | {
@@ -158,7 +158,7 @@ export class SpotifyApiService implements OnModuleInit {
       }
     }
 
-    const options: AxiosRequestConfig = {
+    const options: axios.AxiosRequestConfig = {
       headers: {
         ...(await this.getAuthorizationHeaderForCurrentPlayer(musicSession)),
       },
@@ -294,7 +294,7 @@ export class SpotifyApiService implements OnModuleInit {
 
   private pipeResponse(errorCase?: (status: number) => APIResult | void) {
     return pipe(
-      map((response: AxiosResponse) => {
+      map((response: axios.AxiosResponse) => {
         return this.success(response.data);
       }),
       catchError((err) => {

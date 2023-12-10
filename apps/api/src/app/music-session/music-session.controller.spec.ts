@@ -1,10 +1,10 @@
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from '../users/users.service';
-import { MusicSession } from './entities/music-session.entity';
-import { MusicSessionController } from './music-session.controller';
-import { MusicSessionService } from './music-session.service';
-import { JwtService } from '../users/jwt/jwt.service';
+import { UsersService } from '../users/users.service.js';
+import { MusicSession } from './entities/music-session.entity.js';
+import { MusicSessionController } from './music-session.controller.js';
+import { MusicSessionService } from './music-session.service.js';
+import { JwtService } from '../users/jwt/jwt.service.js';
 
 // Mocking MusicSessionService
 const mockSessionService = {

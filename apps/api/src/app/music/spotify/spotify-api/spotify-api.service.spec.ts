@@ -3,9 +3,9 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { SpotifyAccount } from '../spotify-account.entity';
-import { SpotifyApiService } from './spotify-api.service';
-import { MusicSessionService } from '../../../music-session/music-session.service';
+import { SpotifyAccount } from '../spotify-account.entity.js';
+import { SpotifyApiService } from './spotify-api.service.js';
+import { MusicSessionService } from '../../../music-session/music-session.service.js';
 
 describe('SpotifyApiService', () => {
   let service: SpotifyApiService;

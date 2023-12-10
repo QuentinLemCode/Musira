@@ -1,6 +1,6 @@
 import type { ExecutionContext } from '@nestjs/common';
 import { BadRequestException, createParamDecorator } from '@nestjs/common';
-import { MusicSessionPipe } from '../pipes/music-session.pipe';
+import { MusicSessionPipe } from '../pipes/music-session.pipe.js';
 
 const parseCode = (code: string) => {
   try {

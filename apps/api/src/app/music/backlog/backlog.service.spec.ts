@@ -1,10 +1,10 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
-import { BacklogService } from './backlog.service';
+import { BacklogService } from './backlog.service.js';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Backlog } from './backlog.entity';
-import { MusicSessionService } from '../../music-session/music-session.service';
-import { SpotifyApiService } from '../spotify/spotify-api/spotify-api.service';
+import { Backlog } from './backlog.entity.js';
+import { MusicSessionService } from '../../music-session/music-session.service.js';
+import { SpotifyApiService } from '../spotify/spotify-api/spotify-api.service.js';
 
 describe('BacklogService', () => {
   let service: BacklogService;

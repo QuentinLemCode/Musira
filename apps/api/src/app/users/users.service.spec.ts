@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { EmailUser } from './user.email.entity';
-import { User } from './user.entity';
-import { SocialLoginUser } from './user.social-login.entity';
-import { UsersService } from './users.service';
+import { EmailUser } from './user.email.entity.js';
+import { User } from './user.entity.js';
+import { SocialLoginUser } from './user.social-login.entity.js';
+import { UsersService } from './users.service.js';
 
 // Mocking Repositories
 const mockRepository = {

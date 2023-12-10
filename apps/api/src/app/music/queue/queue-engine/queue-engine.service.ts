@@ -6,15 +6,15 @@ import {
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { setTimeout } from 'timers';
-import type { MusicSession } from '../../../music-session/entities/music-session.entity';
-import type { User } from '../../../users/user.entity';
-import { UserRole } from '../../../users/user.entity';
-import type { Backlog } from '../../backlog/backlog.entity';
-import { BacklogService } from '../../backlog/backlog.service';
-import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service';
-import type { CurrentPlaybackResponse } from '../../spotify/types/spotify-interfaces';
-import { Queue } from '../queue.entity';
-import { QueueService } from '../queue.service';
+import type { MusicSession } from '../../../music-session/entities/music-session.entity.js';
+import type { User } from '../../../users/user.entity.js';
+import { UserRole } from '../../../users/user.entity.js';
+import type { Backlog } from '../../backlog/backlog.entity.js';
+import { BacklogService } from '../../backlog/backlog.service.js';
+import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service.js';
+import type { CurrentPlaybackResponse } from '../../spotify/types/spotify-interfaces.js';
+import { Queue } from '../queue.entity.js';
+import { QueueService } from '../queue.service.js';
 
 export interface StartingStatus {
   started: boolean;

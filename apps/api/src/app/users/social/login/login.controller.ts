@@ -2,7 +2,7 @@ import {
   SocialLoginUserDTO,
   type SocialLoginUserInterface,
   SocialUserResponseDTO,
-} from '@musira/api-interfaces/index';
+} from '#api-interfaces/index.js';
 import {
   BadRequestException,
   Body,
@@ -11,7 +11,7 @@ import {
   Logger,
   Post,
 } from '@nestjs/common';
-import { UsersService } from '../../users.service';
+import { UsersService } from '../../users.service.js';
 
 @Controller('users/social/login')
 export class LoginController {

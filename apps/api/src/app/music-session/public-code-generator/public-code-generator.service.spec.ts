@@ -1,8 +1,8 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
-import { PublicCodeGeneratorService } from './public-code-generator.service';
+import { PublicCodeGeneratorService } from './public-code-generator.service.js';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MusicSession } from '../entities/music-session.entity';
+import { MusicSession } from '../entities/music-session.entity.js';
 
 const mockRepository = {
   findOneBy: jest.fn(),

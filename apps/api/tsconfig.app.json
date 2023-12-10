@@ -2,10 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "Node16",
     "types": ["node"],
-    "target": "es2021",
-    "sourceMap": true
+    "sourceMap": true,
+    "exactOptionalPropertyTypes": false,
   },
   "exclude": [
     "jest.config.ts",
@@ -13,5 +12,5 @@
     "**/*.test.ts",
     "src/test-utils/*.ts"
   ],
-  "include": ["**/*.ts", "../../libs/api-interfaces/src/*", "setup-jest.js"]
+  "include": ["**/*.ts", "setup-jest.js", "src/app/app.module.mts"]
 }

@@ -1,8 +1,8 @@
-import { type EmailRegisterInterface } from '@musira/api-interfaces/user/email.dto';
+import { type EmailRegisterInterface } from '#api-interfaces/index.js';
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
-import { UsersService } from '../../users.service';
-import { EmailUserResponseDTO } from '@musira/api-interfaces/index';
-import { JwtService } from '../../jwt/jwt.service';
+import { UsersService } from '../../users.service.js';
+import { EmailUserResponseDTO } from '#api-interfaces/index.js';
+import { JwtService } from '../../jwt/jwt.service.js';
 
 @Controller('users/email/register')
 export class RegisterController {

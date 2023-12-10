@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RefreshController } from './refresh.controller';
-import { JwtService } from '../../jwt/jwt.service';
-import { EmailRefreshResponseDTO } from '@musira/api-interfaces/index';
+import { RefreshController } from './refresh.controller.js';
+import { JwtService } from '../../jwt/jwt.service.js';
+import { EmailRefreshResponseDTO } from '#api-interfaces/index.js';
 import { BadRequestException } from '@nestjs/common';
 
 // Mocking Services

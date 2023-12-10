@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes } from 'crypto';
 import { Repository } from 'typeorm';
-import { hashPassword } from '../utils/hash';
-import { EmailUser } from './user.email.entity';
-import { UserRole } from './user.entity';
+import { hashPassword } from '../utils/hash.js';
+import { EmailUser } from './user.email.entity.js';
+import { UserRole } from './user.entity.js';
 
 @Injectable()
 export class AdminSeedService implements OnApplicationBootstrap {

@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Raw, Repository } from 'typeorm';
-import type { MusicSession } from '../../music-session/entities/music-session.entity';
-import type { User } from '../../users/user.entity';
-import { UserRole } from '../../users/user.entity';
-import type { Music } from '../music.entity';
-import { Queue, Status } from './queue.entity';
+import type { MusicSession } from '../../music-session/entities/music-session.entity.js';
+import type { User } from '../../users/user.entity.js';
+import { UserRole } from '../../users/user.entity.js';
+import type { Music } from '../music.entity.js';
+import { Queue, Status } from './queue.entity.js';
 
 @Injectable()
 export class QueueService {

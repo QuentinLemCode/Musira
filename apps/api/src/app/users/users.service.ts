@@ -2,16 +2,16 @@ import type {
   EmailLoginInterface,
   EmailRegisterInterface,
   SocialLoginUserInterface,
-} from '@musira/api-interfaces/index';
+} from '#api-interfaces/index.js';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes, randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
-import type { MusicSession } from '../music-session/entities/music-session.entity';
-import { hashPassword } from '../utils/hash';
-import { EmailUser } from './user.email.entity';
-import { User } from './user.entity';
-import { SocialLoginUser } from './user.social-login.entity';
+import type { MusicSession } from '../music-session/entities/music-session.entity.js';
+import { hashPassword } from '../utils/hash.js';
+import { EmailUser } from './user.email.entity.js';
+import { User } from './user.entity.js';
+import { SocialLoginUser } from './user.social-login.entity.js';
 
 @Injectable()
 export class UsersService {

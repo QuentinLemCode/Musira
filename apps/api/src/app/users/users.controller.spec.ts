@@ -1,10 +1,10 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { User } from './user.entity';
-import { JwtGuard } from './jwt/jwt.guard';
-import { mockJwtGuard } from '../../test-utils/mock';
+import { UsersController } from './users.controller.js';
+import { UsersService } from './users.service.js';
+import { User } from './user.entity.js';
+import { JwtGuard } from './jwt/jwt.guard.js';
+import { mockJwtGuard } from '../../test-utils/mock.js';
 
 // Mocking UsersService
 const mockUsersService = {

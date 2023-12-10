@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
   Inject,
 } from '@nestjs/common';
-import { UsersService } from '../../users/users.service';
+import { UsersService } from '../../users/users.service.js';
 import type { JWTPayload } from 'jose';
 
 @Injectable()

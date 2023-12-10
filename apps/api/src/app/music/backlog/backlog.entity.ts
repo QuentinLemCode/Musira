@@ -8,8 +8,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Music } from '../music.entity';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
+import { Music } from '../music.entity.js';
+import { MusicSession } from '../../music-session/entities/music-session.entity.js';
 
 export enum Status {
   PENDING,

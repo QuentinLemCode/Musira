@@ -10,18 +10,18 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { JWTPayload } from 'jose';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
-import { UserRole } from '../../users/user.entity';
-import { UsersService } from '../../users/users.service';
-import { Jwt } from '../../utils/decorators/jwt.decorator';
-import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
-import type { Backlog } from '../backlog/backlog.entity';
-import { BacklogService } from '../backlog/backlog.service';
-import { Music } from '../music.entity';
-import { QueueEngineService } from './queue-engine/queue-engine.service';
-import type { Queue } from './queue.entity';
-import { QueueService } from './queue.service';
+import { MusicSession } from '../../music-session/entities/music-session.entity.js';
+import { JwtGuard } from '../../users/jwt/jwt.guard.js';
+import { UserRole } from '../../users/user.entity.js';
+import { UsersService } from '../../users/users.service.js';
+import { Jwt } from '../../utils/decorators/jwt.decorator.js';
+import { MusicSessionParam } from '../../utils/decorators/music-session.decorator.js';
+import type { Backlog } from '../backlog/backlog.entity.js';
+import { BacklogService } from '../backlog/backlog.service.js';
+import { Music } from '../music.entity.js';
+import { QueueEngineService } from './queue-engine/queue-engine.service.js';
+import type { Queue } from './queue.entity.js';
+import { QueueService } from './queue.service.js';
 
 interface QueueResponse {
   queue: Queue[];

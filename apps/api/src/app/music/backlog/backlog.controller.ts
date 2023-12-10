@@ -8,15 +8,15 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
-import { Roles } from '../../users/roles.decorator';
-import { RolesGuard } from '../../users/roles.guard';
-import { SessionCreatorGuard } from '../../users/session-creator.guard';
-import { UserRole } from '../../users/user.entity';
-import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
-import { Music } from '../music.entity';
-import { BacklogService } from './backlog.service';
+import { MusicSession } from '../../music-session/entities/music-session.entity.js';
+import { JwtGuard } from '../../users/jwt/jwt.guard.js';
+import { Roles } from '../../users/roles.decorator.js';
+import { RolesGuard } from '../../users/roles.guard.js';
+import { SessionCreatorGuard } from '../../users/session-creator.guard.js';
+import { UserRole } from '../../users/user.entity.js';
+import { MusicSessionParam } from '../../utils/decorators/music-session.decorator.js';
+import { Music } from '../music.entity.js';
+import { BacklogService } from './backlog.service.js';
 
 @Controller('session/:publicCode/backlog')
 export class BacklogController {

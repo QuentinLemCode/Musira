@@ -1,10 +1,10 @@
 import { SchedulerRegistry } from '@nestjs/schedule';
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
-import { BacklogService } from '../../backlog/backlog.service';
-import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service';
-import { QueueService } from '../queue.service';
-import { QueueEngineService } from './queue-engine.service';
+import { BacklogService } from '../../backlog/backlog.service.js';
+import { SpotifyApiService } from '../../spotify/spotify-api/spotify-api.service.js';
+import { QueueService } from '../queue.service.js';
+import { QueueEngineService } from './queue-engine.service.js';
 
 describe('QueueEngineService', () => {
   let service: QueueEngineService;

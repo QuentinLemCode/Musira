@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { MusicSessionService } from '../../music-session/music-session.service';
+import { MusicSessionService } from '../../music-session/music-session.service.js';
 
 @Injectable()
 export class MusicSessionPipe implements PipeTransform {

@@ -1,8 +1,8 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Settings } from './settings.entity';
-import { SettingsService } from './settings.service';
+import { Settings } from './settings.entity.js';
+import { SettingsService } from './settings.service.js';
 
 describe('VoteSettingsService', () => {
   let service: SettingsService;

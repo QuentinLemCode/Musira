@@ -10,8 +10,8 @@ import {
   RelationId,
   TableInheritance,
 } from 'typeorm';
-import { MusicSession } from '../music-session/entities/music-session.entity';
-import { Queue } from '../music/queue/queue.entity';
+import { MusicSession } from '../music-session/entities/music-session.entity.js';
+import { Queue } from '../music/queue/queue.entity.js';
 
 export enum UserRole {
   ADMIN = 1,

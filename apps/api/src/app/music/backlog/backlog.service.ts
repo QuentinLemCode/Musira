@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import type { MusicSession } from '../../music-session/entities/music-session.entity';
-import { MusicSessionService } from '../../music-session/music-session.service';
-import type { Music } from '../music.entity';
-import { SpotifyApiService } from '../spotify/spotify-api/spotify-api.service';
-import { Backlog } from './backlog.entity';
+import type { MusicSession } from '../../music-session/entities/music-session.entity.js';
+import { MusicSessionService } from '../../music-session/music-session.service.js';
+import type { Music } from '../music.entity.js';
+import { SpotifyApiService } from '../spotify/spotify-api/spotify-api.service.js';
+import { Backlog } from './backlog.entity.js';
 
 @Injectable()
 export class BacklogService implements OnModuleInit {

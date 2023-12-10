@@ -1,5 +1,5 @@
 import { ChildEntity, Column } from 'typeorm';
-import { User } from './user.entity';
+import { User } from './user.entity.js';
 
 @ChildEntity()
 export class EmailUser extends User {

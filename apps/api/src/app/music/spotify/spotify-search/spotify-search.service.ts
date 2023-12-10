@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { env } from 'process';
 import { catchError, firstValueFrom, from, map, mergeMap, of } from 'rxjs';
-import type { Token, TokenWithCalculatedExpiration } from '../token';
-import type { SearchResponse } from '../types/spotify-interfaces';
+import type { Token, TokenWithCalculatedExpiration } from '../token.js';
+import type { SearchResponse } from '../types/spotify-interfaces.js';
 
 @Injectable()
 export class SpotifySearchService implements OnModuleInit {

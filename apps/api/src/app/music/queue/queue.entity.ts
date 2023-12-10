@@ -11,9 +11,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { User } from '../../users/user.entity';
-import { Music } from '../music.entity';
+import { MusicSession } from '../../music-session/entities/music-session.entity.js';
+import { User } from '../../users/user.entity.js';
+import { Music } from '../music.entity.js';
 
 export enum Status {
   PENDING,

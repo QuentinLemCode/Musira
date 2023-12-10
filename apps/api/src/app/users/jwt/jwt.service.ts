@@ -9,8 +9,8 @@ import { randomBytes } from 'crypto';
 import type { JWTPayload } from 'jose';
 import { SignJWT, createRemoteJWKSet, jwtVerify } from 'jose';
 import { env } from 'process';
-import { type User } from '../user.entity';
-import { UsersService } from '../users.service';
+import { type User } from '../user.entity.js';
+import { UsersService } from '../users.service.js';
 
 enum IssuerType {
   GOOGLE,
