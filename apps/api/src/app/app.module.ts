@@ -12,13 +12,14 @@ import { UsersModule } from './users/users.module';
 import { environment } from '../environments/environment';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AuthModule } from './auth/auth.module';
 
 const modules: (
   | Type<any>
   | DynamicModule
   | Promise<DynamicModule>
   | ForwardReference<any>
-)[] = [MusicModule, CoreModule, MusicSessionModule, UsersModule];
+)[] = [MusicModule, CoreModule, MusicSessionModule, UsersModule, AuthModule];
 
 const logger = new Logger('AppModule');
 
