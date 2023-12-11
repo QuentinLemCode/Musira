@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import type {
   EmailRefreshResponseDTO,
   UserResponseDTO,
@@ -50,8 +50,8 @@ export type UserState =
 export class UserService {
   public loggedUser = signal<UserState>(this.userState);
 
-  private readonly usersEndpoint = environment.serverUrl + 'users';
-  constructor(@Inject(HttpClient) private readonly http: HttpClient) {
+  private readonly usersEndpoint = environment.serverUrl + 'auth';
+  constructor(private readonly http: HttpClient) {
     if (this.isTokenExpired) {
       this.refreshEmailToken().subscribe();
     }
