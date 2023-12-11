@@ -3,7 +3,7 @@ import type { User } from '../../../users/user.entity';
 import { LocalAuthGuard } from '../../local-auth.guard';
 import { AuthService } from '../../auth.service';
 import { JwtGuard } from '../../jwt.guard';
-import { JwtUser } from '../../jwt-user';
+import type { JwtUser } from '../../jwt-user';
 
 @Controller('auth/email')
 export class LoginController {

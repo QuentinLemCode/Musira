@@ -9,7 +9,7 @@ import { randomBytes } from 'crypto';
 import type { JWTPayload } from 'jose';
 import { SignJWT, createRemoteJWKSet, jwtVerify } from 'jose';
 import { env } from 'process';
-import { type User } from '../user.entity';
+import type { User } from '../user.entity';
 import { UsersService } from '../users.service';
 
 enum IssuerType {

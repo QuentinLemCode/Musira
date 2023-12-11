@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import type { Music as MusicInterface } from './music.interface';
-import { Queue } from './queue/queue.entity';
+import type { Queue } from './queue/queue.entity';
 
 @Entity()
 export class Music implements MusicInterface {
@@ -22,7 +22,7 @@ export class Music implements MusicInterface {
   @Column()
   duration: number;
 
-  @OneToMany(() => Queue, (queue) => queue.music)
+  @OneToMany('Queue', 'music')
   queue: Queue[];
 
   toString(): string {

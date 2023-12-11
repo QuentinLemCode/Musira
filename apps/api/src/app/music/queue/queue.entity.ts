@@ -10,10 +10,11 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  type Relation,
 } from 'typeorm';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { User } from '../../users/user.entity';
-import { Music } from '../music.entity';
+import type { MusicSession } from '../../music-session/entities/music-session.entity';
+import type { User } from '../../users/user.entity';
+import type { Music } from '../music.entity';
 
 export enum Status {
   PENDING,
@@ -34,7 +35,7 @@ export class Queue {
   })
   status: Status = Status.PENDING;
 
-  @ManyToOne(() => Music, (music) => music.queue, { cascade: true })
+  @ManyToOne('Music', 'queue', { cascade: true })
   music: Music;
 
   @BeforeUpdate()
@@ -73,21 +74,21 @@ export class Queue {
   @Column({ type: 'int', nullable: false })
   userId: number;
 
-  @ManyToOne(() => User, (user) => user.queued_musics, { onDelete: 'CASCADE' })
+  @ManyToOne('User', 'queued_musics', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToMany(() => User, (user) => user.forward_votes_music, {
+  @ManyToMany('User', 'forward_votes_music', {
     onDelete: 'CASCADE',
   })
   @JoinTable()
   forward_vote_users: User[];
 
-  @ManyToOne(() => MusicSession, (session) => session.queued_musics, {
+  @ManyToOne('MusicSession', 'queued_musics', {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'musicSessionId' })
-  music_session: MusicSession;
+  music_session: Relation<MusicSession>;
 
   @Column({ type: 'int', nullable: false, default: 0 })
   priority: number;
