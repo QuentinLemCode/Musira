@@ -1,9 +1,9 @@
+import type { JwtUser } from '@musira/api-interfaces/index';
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import type { User } from '../../../users/user.entity';
-import { LocalAuthGuard } from '../../local-auth.guard';
 import { AuthService } from '../../auth.service';
 import { JwtGuard } from '../../jwt.guard';
-import type { JwtUser } from '../../jwt-user';
+import { LocalAuthGuard } from '../../local-auth.guard';
 
 @Controller('auth/email')
 export class LoginController {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
-import type { JwtUser } from './jwt-user';
+import type { JwtPayload } from '@musira/api-interfaces/index';
 
 @Injectable()
 export class AuthService {
@@ -16,10 +16,14 @@ export class AuthService {
   }
 
   login(user: User) {
-    const payload: JwtUser = {
-      email: user.email,
-      name: user.name,
-      role: user.role,
+    const payload: JwtPayload = {
+      context: {
+        user: {
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
+      },
     };
     return {
       access_token: this.jwtService.sign(payload),

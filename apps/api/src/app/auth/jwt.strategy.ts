@@ -1,8 +1,8 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
+import type { JwtPayload } from '@musira/api-interfaces/index';
 import { Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { jwtSecret } from './secret';
-import type { JwtUser } from './jwt-user';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,11 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtUser) {
-    return {
-      email: payload.email,
-      name: payload.name,
-      role: payload.role,
-    };
+  validate(payload: JwtPayload) {
+    return { ...payload.context.user };
   }
 }
