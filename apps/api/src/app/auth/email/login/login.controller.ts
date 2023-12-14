@@ -1,9 +1,10 @@
-import type { JwtUser } from '@musira/api-interfaces/index';
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
 import type { User } from '../../../users/user.entity';
 import { AuthService } from '../../auth.service';
 import { JwtGuard } from '../../jwt.guard';
 import { LocalAuthGuard } from '../../local-auth.guard';
+import type { FastifyReply } from 'fastify';
+import type { JwtUser } from '@musira/api-interfaces/index';
 
 @Controller('auth/email')
 export class LoginController {
@@ -11,8 +12,18 @@ export class LoginController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req: { user: User }) {
-    return this.authService.login(req.user);
+  async login(
+    @Request() req: { user: User },
+    @Res({ passthrough: true }) res: FastifyReply,
+  ) {
+    const token = this.authService.login(req.user);
+    res.setCookie('token', token.access_token, {
+      httpOnly: true,
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+      secure: true,
+      sameSite: 'lax',
+    });
   }
 
   @UseGuards(JwtGuard)
