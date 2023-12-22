@@ -78,7 +78,7 @@
     "@nx/nest": "17.2.0",
     "@nx/node": "17.2.0",
     "@nx/workspace": "17.2.0",
-    "@schematics/angular": "17.0.7",
+    "@schematics/angular": "17.0.8",
     "@types/jest": "29.5.11",
     "@types/node": "^20.10.5",
     "@types/qrcode": "^1.5.5",
