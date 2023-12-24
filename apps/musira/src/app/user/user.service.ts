@@ -1,12 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import type {
-  EmailRefreshResponseDTO,
-  UserResponseDTO,
-} from '@musira/api-interfaces/index';
+import type { JwtUser, UserResponseDTO } from '@musira/api-interfaces/index';
 import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
-import { catchError, interval, lastValueFrom, map, of, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { StorageService } from '../services/storage.service';
 
 enum LocalStorageKeys {
   TOKEN = 'token',
@@ -21,25 +19,18 @@ enum LocalStorageKeys {
   REFRESH_TOKEN = 'refresh_token',
 }
 
+enum SessionStorageKeys {
+  USER = 'user',
+}
+
 interface BaseUserState {
   username: string;
   userId: string;
-  token: string;
-}
-
-interface SocialUserState extends BaseUserState {
-  type: 'SOCIAL';
-  provider: string;
-  isAdmin: false;
-}
-
-interface EmailUserState extends BaseUserState {
-  type: 'EMAIL';
-  isAdmin: boolean;
+  admin: boolean;
 }
 
 export type UserState =
-  | ({ isLoggedIn: true } & (SocialUserState | EmailUserState))
+  | ({ isLoggedIn: true } & BaseUserState)
   | {
       isLoggedIn: false;
     };
@@ -48,63 +39,47 @@ export type UserState =
   providedIn: 'root',
 })
 export class UserService {
-  public loggedUser = signal<UserState>(this.userState);
-
+  public loggedUser = signal<UserState>(this.getSession());
   private readonly usersEndpoint = environment.serverUrl + 'auth';
-  constructor(private readonly http: HttpClient) {
-    if (this.isTokenExpired) {
-      this.refreshEmailToken().subscribe();
-    }
-    interval(1000 * 60 * 30).subscribe({
-      next: () => {
-        this.refreshTokenFromServer().subscribe();
-      },
-    });
+
+  constructor(
+    private readonly http: HttpClient,
+    private readonly storage: StorageService,
+  ) {}
+
+  emailProfile() {
+    return this.http.get<JwtUser>(this.usersEndpoint + '/email/profile');
   }
 
-  socialLogin(user: SocialLoginUserDTO, token: string) {
-    return this.http
-      .post<UserResponseDTO>(this.usersEndpoint + '/social/login', user)
-      .pipe(
-        tap((response) => {
-          this.saveLogin(response, token, this.getExpiresAtFromToken(token));
-        }),
-      );
+  socialLogin(user: SocialLoginUserDTO) {
+    return this.http.post<UserResponseDTO>(
+      this.usersEndpoint + '/social/login',
+      user,
+    );
   }
 
   emailLogin(email: string, password: string) {
     return this.http
-      .post<UserResponseDTO>(this.usersEndpoint + '/email/login', {
+      .post<JwtUser>(this.usersEndpoint + '/email/login', {
         email,
         password,
       })
       .pipe(
-        tap((response) => {
-          this.saveLogin(response);
+        tap((data) => {
+          this.saveSession(data);
         }),
       );
   }
 
   emailRegister(email: string, username: string, password: string) {
-    return this.http
-      .post<UserResponseDTO>(this.usersEndpoint + '/email/register', {
+    return this.http.post<UserResponseDTO>(
+      this.usersEndpoint + '/email/register',
+      {
         email,
         username,
         password,
-      })
-      .pipe(
-        tap((token) => {
-          this.saveLogin(token);
-        }),
-      );
-  }
-
-  async logout() {
-    if (this.isEmailLogin) await this.emailLogout();
-    this.clearLocalStorage();
-    this.loggedUser.set({
-      isLoggedIn: false,
-    });
+      },
+    );
   }
 
   getAllUsers() {
@@ -120,14 +95,6 @@ export class UserService {
       this.usersEndpoint + '/email/unlock/' + id,
       {},
     );
-  }
-
-  private refreshTokenFromServer() {
-    if (!this.loggedUser().isLoggedIn) return of(false);
-    if (this.isEmailLogin) {
-      return this.refreshEmailToken();
-    }
-    return of(true);
   }
 
   isSessionCreator(sessionId: number) {
@@ -164,169 +131,36 @@ export class UserService {
     }
   }
 
-  private getExpiresAtFromToken(token: string) {
-    const payload = token.split('.')[1];
-    if (!payload) throw new Error('No payload found');
-    const decodedPayload = atob(payload);
-    const expiresAt: string = JSON.parse(decodedPayload).exp;
-    return Number.parseInt(expiresAt, 10);
-  }
-
-  private refreshEmailToken() {
-    const body = {
-      token: this.refreshToken,
-    };
-    return this.http
-      .post<EmailRefreshResponseDTO>(
-        this.usersEndpoint + '/email/refresh',
-        body,
-      )
-      .pipe(
-        tap((refresh) => this.saveRefresh(refresh)),
-        map(() => true),
-        catchError((err) => {
-          this.clearLocalStorage();
-          this.loggedUser.set({
-            isLoggedIn: false,
-          });
-          console.error(err);
-          return of(false);
-        }),
-      );
-  }
-
-  private get userState(): UserState {
-    if (!this.username || !this.userId || !this.type || !this.token) {
+  private getSession(): UserState {
+    const user = this.storage.getSessionItem<string>(SessionStorageKeys.USER);
+    if (!user) {
       return {
         isLoggedIn: false,
       };
     }
-    const state = {
-      username: this.username,
-      userId: this.userId,
-      token: this.token,
-    };
-    if (this.type === 'EMAIL') {
-      return {
-        ...state,
-        type: this.type,
-        isAdmin: this.isAdmin,
-        isLoggedIn: true,
-      };
-    }
-    if (this.type === 'SOCIAL' && this.provider) {
-      return {
-        ...state,
-        type: this.type,
-        provider: this.provider,
-        isAdmin: false,
-        isLoggedIn: true,
-      };
-    }
+    const parsedUser: JwtUser = JSON.parse(user);
     return {
-      isLoggedIn: false,
+      isLoggedIn: true,
+      username: parsedUser.name,
+      userId: parsedUser.email,
+      admin: parsedUser.admin,
     };
   }
 
-  private get provider(): string | null {
-    return localStorage.getItem(LocalStorageKeys.PROVIDER);
-  }
-
-  private get isSocialLogin(): boolean {
-    return this.type === 'SOCIAL';
-  }
-
-  private get isEmailLogin(): boolean {
-    return this.type === 'EMAIL';
-  }
-
-  private get type(): 'EMAIL' | 'SOCIAL' | null {
-    const item = localStorage.getItem(LocalStorageKeys.TYPE);
-    if (item === 'EMAIL' || item === 'SOCIAL') {
-      return item;
-    }
-    return null;
-  }
-
-  private get username(): string | null {
-    return localStorage.getItem(LocalStorageKeys.USERNAME);
-  }
-
-  private get userId(): string | null {
-    return localStorage.getItem(LocalStorageKeys.USER_ID);
-  }
-
-  private get expires_at(): number | null {
-    const lsItem = localStorage.getItem(LocalStorageKeys.EXPIRES_AT);
-    if (lsItem === null) {
-      return null;
-    }
-    return +lsItem;
-  }
-
-  private get refreshToken(): string | null {
-    return localStorage.getItem(LocalStorageKeys.REFRESH_TOKEN);
-  }
-
-  private get token() {
-    return localStorage.getItem(LocalStorageKeys.TOKEN);
-  }
-
-  private get isTokenExpired() {
-    return !this.expires_at || this.expires_at <= this.now();
-  }
-
-  private get isAdmin() {
-    return localStorage.getItem(LocalStorageKeys.ROLE) === '1';
-  }
-
-  private emailLogout() {
-    return lastValueFrom(
-      this.http.post(this.usersEndpoint + '/email/logout/' + this.userId, ''),
-    );
-  }
-
-  private now() {
-    return Math.floor(Date.now() / 1000);
-  }
-
-  private clearLocalStorage() {
-    Object.values(LocalStorageKeys).forEach((val) => {
-      localStorage.removeItem(val);
+  private saveSession(user: JwtUser) {
+    this.storage.setSessionItem(SessionStorageKeys.USER, JSON.stringify(user));
+    this.loggedUser.set({
+      isLoggedIn: true,
+      username: user.name,
+      userId: user.email,
+      admin: user.admin,
     });
   }
 
-  private saveRefresh(refresh: EmailRefreshResponseDTO) {
-    localStorage.setItem(LocalStorageKeys.TOKEN, refresh.token);
-    localStorage.setItem(LocalStorageKeys.REFRESH_TOKEN, refresh.refreshToken);
-    localStorage.setItem(LocalStorageKeys.EXPIRES_AT, '' + refresh.expiresAt);
-    this.loggedUser.set(this.userState);
-  }
-
-  private saveLogin(
-    login: UserResponseDTO,
-    token?: string,
-    expires_at?: number,
-  ) {
-    localStorage.setItem(LocalStorageKeys.USERNAME, login.name);
-    localStorage.setItem(LocalStorageKeys.USER_ID, '' + login.id);
-    localStorage.setItem(
-      LocalStorageKeys.SESSIONS_CREATOR,
-      login.sessionCreatedIds.join(';'),
-    );
-    localStorage.setItem(LocalStorageKeys.TYPE, login.type);
-    localStorage.setItem(LocalStorageKeys.ROLE, '' + login.role);
-    if (login.type === 'SOCIAL' && token) {
-      localStorage.setItem(LocalStorageKeys.TOKEN, token);
-      localStorage.setItem(LocalStorageKeys.PROVIDER, login.provider);
-      localStorage.setItem(LocalStorageKeys.EXPIRES_AT, '' + expires_at);
-    }
-    if (login.type === 'EMAIL') {
-      localStorage.setItem(LocalStorageKeys.EXPIRES_AT, '' + login.expiresAt);
-      localStorage.setItem(LocalStorageKeys.TOKEN, login.token);
-      localStorage.setItem(LocalStorageKeys.REFRESH_TOKEN, login.refreshToken);
-      localStorage.setItem(LocalStorageKeys.EMAIL, login.email);
-    }
-    this.loggedUser.set(this.userState);
+  async logout() {
+    this.storage.clearSession();
+    this.loggedUser.set({
+      isLoggedIn: false,
+    });
   }
 }

@@ -38,7 +38,7 @@ export class QueueComponent {
       user.isLoggedIn && queue.user.id === +(user.userId ?? 0);
     return {
       votable: this.isEngineStarted && user.isLoggedIn,
-      deletable: isQueuedByUser || (user.isLoggedIn && user.isAdmin),
+      deletable: isQueuedByUser || (user.isLoggedIn && user.admin),
       queueable: false,
       backlog: false,
     };

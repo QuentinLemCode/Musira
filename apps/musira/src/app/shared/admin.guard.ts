@@ -18,7 +18,7 @@ export class AdminGuard {
     | boolean
     | UrlTree {
     const loggedUser = this.user.loggedUser();
-    if (loggedUser.isLoggedIn && loggedUser.isAdmin) {
+    if (loggedUser.isLoggedIn && loggedUser.admin) {
       return true;
     }
     return this.router.navigate(['/']);

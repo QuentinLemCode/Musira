@@ -20,7 +20,7 @@ export class NavigationComponent {
   });
   isAdmin = computed(() => {
     const user = this.user.loggedUser();
-    if (user.isLoggedIn) return user.isAdmin;
+    if (user.isLoggedIn) return user.admin;
     return false;
   });
 

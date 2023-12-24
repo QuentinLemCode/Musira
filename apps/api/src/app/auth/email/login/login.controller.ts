@@ -24,6 +24,7 @@ export class LoginController {
       secure: true,
       sameSite: 'lax',
     });
+    return token.user;
   }
 
   @UseGuards(JwtGuard)
