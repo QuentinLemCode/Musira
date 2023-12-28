@@ -10,16 +10,6 @@ interface JwtPayloadWithJti extends JwtPayload {
   jti: string;
 }
 
-// overriding passport-jwt not available for fastify
-declare module 'passport-jwt' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace ExtractJwt {
-    export interface JwtFromRequestFunction {
-      (req: FastifyRequest): string | null;
-    }
-  }
-}
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   @Inject(AuthService) private readonly auth: AuthService;
