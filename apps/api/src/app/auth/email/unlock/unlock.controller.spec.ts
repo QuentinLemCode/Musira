@@ -4,7 +4,7 @@ import { UnlockController } from './unlock.controller';
 import { UsersService } from '../../../users/users.service';
 import { mockJwtGuard } from '../../../../test-utils/mock';
 import { RolesGuard } from '../../../users/roles.guard';
-import { JwtGuard } from '../../../users/jwt/jwt.guard';
+import { JwtGuard } from '../../jwt.guard';
 
 describe('UnlockController', () => {
   let controller: UnlockController;

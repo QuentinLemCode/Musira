@@ -4,11 +4,14 @@ import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { LoginController } from './email/login/login.controller';
-import { LocalStrategy } from './local.strategy';
-import { jwtSecret } from './secret';
+import { LogoutController } from './email/logout/logout.controller';
+import { RegisterController } from './email/register/register.controller';
+import { UnlockController } from './email/unlock/unlock.controller';
 import { JwtStrategy } from './jwt.strategy';
-import { OAuthService } from './oauth/oauth.service';
+import { LocalStrategy } from './local.strategy';
 import { OauthController } from './oauth/oauth.controller';
+import { OAuthService } from './oauth/oauth.service';
+import { jwtSecret } from './secret';
 
 @Module({
   imports: [
@@ -30,6 +33,12 @@ import { OauthController } from './oauth/oauth.controller';
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, OAuthService],
-  controllers: [LoginController, OauthController],
+  controllers: [
+    LoginController,
+    OauthController,
+    LogoutController,
+    RegisterController,
+    UnlockController,
+  ],
 })
 export class AuthModule {}

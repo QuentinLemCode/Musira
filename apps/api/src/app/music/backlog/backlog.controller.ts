@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
 import { Roles } from '../../users/roles.decorator';
 import { RolesGuard } from '../../users/roles.guard';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
@@ -17,6 +16,7 @@ import { UserRole } from '../../users/user.entity';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { Music } from '../music.entity';
 import { BacklogService } from './backlog.service';
+import { JwtGuard } from '../../auth/jwt.guard';
 
 @Controller('session/:publicCode/backlog')
 export class BacklogController {

@@ -1,9 +1,9 @@
 import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
 import { Roles } from './roles.decorator';
+import { RolesGuard } from './roles.guard';
 import { UserRole } from './user.entity';
 import { UsersService } from './users.service';
-import { JwtGuard } from './jwt/jwt.guard';
-import { RolesGuard } from './roles.guard';
+import { JwtGuard } from '../auth/jwt.guard';
 
 @Controller('users')
 export class UsersController {

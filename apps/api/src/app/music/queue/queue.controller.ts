@@ -1,3 +1,4 @@
+import type { JwtUser } from '@musira/api-interfaces/index';
 import {
   BadRequestException,
   Body,
@@ -7,14 +8,13 @@ import {
   Get,
   Param,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
-import type { JWTPayload } from 'jose';
+import { JwtGuard } from '../../auth/jwt.guard';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
 import { UserRole } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
-import { Jwt } from '../../utils/decorators/jwt.decorator';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import type { Backlog } from '../backlog/backlog.entity';
 import { BacklogService } from '../backlog/backlog.service';
@@ -53,10 +53,13 @@ export class QueueController {
   @Post()
   async pushToQueue(
     @Body() music: Music,
-    @Jwt() jwt: JWTPayload,
+    @Request() req: { user: JwtUser },
     @MusicSessionParam() musicSession: MusicSession,
   ) {
-    const user = await this.getUser(jwt);
+    const user = await this.users.findByEmail(req.user.email);
+    if (!user) {
+      throw new BadRequestException('User not found in database');
+    }
     if (user.role !== UserRole.ADMIN) {
       const settings = await musicSession.settings;
       if (
@@ -81,10 +84,13 @@ export class QueueController {
   @Delete(':id')
   async deleteFromQueue(
     @Param('id') id: string,
-    @Jwt() jwt: JWTPayload,
+    @Request() req: { user: JwtUser },
     @MusicSessionParam() musicSession: MusicSession,
   ) {
-    const user = await this.getUser(jwt);
+    const user = await this.users.findByEmail(req.user.email);
+    if (!user) {
+      throw new BadRequestException('User not found in database');
+    }
     const queuedMusics = await this.users.getQueuedMusicForUser(
       musicSession,
       user.id,
@@ -108,31 +114,13 @@ export class QueueController {
   @Post('/:id/forward')
   async forwardQueue(
     @Param('id') id: string,
-    @Jwt() jwt: JWTPayload,
+    @Request() req: { user: JwtUser },
     @MusicSessionParam() musicSession: MusicSession,
   ) {
-    const user = await this.users.findById((await this.getUser(jwt)).id);
+    const user = await this.users.findByEmail(req.user.email);
     if (user === null) {
       throw new BadRequestException('User not found in database');
     }
     return this.queueEngine.forward(musicSession, id, user);
-  }
-
-  private async getUser(jwt: JWTPayload) {
-    const email = jwt.email;
-    if (!email || typeof email !== 'string') {
-      throw new BadRequestException({
-        cause: 'user',
-        message: 'email not found in jwt',
-      });
-    }
-    const user = await this.users.findByEmail(email);
-    if (!user) {
-      throw new BadRequestException({
-        cause: 'user',
-        message: 'user not found',
-      });
-    }
-    return user;
   }
 }

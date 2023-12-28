@@ -2,10 +2,10 @@ import { Controller, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from '../../../users/users.service';
 import { Roles } from '../../../users/roles.decorator';
 import { UserRole } from '../../../users/user.entity';
-import { JwtGuard } from '../../../users/jwt/jwt.guard';
 import { RolesGuard } from '../../../users/roles.guard';
+import { JwtGuard } from '../../jwt.guard';
 
-@Controller('users/email/unlock')
+@Controller('auth/email/unlock')
 export class UnlockController {
   constructor(@Inject(UsersService) private readonly users: UsersService) {}
 

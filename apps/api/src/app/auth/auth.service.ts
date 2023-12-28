@@ -26,6 +26,7 @@ export class AuthService {
     const payload: JwtPayload = {
       context: {
         user: {
+          id: user.id,
           email: user.email,
           name:
             user instanceof EmailUser
@@ -49,6 +50,10 @@ export class AuthService {
       subject: user.id.toString(),
     });
     return { accessToken: token };
+  }
+
+  logout(res: FastifyReply) {
+    res.clearCookie('signature');
   }
 
   verifySignature(jwtId: string, signature: string) {
