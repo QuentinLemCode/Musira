@@ -1,10 +1,10 @@
+import type { JwtUser } from '@musira/api-interfaces/index';
 import { Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
-import type { User } from '../../../users/user.entity';
+import type { FastifyReply } from 'fastify';
+import type { EmailUser } from '../../../users/user.email.entity';
 import { AuthService } from '../../auth.service';
 import { JwtGuard } from '../../jwt.guard';
 import { LocalAuthGuard } from '../../local-auth.guard';
-import type { FastifyReply } from 'fastify';
-import type { JwtUser } from '@musira/api-interfaces/index';
 
 @Controller('auth/email')
 export class LoginController {
@@ -13,7 +13,7 @@ export class LoginController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   login(
-    @Request() req: { user: User },
+    @Request() req: { user: EmailUser },
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
     return this.authService.login(req.user, res);
