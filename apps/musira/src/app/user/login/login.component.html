@@ -5,7 +5,10 @@
     <img src="/assets/logo-with-title-dark.webp" alt="logo" />
   </div>
   <div class="login-box">
-    <a (click)="emailLogin = !emailLogin">Se connecter avec un email</a>
+    <button (click)="openId()">Clique ici pour commencer</button>
+    <a (click)="profile()">Profile</a>
+    <a (click)="logged()">Test</a>
+    <!-- <a (click)="emailLogin = !emailLogin">Se connecter avec un email</a>
     <ng-container *ngIf="emailLogin">
       <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="register-form">
@@ -53,6 +56,6 @@
         </div>
       </form>
     </ng-container>
-    <a routerLink="/user/register">Créer un compte avec un email</a>
+    <a routerLink="/user/register">Créer un compte avec un email</a> -->
   </div>
 </main>

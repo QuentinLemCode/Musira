@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../user.service';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Component({
   selector: 'musira-login',
@@ -13,6 +14,7 @@ export class LoginComponent {
   constructor(
     @Inject(UserService) private readonly users: UserService,
     @Inject(Router) private readonly router: Router,
+    @Inject(OAuthService) private readonly oauthService: OAuthService,
   ) {
     effect(() => {
       if (this.users.loggedUser().isLoggedIn) this.router.navigate(['/']);
@@ -52,5 +54,19 @@ export class LoginComponent {
           this.error = err.error.message;
         },
       });
+  }
+
+  openId() {
+    this.oauthService.initLoginFlow();
+  }
+
+  profile() {
+    this.users.emailProfile().subscribe();
+  }
+
+  logged() {
+    this.oauthService.loadUserProfile().then((data) => {
+      console.log(data);
+    });
   }
 }

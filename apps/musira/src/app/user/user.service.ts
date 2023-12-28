@@ -48,7 +48,9 @@ export class UserService {
   ) {}
 
   emailProfile() {
-    return this.http.get<JwtUser>(this.usersEndpoint + '/email/profile');
+    return this.http.get<JwtUser>(this.usersEndpoint + '/email/profile', {
+      withCredentials: true,
+    });
   }
 
   socialLogin(user: SocialLoginUserDTO) {

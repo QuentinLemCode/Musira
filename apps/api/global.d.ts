@@ -1,5 +1,3 @@
-import type { JWTPayload } from 'jose';
-
 declare namespace NodeJS {
   export interface ProcessEnv {
     SPOTIFY_CLIENT_ID?: string;
@@ -19,11 +17,8 @@ declare namespace NodeJS {
     JWT_EXPIRATION?: string;
     JWT_REFRESH_SECRET?: string;
     JWT_REFRESH_EXPIRATION?: string;
-  }
-}
-
-declare namespace Express {
-  export interface Request {
-    jwt?: JWTPayload;
+    COOKIE_SECRET?: string;
+    FACEBOOK_APP_ID?: string;
+    FACEBOOK_APP_SECRET?: string;
   }
 }

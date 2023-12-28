@@ -1,38 +1,26 @@
-import type { JwtPayload } from '@musira/api-interfaces/index';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import type { FastifyRequest } from 'fastify';
-import { jwtSecret } from './secret';
+import { passportJwtSecret } from 'jwks-rsa';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-
-// overriding passport-jwt not available for fastify
-declare module 'passport-jwt' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace ExtractJwt {
-    export interface JwtFromRequestFunction {
-      (req: FastifyRequest): string | null;
-    }
-  }
-}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        ExtractJwt.fromAuthHeaderAsBearerToken(),
-        JwtStrategy.extractFromCookie,
-      ]),
-      ignoreExpiration: false,
-      secretOrKey: jwtSecret,
+      secretOrKeyProvider: passportJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri:
+          'https://dev-17p01l3m4bw5jef5.us.auth0.com/.well-known/jwks.json',
+      }),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      audience: '03Vk8RcQzSiQOuHQR4reEi74jEhBsHZw', //optional!
+      issuer: 'https://dev-17p01l3m4bw5jef5.us.auth0.com/',
+      algorithms: ['RS256'],
     });
   }
-
-  validate(payload: JwtPayload) {
-    return { ...payload.context.user };
-  }
-
-  private static extractFromCookie(req: FastifyRequest): string | null {
-    return req.cookies?.token ?? null;
+  validate(payload: unknown): unknown {
+    return payload;
   }
 }
