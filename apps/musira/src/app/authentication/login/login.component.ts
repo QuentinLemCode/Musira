@@ -2,7 +2,9 @@ import { Component, Inject, effect } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-import { UserService } from '../user.service';
+import { AuthenticationService } from '../authentication.service';
+import { OAuthProvider } from '@musira/api-interfaces/index';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'musira-login',
@@ -11,11 +13,12 @@ import { UserService } from '../user.service';
 })
 export class LoginComponent {
   constructor(
-    @Inject(UserService) private readonly users: UserService,
+    @Inject(AuthenticationService) private readonly auth: AuthenticationService,
     @Inject(Router) private readonly router: Router,
+    @Inject(HttpClient) private readonly http: HttpClient,
   ) {
     effect(() => {
-      if (this.users.loggedUser().isLoggedIn) this.router.navigate(['/']);
+      if (this.auth.loggedUser().isLoggedIn) this.router.navigate(['/']);
     });
   }
 
@@ -41,7 +44,7 @@ export class LoginComponent {
       return;
     }
     this.loading = true;
-    this.users
+    this.auth
       .emailLogin(this.form.value.email, this.form.value.password)
       .subscribe({
         next: () => {
@@ -52,5 +55,9 @@ export class LoginComponent {
           this.error = err.error.message;
         },
       });
+  }
+
+  fbLogin() {
+    window.location.href = this.auth.loginUrl(OAuthProvider.FACEBOOK);
   }
 }

@@ -5,14 +5,14 @@ import {
   QueueStubComponent,
   SearchStubComponent,
 } from '../../../tests/components-stubs';
-import { UserService } from '../../user/user.service';
+import { AuthenticationService } from '../../authentication/authentication.service';
 import { MusicSessionsService } from '../music-sessions.service';
 import { MusicSessionComponent } from './music-session.component';
 
 describe('MusicSessionComponent', () => {
   let component: MusicSessionComponent;
   let fixture: ComponentFixture<MusicSessionComponent>;
-  let userServiceMock: Partial<UserService>;
+  let userServiceMock: Partial<AuthenticationService>;
   let musicSessionsServiceMock: Partial<MusicSessionsService>;
 
   beforeEach(async () => {
@@ -32,7 +32,7 @@ describe('MusicSessionComponent', () => {
         SearchStubComponent,
       ],
       providers: [
-        { provide: UserService, useValue: userServiceMock },
+        { provide: AuthenticationService, useValue: userServiceMock },
         { provide: MusicSessionsService, useValue: musicSessionsServiceMock },
       ],
     }).compileComponents();

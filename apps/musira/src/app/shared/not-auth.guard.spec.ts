@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { NotAuthGuard } from './not-auth.guard';
-import { UserService } from '../user/user.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 import { signal } from '@angular/core';
 
 describe('NotAuthGuard', () => {
@@ -17,7 +17,7 @@ describe('NotAuthGuard', () => {
     TestBed.configureTestingModule({
       providers: [
         NotAuthGuard,
-        { provide: UserService, useValue: userServiceMock },
+        { provide: AuthenticationService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock },
       ],
     });

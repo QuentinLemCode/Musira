@@ -7,17 +7,29 @@ import { LoginController } from './email/login/login.controller';
 import { LocalStrategy } from './local.strategy';
 import { jwtSecret } from './secret';
 import { JwtStrategy } from './jwt.strategy';
+import { OAuthService } from './oauth/oauth.service';
+import { OauthController } from './oauth/oauth.controller';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
     JwtModule.register({
+      verifyOptions: {
+        algorithms: ['HS256'],
+        issuer: 'musira',
+        audience: 'musira',
+      },
       secret: jwtSecret,
-      signOptions: { expiresIn: '60s' },
+      signOptions: {
+        expiresIn: '30d',
+        algorithm: 'HS256',
+        issuer: 'musira',
+        audience: 'musira',
+      },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
-  controllers: [LoginController],
+  providers: [AuthService, LocalStrategy, JwtStrategy, OAuthService],
+  controllers: [LoginController, OauthController],
 })
 export class AuthModule {}

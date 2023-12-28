@@ -6,9 +6,15 @@ import { AppRoutingModule } from '../app-routing.module';
 import { ComponentsModule } from '../components/components.module';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { CallbackComponent } from './callback/callback.component';
 
 @NgModule({
-  declarations: [LoginComponent, RegisterComponent, LoginComponent],
+  declarations: [
+    LoginComponent,
+    RegisterComponent,
+    LoginComponent,
+    CallbackComponent,
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -18,4 +24,4 @@ import { RegisterComponent } from './register/register.component';
     FontAwesomeModule,
   ],
 })
-export class UserModule {}
+export class AuthenticationModule {}

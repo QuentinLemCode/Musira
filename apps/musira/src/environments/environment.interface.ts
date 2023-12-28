@@ -3,4 +3,5 @@ export interface Environment {
   serverUrl: string;
   googleClientId: string;
   facebookClientId: string;
+  spotifyClientId: string;
 }

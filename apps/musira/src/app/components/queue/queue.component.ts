@@ -5,7 +5,7 @@ import type { Backlog, Music, Queue } from '../../services/music-api.interface';
 import { Status } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
-import { UserService } from '../../user/user.service';
+import { AuthenticationService } from '../../authentication/authentication.service';
 import type {
   IconUpdateStatus,
   MusicComponentConfiguration,
@@ -46,7 +46,7 @@ export class QueueComponent {
 
   constructor(
     @Inject(QueueService) private readonly queue: QueueService,
-    @Inject(UserService) private readonly user: UserService,
+    @Inject(AuthenticationService) private readonly user: AuthenticationService,
     @Inject(MusicApiService) private readonly music: MusicApiService,
   ) {
     this.queue

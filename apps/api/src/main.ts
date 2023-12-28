@@ -16,7 +16,7 @@ const getLogger = (): LogLevel[] | LoggerService => {
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    new FastifyAdapter({ logger: true }),
     { logger: getLogger() },
   );
   app.setGlobalPrefix('api');
@@ -25,6 +25,16 @@ async function bootstrap() {
       origin: env.ORIGIN,
     });
   }
+
+  // const fastifyInstance = app.getHttpAdapter().getInstance();
+  // fastifyInstance
+  //   .decorateReply('setHeader', function (name: string, value: unknown) {
+  //     this.header(name, value);
+  //   })
+  //   .decorateReply('end', function () {
+  //     this.send('');
+  //   });
+
   await app.register(fastifyCookie, {
     secret: env.COOKIE_SECRET || 'defaultSecret',
   });

@@ -2,14 +2,14 @@ import { Inject, Injectable } from '@angular/core';
 import type { UrlTree } from '@angular/router';
 import { Router } from '@angular/router';
 import type { Observable } from 'rxjs';
-import { UserService } from '../user/user.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminGuard {
   constructor(
-    @Inject(UserService) private user: UserService,
+    @Inject(AuthenticationService) private user: AuthenticationService,
     @Inject(Router) private router: Router,
   ) {}
   canActivate():

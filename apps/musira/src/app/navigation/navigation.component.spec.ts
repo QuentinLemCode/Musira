@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
-import { UserService } from '../user/user.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 import { NavigationComponent } from './navigation.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -27,7 +27,7 @@ describe('NavigationComponent', () => {
       imports: [FontAwesomeModule, RouterTestingModule.withRoutes([])],
       declarations: [NavigationComponent],
       providers: [
-        { provide: UserService, useValue: mockUserService },
+        { provide: AuthenticationService, useValue: mockUserService },
         { provide: MusicSessionsService, useValue: mockMusicSessionsService },
       ],
     }).compileComponents();

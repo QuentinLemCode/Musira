@@ -11,3 +11,7 @@ export interface JwtContext {
 export interface JwtPayload {
   context: JwtContext;
 }
+
+export interface JwtToken {
+  accessToken: string;
+}

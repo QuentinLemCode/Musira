@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import type { JwtUser, UserResponseDTO } from '@musira/api-interfaces/index';
-import { SocialLoginUserDTO } from '@musira/api-interfaces/index';
+import {
+  OAuthProvider,
+  type JwtUser,
+  type UserResponseDTO,
+  type JwtToken,
+  type JwtPayload,
+} from '@musira/api-interfaces/index';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { StorageService } from '../services/storage.service';
@@ -19,10 +24,6 @@ enum LocalStorageKeys {
   REFRESH_TOKEN = 'refresh_token',
 }
 
-enum SessionStorageKeys {
-  USER = 'user',
-}
-
 interface BaseUserState {
   username: string;
   userId: string;
@@ -38,7 +39,7 @@ export type UserState =
 @Injectable({
   providedIn: 'root',
 })
-export class UserService {
+export class AuthenticationService {
   public loggedUser = signal<UserState>(this.getSession());
   private readonly usersEndpoint = environment.serverUrl + 'auth';
 
@@ -51,22 +52,29 @@ export class UserService {
     return this.http.get<JwtUser>(this.usersEndpoint + '/email/profile');
   }
 
-  socialLogin(user: SocialLoginUserDTO) {
-    return this.http.post<UserResponseDTO>(
-      this.usersEndpoint + '/social/login',
-      user,
-    );
+  oAuthLogin(provider: OAuthProvider, code: string, state: string) {
+    return this.http
+      .post<JwtToken>(this.usersEndpoint + '/oauth/login', {
+        code,
+        state,
+        provider,
+      })
+      .pipe(
+        tap((data) => {
+          this.saveToken(data.accessToken);
+        }),
+      );
   }
 
   emailLogin(email: string, password: string) {
     return this.http
-      .post<JwtUser>(this.usersEndpoint + '/email/login', {
+      .post<JwtToken>(this.usersEndpoint + '/email/login', {
         email,
         password,
       })
       .pipe(
         tap((data) => {
-          this.saveSession(data);
+          this.saveToken(data.accessToken);
         }),
       );
   }
@@ -132,35 +140,96 @@ export class UserService {
   }
 
   private getSession(): UserState {
-    const user = this.storage.getSessionItem<string>(SessionStorageKeys.USER);
+    const user = this.tokenPayload;
     if (!user) {
       return {
         isLoggedIn: false,
       };
     }
-    const parsedUser: JwtUser = JSON.parse(user);
     return {
       isLoggedIn: true,
-      username: parsedUser.name,
-      userId: parsedUser.email,
-      admin: parsedUser.admin,
+      username: user.context.user.name,
+      userId: user.context.user.email,
+      admin: user.context.user.admin,
     };
   }
 
-  private saveSession(user: JwtUser) {
-    this.storage.setSessionItem(SessionStorageKeys.USER, JSON.stringify(user));
-    this.loggedUser.set({
-      isLoggedIn: true,
-      username: user.name,
-      userId: user.email,
-      admin: user.admin,
-    });
+  private saveToken(token: string) {
+    this.storage.setLocalItem(LocalStorageKeys.TOKEN, token);
+    this.loggedUser.set(this.getSession());
+  }
+
+  private get tokenPayload(): JwtPayload | null {
+    const token = this.storage.getLocalItem<string>(LocalStorageKeys.TOKEN);
+    const parsedToken = atob(token?.split('.')?.[1] ?? '');
+    try {
+      return JSON.parse(parsedToken) as JwtPayload;
+    } catch (e) {
+      this.storage.clearLocal();
+    }
+    return null;
   }
 
   async logout() {
+    this.storage.clearLocal();
     this.storage.clearSession();
     this.loggedUser.set({
       isLoggedIn: false,
     });
+  }
+
+  loginUrl(provider: OAuthProvider): string {
+    const url = new URL(this.authUrl(provider));
+
+    Object.entries(this.params(provider)).forEach(([key, value]) => {
+      if (!value) return;
+      url.searchParams.set(key, value);
+    });
+    return url.toString();
+  }
+
+  private authUrl(provider: OAuthProvider) {
+    switch (provider) {
+      case OAuthProvider.FACEBOOK:
+        return 'https://www.facebook.com/v18.0/dialog/oauth';
+      case OAuthProvider.SPOTIFY:
+        return 'https://accounts.spotify.com/authorize';
+      case OAuthProvider.GOOGLE:
+        return 'https://accounts.google.com/o/oauth2/v2/auth';
+    }
+  }
+
+  private params(provider: OAuthProvider) {
+    const uuid = crypto.randomUUID();
+    switch (provider) {
+      case OAuthProvider.FACEBOOK:
+        return {
+          response_type: 'code',
+          client_id: environment.facebookClientId,
+          scope: 'email',
+          redirect_uri: this.redirectUrl,
+          state: uuid,
+        };
+      case OAuthProvider.SPOTIFY:
+        return {
+          response_type: 'code',
+          client_id: environment.spotifyClientId,
+          scope: 'user-read-email user-read-private',
+          redirect_uri: this.redirectUrl,
+          state: uuid,
+        };
+      case OAuthProvider.GOOGLE:
+        return {
+          response_type: 'code',
+          client_id: environment.googleClientId,
+          scope: 'email profile',
+          redirect_uri: this.redirectUrl,
+          state: uuid,
+        };
+    }
+  }
+
+  private get redirectUrl() {
+    return `https://${window.location.host}/oauth/callback`;
   }
 }

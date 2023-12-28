@@ -4,7 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
 import { mockObservable } from '../../../tests/mock';
-import { UserService } from '../user.service';
+import { AuthenticationService } from '../authentication.service';
 import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
@@ -26,7 +26,9 @@ describe('LoginComponent', () => {
         FontAwesomeTestingModule,
       ],
       declarations: [LoginComponent],
-      providers: [{ provide: UserService, useValue: userServiceMock }],
+      providers: [
+        { provide: AuthenticationService, useValue: userServiceMock },
+      ],
     });
 
     fixture = TestBed.createComponent(LoginComponent);

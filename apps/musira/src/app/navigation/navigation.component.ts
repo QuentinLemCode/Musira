@@ -2,7 +2,7 @@ import { Component, Inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
-import { UserService } from '../user/user.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Component({
   selector: 'musira-navigation',
@@ -25,7 +25,7 @@ export class NavigationComponent {
   });
 
   constructor(
-    @Inject(UserService) readonly user: UserService,
+    @Inject(AuthenticationService) readonly user: AuthenticationService,
     @Inject(MusicSessionsService)
     private readonly sessions: MusicSessionsService,
     @Inject(Router) private readonly router: Router,

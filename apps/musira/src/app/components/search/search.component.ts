@@ -27,7 +27,7 @@ import type { Music } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
-import { UserService } from '../../user/user.service';
+import { AuthenticationService } from '../../authentication/authentication.service';
 import type {
   IconUpdateStatus,
   MusicComponentConfiguration,
@@ -70,7 +70,7 @@ export class SearchComponent implements OnInit {
   constructor(
     @Inject(MusicApiService) private readonly music: MusicApiService,
     @Inject(QueueService) private readonly queue: QueueService,
-    @Inject(UserService) private readonly user: UserService,
+    @Inject(AuthenticationService) private readonly user: AuthenticationService,
     @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
   ) {

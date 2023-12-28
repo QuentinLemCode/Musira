@@ -3,7 +3,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
 import { mockObservable } from '../../../tests/mock';
-import { UserService } from '../user.service';
+import { AuthenticationService } from '../authentication.service';
 import { RegisterComponent } from './register.component';
 
 describe('RegisterComponent', () => {
@@ -23,7 +23,7 @@ describe('RegisterComponent', () => {
       imports: [ReactiveFormsModule, FontAwesomeTestingModule],
       declarations: [RegisterComponent],
       providers: [
-        { provide: UserService, useValue: userServiceMock },
+        { provide: AuthenticationService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock },
       ],
     });

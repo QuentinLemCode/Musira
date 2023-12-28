@@ -1,9 +1,14 @@
 import type { JwtPayload } from '@musira/api-interfaces/index';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import type { FastifyRequest } from 'fastify';
 import { jwtSecret } from './secret';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { AuthService } from './auth.service';
+
+interface JwtPayloadWithJti extends JwtPayload {
+  jti: string;
+}
 
 // overriding passport-jwt not available for fastify
 declare module 'passport-jwt' {
@@ -17,22 +22,26 @@ declare module 'passport-jwt' {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  @Inject(AuthService) private readonly auth: AuthService;
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        ExtractJwt.fromAuthHeaderAsBearerToken(),
-        JwtStrategy.extractFromCookie,
-      ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: jwtSecret,
+      algorithms: ['HS256'],
+      passReqToCallback: true,
     });
   }
 
-  validate(payload: JwtPayload) {
+  validate(request: FastifyRequest, payload: JwtPayloadWithJti) {
+    const signature = request.cookies.signature;
+    if (!signature) {
+      throw new UnauthorizedException();
+    }
+    const validSignature = this.auth.verifySignature(payload.jti, signature);
+    if (!validSignature) {
+      throw new UnauthorizedException();
+    }
     return { ...payload.context.user };
-  }
-
-  private static extractFromCookie(req: FastifyRequest): string | null {
-    return req.cookies?.token ?? null;
   }
 }

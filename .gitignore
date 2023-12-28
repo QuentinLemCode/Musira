@@ -45,3 +45,6 @@ Thumbs.db
 apps/musira-e2e/cypress/downloads
 
 .nx/cache
+
+localhost-key.pem
+localhost.pem

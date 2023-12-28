@@ -8,7 +8,7 @@ import { currentMusicFixture, musicFixture } from '../../../tests/fixtures';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
-import { UserService } from '../../user/user.service';
+import { AuthenticationService } from '../../authentication/authentication.service';
 import type { IconUpdateStatus } from '../music/music.component';
 import { SearchComponent } from './search.component';
 
@@ -41,7 +41,7 @@ describe('SearchComponent', () => {
       providers: [
         { provide: MusicApiService, useValue: mockMusicApiService },
         { provide: QueueService, useValue: mockQueueService },
-        { provide: UserService, useValue: mockUserService },
+        { provide: AuthenticationService, useValue: mockUserService },
         { provide: MusicSessionsService, useValue: mockSessionService },
       ],
     }).compileComponents();

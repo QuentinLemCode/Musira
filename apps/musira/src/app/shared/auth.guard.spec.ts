@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { UserService } from '../user/user.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 import { AuthGuard } from './auth.guard';
 import { signal } from '@angular/core';
 
@@ -19,7 +19,7 @@ describe('AuthGuard', () => {
     TestBed.configureTestingModule({
       providers: [
         AuthGuard,
-        { provide: UserService, useValue: userServiceMock },
+        { provide: AuthenticationService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock },
       ],
     });

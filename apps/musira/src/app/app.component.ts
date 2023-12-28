@@ -1,11 +1,11 @@
-import { Component, Inject, effect } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   faGithubSquare,
   faLinkedin,
   faTwitterSquare,
 } from '@fortawesome/free-brands-svg-icons';
-import { UserService } from './user/user.service';
+import { AuthenticationService } from './authentication/authentication.service';
 import { DashboardService } from './services/dashboard.service';
 
 @Component({
@@ -20,7 +20,7 @@ export class AppComponent {
   isDashboard = false;
 
   constructor(
-    @Inject(UserService) private readonly user: UserService,
+    @Inject(AuthenticationService) private readonly user: AuthenticationService,
     @Inject(Router) private readonly router: Router,
     @Inject(DashboardService) private readonly dashboard: DashboardService,
   ) {
@@ -28,11 +28,6 @@ export class AppComponent {
       next: (value) => {
         this.isDashboard = value;
       },
-    });
-    effect(() => {
-      if (this.user.loggedUser().isLoggedIn !== true) {
-        this.router.navigate(['/user/login'], { replaceUrl: true });
-      }
     });
   }
 }

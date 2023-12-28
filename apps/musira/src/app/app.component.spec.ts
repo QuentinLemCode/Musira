@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { NavigationModule } from './navigation/navigation.module';
 import { DashboardService } from './services/dashboard.service';
-import { UserService } from './user/user.service';
+import { AuthenticationService } from './authentication/authentication.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -28,7 +28,7 @@ describe('AppComponent', () => {
         RouterTestingModule,
       ],
       providers: [
-        { provide: UserService, useValue: mockUserService },
+        { provide: AuthenticationService, useValue: mockUserService },
         { provide: DashboardService, useValue: { dashboard$: of(false) } },
       ],
     }).compileComponents();

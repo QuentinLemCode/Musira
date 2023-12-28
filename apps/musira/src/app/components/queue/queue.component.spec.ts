@@ -12,7 +12,7 @@ import type {
 } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
-import { UserService } from '../../user/user.service';
+import { AuthenticationService } from '../../authentication/authentication.service';
 import type { IconUpdateStatus } from '../music/music.component';
 import { QueueComponent } from './queue.component';
 
@@ -46,7 +46,7 @@ describe('QueueComponent', () => {
       declarations: [QueueComponent],
       providers: [
         { provide: QueueService, useValue: mockQueueService },
-        { provide: UserService, useValue: mockUserService },
+        { provide: AuthenticationService, useValue: mockUserService },
         { provide: MusicApiService, useValue: mockMusicApiService },
       ],
     }).compileComponents();

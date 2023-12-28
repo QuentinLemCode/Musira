@@ -14,8 +14,9 @@ import { DashboardService } from './services/dashboard.service';
 import { SessionsModule } from './sessions/sessions.module';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
-import { UserModule } from './user/user.module';
+import { AuthenticationModule } from './authentication/authentication.module';
 import { withCredentialsInterceptor } from './shared/with-credentials.interceptor';
+import { jwtInterceptor } from './shared/jwt.interceptor';
 
 @NgModule({
   declarations: [
@@ -33,12 +34,12 @@ import { withCredentialsInterceptor } from './shared/with-credentials.intercepto
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    UserModule,
+    AuthenticationModule,
     ComponentsModule,
     SessionsModule,
     NavigationModule,
   ],
-  providers: [DashboardService, withCredentialsInterceptor],
+  providers: [DashboardService, withCredentialsInterceptor, jwtInterceptor],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -8,7 +8,7 @@ import type {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-import { UserService } from '../user.service';
+import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'musira-register',
@@ -17,7 +17,7 @@ import { UserService } from '../user.service';
 })
 export class RegisterComponent implements OnInit {
   constructor(
-    @Inject(UserService) private user: UserService,
+    @Inject(AuthenticationService) private user: AuthenticationService,
     @Inject(Router) private router: Router,
   ) {}
 

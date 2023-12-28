@@ -1,0 +1,55 @@
+import {
+  HTTP_INTERCEPTORS,
+  type HttpEvent,
+  type HttpHandler,
+  type HttpInterceptor,
+  type HttpRequest,
+} from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import type { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class JwtInterceptor implements HttpInterceptor {
+  intercept(
+    request: HttpRequest<unknown>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<unknown>> {
+    const token = this.getTokenFromLocalStorage();
+    if (!token) {
+      return next.handle(request);
+    }
+    request = this.cloneRequest(request, token);
+    return next.handle(request);
+  }
+
+  private cloneRequest(request: HttpRequest<unknown>, token: string) {
+    return request.clone({
+      setHeaders: {
+        Authorization: 'Bearer ' + token,
+      },
+    });
+  }
+
+  private getTokenFromLocalStorage() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return null;
+    }
+    try {
+      return JSON.parse(token) as string;
+    } catch (e) {
+      localStorage.removeItem('token');
+      return null;
+    }
+  }
+}
+
+export const jwtInterceptor = [
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: JwtInterceptor,
+    multi: true,
+  },
+];

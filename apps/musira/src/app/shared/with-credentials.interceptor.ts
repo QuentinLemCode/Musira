@@ -14,9 +14,11 @@ export class WithCredentialsInterceptor implements HttpInterceptor {
     req: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    req = req.clone({
-      withCredentials: true,
-    });
+    if (req.url.startsWith('/api')) {
+      req = req.clone({
+        withCredentials: true,
+      });
+    }
 
     return next.handle(req);
   }

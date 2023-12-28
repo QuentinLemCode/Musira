@@ -3,23 +3,23 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { UserService } from './user.service';
+import { AuthenticationService } from './authentication.service';
 
-describe('UserService', () => {
-  let userService: UserService;
+describe('AuthenticationService', () => {
+  let userService: AuthenticationService;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [UserService],
+      providers: [AuthenticationService],
     });
     localStorage.setItem(
       'expires_at',
       Math.floor(new Date().valueOf() / 1000) + 60 * 60 + '',
     );
 
-    userService = TestBed.inject(UserService);
+    userService = TestBed.inject(AuthenticationService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 

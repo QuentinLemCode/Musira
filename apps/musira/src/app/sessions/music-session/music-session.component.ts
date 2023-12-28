@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { UserService } from '../../user/user.service';
+import { AuthenticationService } from '../../authentication/authentication.service';
 import { MusicSessionsService } from '../music-sessions.service';
 import { codeToString } from '../../utils/format-code';
 
@@ -10,7 +10,7 @@ import { codeToString } from '../../utils/format-code';
 })
 export class MusicSessionComponent {
   constructor(
-    @Inject(UserService) private readonly user: UserService,
+    @Inject(AuthenticationService) private readonly user: AuthenticationService,
     @Inject(MusicSessionsService)
     private readonly sessions: MusicSessionsService,
   ) {}

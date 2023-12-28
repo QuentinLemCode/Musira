@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { MusicSessionsService } from './music-sessions.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { UserService } from '../user/user.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 describe('MusicSessionsService', () => {
   let service: MusicSessionsService;
@@ -12,7 +12,7 @@ describe('MusicSessionsService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         {
-          provide: UserService,
+          provide: AuthenticationService,
           useValue: {},
         },
       ],

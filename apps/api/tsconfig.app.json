@@ -14,5 +14,5 @@
     "**/*.test.ts",
     "src/test-utils/*.ts"
   ],
-  "include": ["**/*.ts", "setup-jest.js"]
+  "include": ["**/*.ts", "setup-jest.js", "global.d.ts"]
 }

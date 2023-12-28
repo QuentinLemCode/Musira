@@ -4,12 +4,12 @@ import { AdminSeedService } from './admin-seed.service';
 import { JwtService } from './jwt/jwt.service';
 import { EmailUser } from './user.email.entity';
 import { User } from './user.entity';
-import { SocialLoginUser } from './user.social-login.entity';
+import { OAuthUser } from './user.oauth.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, EmailUser, SocialLoginUser])],
+  imports: [TypeOrmModule.forFeature([User, EmailUser, OAuthUser])],
   providers: [UsersService, AdminSeedService, JwtService],
   controllers: [UsersController],
   exports: [UsersService, JwtService],

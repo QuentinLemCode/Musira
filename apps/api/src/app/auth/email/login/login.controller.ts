@@ -12,19 +12,11 @@ export class LoginController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(
+  login(
     @Request() req: { user: User },
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
-    const token = this.authService.login(req.user);
-    res.setCookie('token', token.access_token, {
-      httpOnly: true,
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7,
-      secure: true,
-      sameSite: 'lax',
-    });
-    return token.user;
+    return this.authService.login(req.user, res);
   }
 
   @UseGuards(JwtGuard)

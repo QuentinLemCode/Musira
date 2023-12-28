@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EmailUser } from './user.email.entity';
 import { User } from './user.entity';
-import { SocialLoginUser } from './user.social-login.entity';
+import { OAuthUser } from './user.oauth.entity';
 import { UsersService } from './users.service';
 
 // Mocking Repositories
@@ -36,7 +36,7 @@ describe('UsersService', () => {
           useValue: mockRepository,
         },
         {
-          provide: getRepositoryToken(SocialLoginUser),
+          provide: getRepositoryToken(OAuthUser),
           useValue: mockRepository,
         },
       ],

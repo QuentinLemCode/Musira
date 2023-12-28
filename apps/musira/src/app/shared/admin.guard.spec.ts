@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { UserService } from '../user/user.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 import { AdminGuard } from './admin.guard';
 import { signal } from '@angular/core';
 
@@ -19,7 +19,7 @@ describe('AdminGuard', () => {
     TestBed.configureTestingModule({
       providers: [
         AdminGuard,
-        { provide: UserService, useValue: userServiceMock },
+        { provide: AuthenticationService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock },
       ],
     });
