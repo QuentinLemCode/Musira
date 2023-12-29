@@ -3,6 +3,7 @@ export interface JwtUser {
   admin: boolean;
   email: string;
   name: string;
+  role: number;
 }
 
 export interface JwtContext {

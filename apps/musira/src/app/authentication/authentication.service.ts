@@ -1,11 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
+import { Inject, Injectable, signal } from '@angular/core';
 import {
   OAuthProvider,
-  type JwtUser,
-  type UserResponseDTO,
-  type JwtToken,
   type JwtPayload,
+  type JwtToken,
 } from '@musira/api-interfaces/index';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -41,20 +39,16 @@ export type UserState =
 })
 export class AuthenticationService {
   public loggedUser = signal<UserState>(this.getSession());
-  private readonly usersEndpoint = environment.serverUrl + 'auth';
+  private readonly authEndpoint = environment.serverUrl + 'auth';
 
   constructor(
-    private readonly http: HttpClient,
-    private readonly storage: StorageService,
+    @Inject(HttpClient) private readonly http: HttpClient,
+    @Inject(StorageService) private readonly storage: StorageService,
   ) {}
-
-  emailProfile() {
-    return this.http.get<JwtUser>(this.usersEndpoint + '/email/profile');
-  }
 
   oAuthLogin(provider: OAuthProvider, code: string, state: string) {
     return this.http
-      .post<JwtToken>(this.usersEndpoint + '/oauth/login', {
+      .post<JwtToken>(this.authEndpoint + '/oauth/login', {
         code,
         state,
         provider,
@@ -68,7 +62,7 @@ export class AuthenticationService {
 
   emailLogin(email: string, password: string) {
     return this.http
-      .post<JwtToken>(this.usersEndpoint + '/email/login', {
+      .post<JwtToken>(this.authEndpoint + '/email/login', {
         email,
         password,
       })
@@ -81,7 +75,7 @@ export class AuthenticationService {
 
   emailRegister(email: string, username: string, password: string) {
     return this.http
-      .post<JwtToken>(this.usersEndpoint + '/email/register', {
+      .post<JwtToken>(this.authEndpoint + '/email/register', {
         email,
         username,
         password,
@@ -91,21 +85,6 @@ export class AuthenticationService {
           this.saveToken(data.accessToken);
         }),
       );
-  }
-
-  getAllUsers() {
-    return this.http.get<UserResponseDTO[]>(this.usersEndpoint);
-  }
-
-  delete(id: number) {
-    return this.http.delete<UserResponseDTO[]>(this.usersEndpoint + '/' + id);
-  }
-
-  unlock(id: number) {
-    return this.http.post<UserResponseDTO[]>(
-      this.usersEndpoint + '/email/unlock/' + id,
-      {},
-    );
   }
 
   isSessionCreator(sessionId: number) {

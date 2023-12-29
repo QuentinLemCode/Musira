@@ -6,8 +6,8 @@ import type {
 } from '@musira/api-interfaces/index';
 import { mergeMap } from 'rxjs/operators';
 import { QueueService } from '../../services/queue.service';
+import { UsersService } from '../../services/users.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
-import { AuthenticationService } from '../../authentication/authentication.service';
 
 @Component({
   selector: 'musira-admin',
@@ -23,8 +23,8 @@ export class AdminComponent implements OnInit {
   error = '';
 
   constructor(
-    @Inject(AuthenticationService)
-    private readonly users: AuthenticationService,
+    @Inject(UsersService)
+    private readonly users: UsersService,
     @Inject(MusicSessionsService)
     private readonly sessions: MusicSessionsService,
     @Inject(QueueService)

@@ -41,7 +41,7 @@ describe('AuthenticationService', () => {
     });
 
     const req = httpMock.expectOne(
-      `${userService['usersEndpoint']}/email/login`,
+      `${userService['authEndpoint']}/email/login`,
     );
     expect(req.request.method).toBe('POST');
     req.flush(mockResponse);
