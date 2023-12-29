@@ -58,4 +58,8 @@ export class LoginComponent {
   fbLogin() {
     window.location.href = this.auth.loginUrl(OAuthProvider.FACEBOOK);
   }
+
+  googleLogin() {
+    window.location.href = this.auth.loginUrl(OAuthProvider.GOOGLE);
+  }
 }

@@ -6,6 +6,7 @@
   </div>
   <div class="login-box">
     <a (click)="fbLogin()">Se connecter avec Facebook</a>
+    <a (click)="googleLogin()">Se connecter avec Google</a>
     <a (click)="emailLogin = !emailLogin">Se connecter avec un email</a>
     <ng-container *ngIf="emailLogin">
       <form [formGroup]="form" (ngSubmit)="submit()">
