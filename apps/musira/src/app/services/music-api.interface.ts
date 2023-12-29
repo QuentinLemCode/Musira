@@ -42,16 +42,17 @@ export interface CurrentMusic {
   message?: string;
 }
 
-export enum Status {
-  PENDING,
-  PLAYING,
-  FINISHED,
-  CANCELLED,
-}
+export const Status = {
+  PENDING: 'pending',
+  PLAYING: 'playing',
+  FINISHED: 'finished',
+  CANCELLED: 'cancelled',
+} as const;
 
+export type StatusType = (typeof Status)[keyof typeof Status];
 export interface Queue {
   id: number;
-  status: Status;
+  status: StatusType;
   music: Music;
   user: {
     name: string;

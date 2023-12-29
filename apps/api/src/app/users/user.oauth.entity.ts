@@ -1,6 +1,6 @@
+import type { OAuthProviderType } from '@musira/api-interfaces';
 import { ChildEntity, Column, Index } from 'typeorm';
 import { User } from './user.entity';
-import type { OAuthProvider } from '@musira/api-interfaces';
 
 @ChildEntity()
 export class OAuthUser extends User {
@@ -11,7 +11,7 @@ export class OAuthUser extends User {
   @Column({
     type: 'int',
   })
-  provider: OAuthProvider;
+  provider: OAuthProviderType;
 
   @Column()
   photoUrl: string;

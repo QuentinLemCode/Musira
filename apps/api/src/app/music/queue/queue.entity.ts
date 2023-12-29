@@ -29,8 +29,6 @@ export class Queue {
   id: number;
 
   @Column({
-    type: 'enum',
-    enum: Status,
     default: Status.PENDING,
   })
   status: Status = Status.PENDING;

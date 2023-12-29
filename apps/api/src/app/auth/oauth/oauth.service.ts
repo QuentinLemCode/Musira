@@ -6,7 +6,7 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { UsersService } from '../../users/users.service';
-import { OAuthProvider } from '@musira/api-interfaces';
+import { OAuthProvider, type OAuthProviderType } from '@musira/api-interfaces';
 
 interface FacebookToken {
   access_token: string;
@@ -42,7 +42,7 @@ export class OAuthService {
 
   constructor(@Inject(UsersService) private readonly users: UsersService) {}
 
-  login(provider: OAuthProvider, code: string) {
+  login(provider: OAuthProviderType, code: string) {
     switch (provider) {
       case OAuthProvider.FACEBOOK:
         return this.facebookLogin(code);

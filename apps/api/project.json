@@ -5,30 +5,14 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
+      "dependsOn": ["api-interfaces:build"],
+      "executor": "@nx/js:swc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api",
         "main": "apps/api/src/main.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
-        "assets": ["apps/api/src/assets"],
-        "target": "node",
-        "compiler": "tsc",
-        "sourceMap": true,
-        "webpackConfig": "apps/api/webpack.config.js"
-      },
-      "configurations": {
-        "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/api/src/environments/environment.ts",
-              "with": "apps/api/src/environments/environment.prod.ts"
-            }
-          ]
-        }
+        "assets": []
       }
     },
     "serve": {
@@ -48,6 +32,12 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/api/**/*.ts"]
+      }
+    },
+    "check-circular-dependencies": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "dpdm --tsconfig apps/api/tsconfig.app.json --no-warning --no-tree -T --exit-code circular:1 apps/api/src/main.ts"
       }
     },
     "test": {

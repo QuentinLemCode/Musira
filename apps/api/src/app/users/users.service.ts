@@ -1,3 +1,8 @@
+import type {
+  EmailLoginInterface,
+  EmailRegisterInterface,
+  OAuthProviderType,
+} from '@musira/api-interfaces';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes, randomUUID } from 'crypto';
@@ -7,11 +12,6 @@ import { hashPassword } from '../utils/hash';
 import { EmailUser } from './user.email.entity';
 import { User } from './user.entity';
 import { OAuthUser } from './user.oauth.entity';
-import type {
-  OAuthProvider,
-  EmailRegisterInterface,
-  EmailLoginInterface,
-} from '@musira/api-interfaces';
 
 @Injectable()
 export class UsersService {
@@ -102,7 +102,7 @@ export class UsersService {
     lastName: string,
     photoUrl: string,
     externalId: string,
-    provider: OAuthProvider,
+    provider: OAuthProviderType,
   ) {
     const existingUser = await this.findOneOAuthLoginByExternalId(externalId);
     if (existingUser !== null) {
