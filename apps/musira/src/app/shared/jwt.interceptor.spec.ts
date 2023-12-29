@@ -4,11 +4,13 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { StorageService } from '../services/storage.service';
 import { JwtInterceptor } from './jwt.interceptor';
 
 describe('JwtInterceptor', () => {
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
+  let storageService: StorageService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -19,15 +21,22 @@ describe('JwtInterceptor', () => {
           useClass: JwtInterceptor,
           multi: true,
         },
+        {
+          provide: StorageService,
+          useValue: {
+            getLocalItem: jest.fn(),
+          },
+        },
       ],
     });
 
     httpMock = TestBed.inject(HttpTestingController);
     httpClient = TestBed.inject(HttpClient);
+    storageService = TestBed.inject(StorageService);
   });
 
   it('should add Authorization header with token', () => {
-    localStorage.setItem('token', 'fakeToken');
+    jest.spyOn(storageService, 'getLocalItem').mockReturnValue('fakeToken');
     httpClient.get('/api/data').subscribe((response) => {
       expect(response).toBeTruthy();
     });
@@ -35,7 +44,6 @@ describe('JwtInterceptor', () => {
     const req = httpMock.expectOne('/api/data');
     expect(req.request.headers.get('Authorization')).toBe('Bearer fakeToken');
     req.flush({});
-    localStorage.clear();
   });
 
   it('should not add Authorization header without token', () => {

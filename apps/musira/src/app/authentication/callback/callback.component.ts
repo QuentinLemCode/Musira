@@ -1,8 +1,7 @@
 import { Component, Inject, type OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StorageService } from '../../services/storage.service';
-import { AuthenticationService } from '../authentication.service';
 import { OAuthProvider } from '@musira/api-interfaces/index';
+import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'musira-callback',
@@ -13,7 +12,6 @@ export class CallbackComponent implements OnInit {
   constructor(
     @Inject(ActivatedRoute) private readonly route: ActivatedRoute,
     @Inject(Router) private readonly router: Router,
-    @Inject(StorageService) private readonly storage: StorageService,
     @Inject(AuthenticationService) private readonly auth: AuthenticationService,
   ) {}
 
@@ -21,9 +19,7 @@ export class CallbackComponent implements OnInit {
 
   ngOnInit(): void {
     const { code, state } = this.oauthData;
-    if (!state && !code) {
-      this.router.navigate(['']);
-    } else if (code && state) {
+    if (state && code) {
       this.auth.oAuthLogin(OAuthProvider.FACEBOOK, code, state).subscribe({
         next: () => {
           this.router.navigate(['/']);
@@ -32,9 +28,9 @@ export class CallbackComponent implements OnInit {
           this.error = err?.error?.error || err?.error?.message;
         },
       });
-    } else {
-      this.error = 'Invalid request';
+      return;
     }
+    this.error = 'Invalid request';
   }
 
   get oauthData() {

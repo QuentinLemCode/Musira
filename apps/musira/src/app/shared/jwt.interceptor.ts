@@ -5,13 +5,18 @@ import {
   type HttpInterceptor,
   type HttpRequest,
 } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import type { Observable } from 'rxjs';
+import { StorageService } from '../services/storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class JwtInterceptor implements HttpInterceptor {
+  constructor(
+    @Inject(StorageService) private readonly storageService: StorageService,
+  ) {}
+
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler,
@@ -33,16 +38,7 @@ export class JwtInterceptor implements HttpInterceptor {
   }
 
   private getTokenFromLocalStorage() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return null;
-    }
-    try {
-      return JSON.parse(token) as string;
-    } catch (e) {
-      localStorage.removeItem('token');
-      return null;
-    }
+    return this.storageService.getLocalItem<string>('token');
   }
 }
 

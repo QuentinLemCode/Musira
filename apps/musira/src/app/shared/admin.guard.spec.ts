@@ -7,7 +7,7 @@ import { signal } from '@angular/core';
 describe('AdminGuard', () => {
   let adminGuard: AdminGuard;
   const userServiceMock = {
-    loggedUser: signal({ isLoggedIn: true, isAdmin: false }),
+    loggedUser: signal({ isLoggedIn: true, admin: false }),
   };
   let routerMock: Partial<Router>;
 
@@ -38,7 +38,7 @@ describe('AdminGuard', () => {
   });
 
   it('should return true if logged in and admin', () => {
-    userServiceMock.loggedUser.set({ isLoggedIn: true, isAdmin: true });
+    userServiceMock.loggedUser.set({ isLoggedIn: true, admin: true });
 
     const result = adminGuard.canActivate();
 

@@ -2,9 +2,8 @@ import { Component, Inject, effect } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-import { AuthenticationService } from '../authentication.service';
 import { OAuthProvider } from '@musira/api-interfaces/index';
-import { HttpClient } from '@angular/common/http';
+import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'musira-login',
@@ -15,7 +14,6 @@ export class LoginComponent {
   constructor(
     @Inject(AuthenticationService) private readonly auth: AuthenticationService,
     @Inject(Router) private readonly router: Router,
-    @Inject(HttpClient) private readonly http: HttpClient,
   ) {
     effect(() => {
       if (this.auth.loggedUser().isLoggedIn) this.router.navigate(['/']);
