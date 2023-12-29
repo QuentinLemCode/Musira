@@ -8,20 +8,20 @@ import { CreateMusicSessionDto, JwtUser } from '@musira/api-interfaces';
 
 // Mocking MusicSessionService
 const mockSessionService = {
-  create: jest.fn(),
-  findAll: jest.fn(),
-  findOne: jest.fn(),
-  update: jest.fn(),
-  remove: jest.fn(),
+  create: vi.fn(),
+  findAll: vi.fn(),
+  findOne: vi.fn(),
+  update: vi.fn(),
+  remove: vi.fn(),
 };
 
 // Mocking UsersService
 const mockUsersService = {
-  findByEmail: jest.fn(),
+  findByEmail: vi.fn(),
 };
 
 const mockJwt = {
-  validateToken: jest.fn(),
+  validateToken: vi.fn(),
 };
 
 describe('MusicSessionController', () => {

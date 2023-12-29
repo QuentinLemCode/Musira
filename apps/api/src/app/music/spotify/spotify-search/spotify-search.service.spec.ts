@@ -27,7 +27,7 @@ describe('SpotifySearchService', () => {
 
     service = module.get<SpotifySearchService>(SpotifySearchService);
     httpService = module.get<HttpService>(HttpService);
-    jest.spyOn(httpService, 'post').mockImplementation(() => of(tokenResponse));
+    vi.spyOn(httpService, 'post').mockImplementation(() => of(tokenResponse));
   });
 
   it('should be defined', () => {
@@ -64,7 +64,7 @@ describe('SpotifySearchService', () => {
     const invalidTokenResponse = { ...tokenResponse };
     invalidTokenResponse.data = { access_token: 'invalid' };
 
-    const spyGet = jest
+    const spyGet = vi
       .spyOn(httpService, 'get')
       .mockImplementation((_url, config) => {
         if (config?.headers?.Authorization === 'Bearer valid') {

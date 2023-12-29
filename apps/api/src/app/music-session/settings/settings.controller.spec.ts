@@ -10,8 +10,8 @@ import { JwtGuard } from '../../auth/jwt.guard';
 
 // Mocking Service
 const mockSettingsService = {
-  setMaxVotes: jest.fn(),
-  setMaxQueuableSongPerUser: jest.fn(),
+  setMaxVotes: vi.fn(),
+  setMaxQueuableSongPerUser: vi.fn(),
 };
 
 describe('SettingsController', () => {

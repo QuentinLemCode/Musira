@@ -4,21 +4,19 @@ import { User } from './user.entity';
 
 @ChildEntity()
 export class OAuthUser extends User {
-  @Column()
+  @Column('varchar')
   @Index({ unique: true })
   externalId: string;
 
-  @Column({
-    type: 'int',
-  })
+  @Column('varchar')
   provider: OAuthProviderType;
 
-  @Column()
+  @Column('varchar')
   photoUrl: string;
 
-  @Column()
+  @Column('varchar')
   firstName: string;
 
-  @Column()
+  @Column('varchar')
   lastName: string;
 }

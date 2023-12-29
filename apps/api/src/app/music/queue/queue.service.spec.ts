@@ -4,7 +4,7 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MusicSessionService } from '../../music-session/music-session.service';
 import type { Music } from '../music.entity';
-import type {
+import {
   APIResult,
   SpotifyApiService,
 } from '../spotify/spotify-api/spotify-api.service';
@@ -17,9 +17,7 @@ import { QueueService } from './queue.service';
 
 describe('QueueService', () => {
   let service: QueueService;
-  const spySpotifyApiService = jest.createMockFromModule<SpotifyApiService>(
-    '../spotify/spotify-api/spotify-api.service',
-  );
+  let mockSpotifyService: SpotifyApiService;
 
   const mockMusic: Music = {
     artist: 'artist',
@@ -45,17 +43,34 @@ describe('QueueService', () => {
   };
 
   beforeEach(async () => {
-    spySpotifyApiService.isAccountRegistered = jest.fn(() =>
-      Promise.resolve(true),
-    );
-
     const module: TestingModule = await Test.createTestingModule({
       imports: [ScheduleModule.forRoot()],
       providers: [
         QueueService,
         {
           provide: MusicSessionService,
-          useValue: {},
+          useValue: {
+            isAccountRegistered: vi.fn(() => Promise.resolve(true)),
+            addToQueue: vi.fn(async (): Promise<APIResult> => {
+              return {
+                status: 'success',
+              };
+            }),
+            getPlaybackState: vi.fn(() => {
+              return Promise.resolve({
+                status: 'success',
+                data: {
+                  registered: true,
+                  currentPlayback:
+                    mockPlaybackResponse as CurrentPlaybackResponse,
+                },
+              });
+            }),
+          },
+        },
+        {
+          provide: SpotifyApiService,
+          useValue: mockSpotifyService,
         },
         {
           provide: getRepositoryToken(Queue),
@@ -73,20 +88,8 @@ describe('QueueService', () => {
         },
       ],
     }).compile();
-    spySpotifyApiService.addToQueue = jest.fn(async (): Promise<APIResult> => {
-      return {
-        status: 'success',
-      };
-    });
-    spySpotifyApiService.getPlaybackState = jest.fn(() => {
-      return Promise.resolve({
-        status: 'success',
-        data: {
-          registered: true,
-          currentPlayback: mockPlaybackResponse as CurrentPlaybackResponse,
-        },
-      });
-    });
+    mockSpotifyService = module.get<SpotifyApiService>(SpotifyApiService);
+
     service = module.get<QueueService>(QueueService);
   });
 
@@ -95,7 +98,7 @@ describe('QueueService', () => {
   });
 
   afterEach(() => {
-    jest.clearAllTimers();
+    vi.clearAllTimers();
   });
 
   // the music has been paused

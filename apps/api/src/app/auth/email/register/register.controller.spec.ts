@@ -7,8 +7,8 @@ import { RegisterController } from './register.controller';
 import { EmailRegisterInterface } from '@musira/api-interfaces';
 describe('RegisterController', () => {
   let registerController: RegisterController;
-  const usersService = { emailRegister: jest.fn() };
-  const authService = { login: jest.fn() };
+  const usersService = { emailRegister: vi.fn() };
+  const authService = { login: vi.fn() };
   let mockFastifyReply: FastifyReply;
 
   beforeEach(async () => {
@@ -21,8 +21,8 @@ describe('RegisterController', () => {
     }).compile();
 
     mockFastifyReply = {
-      clearCookie: jest.fn(),
-      setCookie: jest.fn(),
+      clearCookie: vi.fn(),
+      setCookie: vi.fn(),
     } as unknown as FastifyReply;
 
     registerController = module.get<RegisterController>(RegisterController);

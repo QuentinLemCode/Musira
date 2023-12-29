@@ -4,22 +4,22 @@ import type { Queue } from './queue/queue.entity';
 
 @Entity()
 export class Music implements MusicInterface {
-  @Column()
+  @Column('varchar')
   artist: string;
 
-  @Column()
+  @Column('varchar')
   title: string;
 
-  @Column()
+  @Column('varchar')
   album: string;
 
-  @PrimaryColumn()
+  @PrimaryColumn('varchar')
   uri: `spotify:track:${string}`;
 
-  @Column()
+  @Column('varchar')
   cover: string;
 
-  @Column()
+  @Column('varchar')
   duration: number;
 
   @OneToMany('Queue', 'music')

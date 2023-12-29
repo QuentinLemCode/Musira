@@ -29,7 +29,7 @@ export class Queue {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
+  @Column('int', {
     default: Status.PENDING,
   })
   status: Status = Status.PENDING;

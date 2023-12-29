@@ -8,15 +8,15 @@ import { CreateMusicSessionDto } from '@musira/api-interfaces';
 
 // Mocking Repositories and Services
 const mockRepository = {
-  create: jest.fn(),
-  findOneOrFail: jest.fn(),
-  find: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
+  create: vi.fn(),
+  findOneOrFail: vi.fn(),
+  find: vi.fn(),
+  save: vi.fn(),
+  delete: vi.fn(),
 };
 
 const mockPublicCodeGeneratorService = {
-  generatePublicCode: jest.fn(),
+  generatePublicCode: vi.fn(),
 };
 
 describe('MusicSessionService', () => {
