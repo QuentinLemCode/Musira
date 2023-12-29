@@ -5,7 +5,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { MusicSession } from '../entities/music-session.entity';
 
 const mockRepository = {
-  findOneBy: jest.fn(),
+  findOneBy: vi.fn(),
 };
 
 describe('PublicCodeGeneratorService', () => {
@@ -28,11 +28,11 @@ describe('PublicCodeGeneratorService', () => {
   });
 
   beforeEach(() => {
-    jest.spyOn(global.Math, 'random').mockReturnValue(0.123456789);
+    vi.spyOn(global.Math, 'random').mockReturnValue(0.123456789);
   });
 
   afterEach(() => {
-    jest.spyOn(global.Math, 'random').mockRestore();
+    vi.spyOn(global.Math, 'random').mockRestore();
   });
 
   it('should be defined', () => {

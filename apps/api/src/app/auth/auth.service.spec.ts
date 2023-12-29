@@ -20,13 +20,13 @@ describe('AuthService', () => {
         {
           provide: UsersService,
           useValue: {
-            emailLogin: jest.fn(),
+            emailLogin: vi.fn(),
           },
         },
         {
           provide: JwtService,
           useValue: {
-            sign: jest.fn(),
+            sign: vi.fn(),
           },
         },
       ],
@@ -36,8 +36,8 @@ describe('AuthService', () => {
     usersService = module.get<UsersService>(UsersService);
     jwtService = module.get<JwtService>(JwtService);
     mockFastifyReply = {
-      clearCookie: jest.fn(),
-      setCookie: jest.fn(),
+      clearCookie: vi.fn(),
+      setCookie: vi.fn(),
     } as unknown as FastifyReply;
   });
 
@@ -55,8 +55,8 @@ describe('AuthService', () => {
         role: UserRole.USER,
       } as EmailUser;
       const mockAccessToken = 'mock_access_token';
-      jest.spyOn(usersService, 'emailLogin').mockResolvedValue(mockUser);
-      jest.spyOn(jwtService, 'sign').mockReturnValue(mockAccessToken);
+      vi.spyOn(usersService, 'emailLogin').mockResolvedValue(mockUser);
+      vi.spyOn(jwtService, 'sign').mockReturnValue(mockAccessToken);
 
       const result = service.login(mockUser, mockFastifyReply);
       expect(mockFastifyReply.setCookie).toHaveBeenCalledWith(
@@ -92,8 +92,8 @@ describe('AuthService', () => {
         name: 'Test User',
         role: UserRole.USER,
       } as EmailUser;
-      jest.spyOn(usersService, 'emailLogin').mockResolvedValue(mockUser);
-      jest.spyOn;
+      vi.spyOn(usersService, 'emailLogin').mockResolvedValue(mockUser);
+      vi.spyOn;
 
       const result = await service.validateUser(email, password);
       expect(result).toEqual(mockUser);

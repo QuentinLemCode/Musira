@@ -56,7 +56,7 @@ export class MusicSession {
   })
   deleted_at: Date;
 
-  @Column()
+  @Column('text')
   name: string;
 
   @ManyToOne('User')
@@ -81,7 +81,7 @@ export class MusicSession {
   @OneToOne('SpotifyAccount', 'music_session')
   spotify_account: Promise<SpotifyAccount | null>;
 
-  @Column({ default: true })
+  @Column('boolean', { default: true })
   active: boolean;
 
   @Column({ default: null, nullable: true, type: 'uuid' })

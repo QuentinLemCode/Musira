@@ -9,12 +9,12 @@ import { MusicSession } from '../music-session/entities/music-session.entity';
 import { SessionCreatorGuard } from '../users/session-creator.guard';
 import { MusicSessionPipe } from '../utils/pipes/music-session.pipe';
 import { MusicController } from './music.controller';
-import { CurrentMusic, Music } from './music.interface';
+import type { CurrentMusic, Music } from './music.interface';
 import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';
 import { SpotifyApiService } from './spotify/spotify-api/spotify-api.service';
 import { SpotifySearchService } from './spotify/spotify-search/spotify-search.service';
-import {
+import type {
   AlbumObjectSimplified,
   ArtistObjectSimplified,
   SearchResponse,
@@ -24,20 +24,20 @@ import { JwtGuard } from '../auth/jwt.guard';
 describe('MusicController', () => {
   let musicController: MusicController;
   const spotifyApiService = {
-    getTrack: jest.fn(),
-    isAccountRegistered: jest.fn(),
-    getPlaybackState: jest.fn(),
+    getTrack: vi.fn(),
+    isAccountRegistered: vi.fn(),
+    getPlaybackState: vi.fn(),
   };
   const spotifySearchService = {
-    search: jest.fn(),
+    search: vi.fn(),
   };
   const queueService = {
-    get: jest.fn(),
-    add: jest.fn(),
+    get: vi.fn(),
+    add: vi.fn(),
   };
   const queueEngineService = {
-    start: jest.fn(),
-    stop: jest.fn(),
+    start: vi.fn(),
+    stop: vi.fn(),
     isRunning: false,
   };
 
@@ -109,7 +109,7 @@ describe('MusicController', () => {
           total: 1,
         },
       };
-      spotifySearchService.search = jest.fn().mockResolvedValue(searchResponse);
+      spotifySearchService.search = vi.fn().mockResolvedValue(searchResponse);
 
       const result: Music[] = await musicController.search(query);
 
@@ -137,7 +137,7 @@ describe('MusicController', () => {
     it('should start the queue engine and return CurrentMusic', async () => {
       const musicSession: MusicSession = new MusicSession(); // You may need to create a valid MusicSession instance
       const queueEngineStatus = { message: 'Queue engine started' };
-      queueEngineService.start = jest.fn().mockResolvedValue(queueEngineStatus);
+      queueEngineService.start = vi.fn().mockResolvedValue(queueEngineStatus);
       queueEngineService.isRunning = true;
 
       const result: CurrentMusic = await musicController.start(musicSession);
@@ -156,7 +156,7 @@ describe('MusicController', () => {
   describe('stop', () => {
     it('should stop the queue engine and return CurrentMusic', async () => {
       const musicSession: MusicSession = new MusicSession(); // You may need to create a valid MusicSession instance
-      queueEngineService.stop = jest.fn();
+      queueEngineService.stop = vi.fn();
       queueEngineService.isRunning = false;
       const result: CurrentMusic = await musicController.stop(musicSession);
 
@@ -180,9 +180,7 @@ describe('MusicController', () => {
         currentPlay: null,
         engineStarted: false,
       };
-      jest
-        .spyOn(musicController, 'currentState')
-        .mockResolvedValue(currentState);
+      vi.spyOn(musicController, 'currentState').mockResolvedValue(currentState);
 
       const result: CurrentMusic =
         await musicController.currentState(musicSession);

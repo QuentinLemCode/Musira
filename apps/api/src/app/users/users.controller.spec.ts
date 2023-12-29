@@ -8,8 +8,8 @@ import { JwtGuard } from '../auth/jwt.guard';
 
 // Mocking UsersService
 const mockUsersService = {
-  getAll: jest.fn(),
-  delete: jest.fn(),
+  getAll: vi.fn(),
+  delete: vi.fn(),
 };
 
 describe('UsersController', () => {

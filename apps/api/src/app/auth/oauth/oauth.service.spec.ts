@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OAuthUser } from '../../users/user.oauth.entity';
 import { UsersService } from '../../users/users.service';
 import { OAuthService } from './oauth.service';
-import { OAuthProvider, OAuthProviderType } from '@musira/api-interfaces';
+import { OAuthProvider, type OAuthProviderType } from '@musira/api-interfaces';
 describe('OAuthService', () => {
   let service: OAuthService;
   let usersService: UsersService;
@@ -15,7 +15,7 @@ describe('OAuthService', () => {
         {
           provide: UsersService,
           useValue: {
-            OAuthLogin: jest.fn(),
+            OAuthLogin: vi.fn(),
           },
         },
       ],
@@ -71,17 +71,17 @@ describe('OAuthService', () => {
       };
       const mockUserResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValueOnce(mockUser),
+        json: vi.fn().mockResolvedValueOnce(mockUser),
       };
 
       const mockUserPermissions = {
         ok: true,
-        json: jest.fn().mockResolvedValueOnce(mockPermissions),
+        json: vi.fn().mockResolvedValueOnce(mockPermissions),
       };
 
       const mockCode = {
         ok: true,
-        json: jest.fn().mockResolvedValueOnce({ access_token: 'token' }),
+        json: vi.fn().mockResolvedValueOnce({ access_token: 'token' }),
       };
 
       const urls: Record<string, any> = {
@@ -90,17 +90,17 @@ describe('OAuthService', () => {
         'https://graph.facebook.com/v18.0/me': mockUserResponse,
       };
 
-      jest
-        .spyOn(global, 'fetch')
-        .mockImplementation((url: string | URL | Request) => {
+      vi.spyOn(global, 'fetch').mockImplementation(
+        (url: string | URL | Request) => {
           url = typeof url === 'string' ? url : url.toString();
           url = url.split('?')[0] || '';
           return urls[url];
-        });
+        },
+      );
       const user = {
         email: 'test@email.fr',
       } as OAuthUser;
-      jest.spyOn(usersService, 'OAuthLogin').mockResolvedValueOnce(user);
+      vi.spyOn(usersService, 'OAuthLogin').mockResolvedValueOnce(user);
 
       await service.login(OAuthProvider.FACEBOOK, code);
 

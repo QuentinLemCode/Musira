@@ -12,10 +12,10 @@ export class Settings {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ default: 3 })
+  @Column('int', { default: 3 })
   maxVotes: number;
 
-  @Column({ default: 5 })
+  @Column('int', { default: 5 })
   maxQueuableSongPerUser: number;
 
   @OneToOne(() => MusicSession, (music_session) => music_session.settings, {

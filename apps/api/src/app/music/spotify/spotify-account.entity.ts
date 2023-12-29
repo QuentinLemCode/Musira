@@ -12,19 +12,19 @@ export class SpotifyAccount {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column('varchar', { nullable: true })
   access_token: string;
 
-  @Column({ nullable: true })
+  @Column('varchar', { nullable: true })
   token_type: string;
 
-  @Column({ nullable: true })
+  @Column('varchar', { nullable: true })
   scope: string;
 
-  @Column({ nullable: true })
+  @Column('int', { nullable: true })
   expires_in: number;
 
-  @Column({ nullable: true })
+  @Column('varchar', { nullable: true })
   refresh_token: string;
 
   @Column({ type: 'bigint', nullable: true })
