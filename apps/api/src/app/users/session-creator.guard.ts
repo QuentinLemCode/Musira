@@ -1,8 +1,8 @@
-import type { JwtUser } from '@musira/api-interfaces/index';
 import type { CanActivate, ExecutionContext } from '@nestjs/common';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { publicCodeFromRequest } from '../utils/decorators/music-session.decorator';
 import { UsersService } from './users.service';
+import type { JwtUser } from '@musira/api-interfaces';
 
 @Injectable()
 export class SessionCreatorGuard implements CanActivate {

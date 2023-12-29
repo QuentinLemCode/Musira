@@ -4,7 +4,7 @@ import {
   OAuthProvider,
   type JwtPayload,
   type JwtToken,
-} from '@musira/api-interfaces/index';
+} from '@musira/api-interfaces';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { StorageService } from '../services/storage.service';

@@ -1,4 +1,3 @@
-import type { JwtUser } from '@musira/api-interfaces/index';
 import {
   BadRequestException,
   Body,
@@ -22,6 +21,7 @@ import { Music } from '../music.entity';
 import { QueueEngineService } from './queue-engine/queue-engine.service';
 import type { Queue } from './queue.entity';
 import { QueueService } from './queue.service';
+import type { JwtUser } from '@musira/api-interfaces';
 
 interface QueueResponse {
   queue: Queue[];

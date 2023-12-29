@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { type JwtToken, OAuthProvider } from '@musira/api-interfaces/index';
-import { of, throwError } from 'rxjs';
 import { AuthenticationService } from '../authentication.service';
 import { CallbackComponent } from './callback.component';
+import { type JwtToken, OAuthProvider } from '@musira/api-interfaces';
+import { of, throwError } from 'rxjs';
 
 describe('CallbackComponent', () => {
   let component: CallbackComponent;

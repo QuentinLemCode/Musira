@@ -1,6 +1,6 @@
-import { OAuthProvider } from '@musira/api-interfaces/index';
 import { ChildEntity, Column, Index } from 'typeorm';
 import { User } from './user.entity';
+import type { OAuthProvider } from '@musira/api-interfaces';
 
 @ChildEntity()
 export class OAuthUser extends User {

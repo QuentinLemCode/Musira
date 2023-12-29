@@ -1,4 +1,3 @@
-import { OAuthProvider } from '@musira/api-interfaces/index';
 import {
   BadRequestException,
   Inject,
@@ -7,6 +6,7 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { UsersService } from '../../users/users.service';
+import { OAuthProvider } from '@musira/api-interfaces';
 
 interface FacebookToken {
   access_token: string;

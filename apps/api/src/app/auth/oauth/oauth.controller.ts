@@ -1,8 +1,8 @@
 import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
 import { OAuthService } from './oauth.service';
-import type { OAuthProvider } from '@musira/api-interfaces/index';
 import { AuthService } from '../auth.service';
 import type { FastifyReply } from 'fastify';
+import type { OAuthProvider } from '@musira/api-interfaces';
 
 @Controller('auth/oauth')
 export class OauthController {

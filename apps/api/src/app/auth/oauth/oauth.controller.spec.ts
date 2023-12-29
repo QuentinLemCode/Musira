@@ -1,10 +1,10 @@
-import { OAuthProvider } from '@musira/api-interfaces/index';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyReply } from 'fastify';
 import { OAuthUser } from '../../users/user.oauth.entity';
 import { AuthService } from '../auth.service';
 import { OauthController } from './oauth.controller';
 import { OAuthService } from './oauth.service';
+import { OAuthProvider } from '@musira/api-interfaces';
 
 describe('OauthController', () => {
   let controller: OauthController;

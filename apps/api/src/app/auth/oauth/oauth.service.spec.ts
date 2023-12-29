@@ -1,9 +1,9 @@
-import { OAuthProvider } from '@musira/api-interfaces/index';
 import { ServiceUnavailableException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OAuthUser } from '../../users/user.oauth.entity';
 import { UsersService } from '../../users/users.service';
 import { OAuthService } from './oauth.service';
+import { OAuthProvider } from '@musira/api-interfaces';
 describe('OAuthService', () => {
   let service: OAuthService;
   let usersService: UsersService;

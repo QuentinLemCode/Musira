@@ -1,4 +1,3 @@
-import type { JwtUser } from '@musira/api-interfaces/index';
 import {
   BadRequestException,
   Body,
@@ -20,6 +19,7 @@ import { isResponseError } from '../../utils/type-guards';
 import { type SpotifyOAuthDTO } from '../music.interface';
 import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
 import { SpotifyApiService } from './spotify-api/spotify-api.service';
+import type { JwtUser } from '@musira/api-interfaces';
 
 @Controller('spotify')
 export class SpotifyLoginController {

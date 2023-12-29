@@ -1,4 +1,3 @@
-import type { JwtPayload } from '@musira/api-interfaces/index';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
@@ -8,6 +7,7 @@ import { UserRole } from '../users/user.entity';
 import type { OAuthUser } from '../users/user.oauth.entity';
 import { UsersService } from '../users/users.service';
 import { hashPassword } from '../utils/hash';
+import type { JwtPayload } from '@musira/api-interfaces';
 
 @Injectable()
 export class AuthService {

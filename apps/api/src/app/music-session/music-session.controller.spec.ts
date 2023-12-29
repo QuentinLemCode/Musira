@@ -1,11 +1,10 @@
-import { JwtUser } from '@musira/api-interfaces/index';
-import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../users/users.service';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionController } from './music-session.controller';
 import { MusicSessionService } from './music-session.service';
 import { JwtService } from '@nestjs/jwt';
+import { CreateMusicSessionDto, JwtUser } from '@musira/api-interfaces';
 
 // Mocking MusicSessionService
 const mockSessionService = {

@@ -1,9 +1,6 @@
 import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
-import type {
-  MusicSessionDto,
-  UserResponseDTO,
-} from '@musira/api-interfaces/index';
+import type { MusicSessionDto, UserResponseDTO } from '@musira/api-interfaces';
 import { mergeMap } from 'rxjs/operators';
 import { QueueService } from '../../services/queue.service';
 import { UsersService } from '../../services/users.service';

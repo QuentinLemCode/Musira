@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
+import { CreateMusicSessionDto } from '@musira/api-interfaces';
 import { firstValueFrom } from 'rxjs';
 import { MusicSessionsService } from '../music-sessions.service';
 

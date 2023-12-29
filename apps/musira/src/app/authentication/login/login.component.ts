@@ -2,7 +2,7 @@ import { Component, Inject, effect } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-import { OAuthProvider } from '@musira/api-interfaces/index';
+import { OAuthProvider } from '@musira/api-interfaces';
 import { AuthenticationService } from '../authentication.service';
 
 @Component({
