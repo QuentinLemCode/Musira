@@ -2,6 +2,8 @@ import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../../../users/users.service';
 import { LogoutController } from './logout.controller';
+import { AuthService } from '../../auth.service';
+import type { FastifyReply } from 'fastify';
 
 // Mocking Service
 const mockUserService = {
@@ -10,14 +12,23 @@ const mockUserService = {
 
 describe('LogoutController', () => {
   let controller: LogoutController;
+  const authService = { logout: jest.fn() };
+  let mockFastifyReply: FastifyReply;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [LogoutController],
-      providers: [{ provide: UsersService, useValue: mockUserService }],
+      providers: [
+        { provide: UsersService, useValue: mockUserService },
+        { provide: AuthService, useValue: authService },
+      ],
     }).compile();
 
     controller = module.get<LogoutController>(LogoutController);
+    mockFastifyReply = {
+      clearCookie: jest.fn(),
+      setCookie: jest.fn(),
+    } as unknown as FastifyReply;
   });
 
   it('should be defined', () => {
@@ -29,16 +40,15 @@ describe('LogoutController', () => {
       const userId = '123';
       mockUserService.removeRefreshUUID.mockResolvedValue(true);
 
-      const result = await controller.logout(userId);
+      await controller.logout(userId, mockFastifyReply);
 
-      expect(result).toBe(true);
       expect(mockUserService.removeRefreshUUID).toHaveBeenCalledWith(123);
     });
 
     it('should throw BadRequestException when id is missing', async () => {
       const userId = '';
 
-      await expect(controller.logout(userId)).rejects.toThrow(
+      await expect(controller.logout(userId, mockFastifyReply)).rejects.toThrow(
         BadRequestException,
       );
     });

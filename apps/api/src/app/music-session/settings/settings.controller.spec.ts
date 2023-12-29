@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSession } from '../entities/music-session.entity';
 import { SettingsController, SettingsQuery } from './settings.controller';
@@ -7,6 +6,7 @@ import { SettingsService } from './settings.service';
 import { Settings } from './settings.entity';
 import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
 import { mockMusicSessionPipe } from '../../../test-utils/mock';
+import { JwtGuard } from '../../auth/jwt.guard';
 
 // Mocking Service
 const mockSettingsService = {

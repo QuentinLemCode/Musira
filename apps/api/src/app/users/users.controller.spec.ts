@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
-import { JwtGuard } from './jwt/jwt.guard';
 import { mockJwtGuard } from '../../test-utils/mock';
+import { JwtGuard } from '../auth/jwt.guard';
 
 // Mocking UsersService
 const mockUsersService = {

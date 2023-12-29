@@ -1,24 +1,29 @@
-import { EmailUserResponseDTO } from '@musira/api-interfaces/index';
 import { EmailRegisterInterface } from '@musira/api-interfaces/user/email.dto';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { JwtService } from '../../../users/jwt/jwt.service';
+import type { FastifyReply } from 'fastify';
 import { UsersService } from '../../../users/users.service';
+import { AuthService } from '../../auth.service';
 import { RegisterController } from './register.controller';
-
 describe('RegisterController', () => {
   let registerController: RegisterController;
   const usersService = { emailRegister: jest.fn() };
-  const jwtService = { generateEmailToken: jest.fn() };
+  const authService = { login: jest.fn() };
+  let mockFastifyReply: FastifyReply;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RegisterController],
       providers: [
         { provide: UsersService, useValue: usersService },
-        { provide: JwtService, useValue: jwtService },
+        { provide: AuthService, useValue: authService },
       ],
     }).compile();
+
+    mockFastifyReply = {
+      clearCookie: jest.fn(),
+      setCookie: jest.fn(),
+    } as unknown as FastifyReply;
 
     registerController = module.get<RegisterController>(RegisterController);
   });
@@ -43,37 +48,25 @@ describe('RegisterController', () => {
         /* Create a mock of the created user object */
       };
       const generatedToken = {
-        expires_at: 1000,
-        access_token: 'token',
-        refresh_token: 'refresh-token',
-      };
-      const expectedResponse: EmailUserResponseDTO = {
-        name: 'test',
-        created_at: date.toISOString(),
-        email: 'test@example.com',
-        expiresAt: 1000,
-        id: 1,
-        locked: false,
-        loginTries: 0,
-        refreshToken: 'refresh-token',
-        role: 1,
-        sessionCreatedIds: [],
-        token: 'token',
-        updated_at: date.toISOString(),
-        type: 'EMAIL',
+        accessToken: 'token',
       };
 
       usersService.emailRegister.mockResolvedValue(createdUser);
-      jwtService.generateEmailToken.mockResolvedValue(generatedToken);
+      authService.login.mockResolvedValue(generatedToken);
 
-      const result: EmailUserResponseDTO =
-        await registerController.create(emailRegisterData);
+      const result = await registerController.create(
+        emailRegisterData,
+        mockFastifyReply,
+      );
 
-      expect(result).toEqual(expectedResponse);
+      expect(result).toHaveProperty('accessToken');
       expect(usersService.emailRegister).toHaveBeenCalledWith(
         emailRegisterData,
       );
-      expect(jwtService.generateEmailToken).toHaveBeenCalledWith(createdUser);
+      expect(authService.login).toHaveBeenCalledWith(
+        createdUser,
+        mockFastifyReply,
+      );
     });
 
     it('should throw BadRequestException when user already exists', async () => {
@@ -85,7 +78,7 @@ describe('RegisterController', () => {
       usersService.emailRegister.mockResolvedValue(null);
 
       await expect(
-        registerController.create(emailRegisterData),
+        registerController.create(emailRegisterData, mockFastifyReply),
       ).rejects.toThrow(BadRequestException);
       expect(usersService.emailRegister).toHaveBeenCalledWith(
         emailRegisterData,

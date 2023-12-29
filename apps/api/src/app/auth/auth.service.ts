@@ -15,7 +15,7 @@ export class AuthService {
     process.env.JWT_SIGNATURE_SECRET || 'notreallysecret';
   constructor(
     private readonly users: UsersService,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   validateUser(email: string, password: string): Promise<EmailUser | null> {

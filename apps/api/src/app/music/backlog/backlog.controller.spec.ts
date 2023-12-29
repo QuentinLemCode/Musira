@@ -1,7 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { Music } from '../music.entity';
@@ -9,6 +8,7 @@ import { BacklogController } from './backlog.controller';
 import { BacklogService } from './backlog.service';
 import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
 import { mockMusicSessionPipe } from '../../../test-utils/mock';
+import { JwtGuard } from '../../auth/jwt.guard';
 
 // Mocking Services and Guards
 const mockBacklogService = {
