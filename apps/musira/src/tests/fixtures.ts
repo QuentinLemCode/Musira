@@ -1,10 +1,10 @@
-import type { EmailRefreshResponseDTO } from '@musira/api-interfaces/index';
+import type { EmailRefreshResponseDTO } from '@musira/api-interfaces';
 import {
   Status,
-  type Music,
-  type Queue,
   type Backlog,
   type CurrentMusic,
+  type Music,
+  type Queue,
 } from '../app/services/music-api.interface';
 
 export const musicFixture: Music = {

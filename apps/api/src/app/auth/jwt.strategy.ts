@@ -1,10 +1,10 @@
-import type { JwtPayload } from '@musira/api-interfaces/index';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import type { FastifyRequest } from 'fastify';
 import { jwtSecret } from './secret';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from './auth.service';
+import type { JwtPayload } from '@musira/api-interfaces';
 
 interface JwtPayloadWithJti extends JwtPayload {
   jti: string;

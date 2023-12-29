@@ -1,10 +1,10 @@
-import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionService } from './music-session.service';
 import { PublicCodeGeneratorService } from './public-code-generator/public-code-generator.service';
+import { CreateMusicSessionDto } from '@musira/api-interfaces';
 
 // Mocking Repositories and Services
 const mockRepository = {

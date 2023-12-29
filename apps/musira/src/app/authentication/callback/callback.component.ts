@@ -1,6 +1,6 @@
 import { Component, Inject, type OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { OAuthProvider } from '@musira/api-interfaces/index';
+import { OAuthProvider } from '@musira/api-interfaces';
 import { AuthenticationService } from '../authentication.service';
 
 @Component({

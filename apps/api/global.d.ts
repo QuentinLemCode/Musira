@@ -1,4 +1,4 @@
-import type { JWTPayload } from 'jose';
+import type { JwtPayload } from '@musira/api-interfaces';
 
 declare namespace NodeJS {
   export interface ProcessEnv {
@@ -27,6 +27,6 @@ declare namespace NodeJS {
 
 declare namespace Express {
   export interface Request {
-    jwt?: JWTPayload;
+    jwt?: JwtPayload;
   }
 }

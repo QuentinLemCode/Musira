@@ -1,10 +1,10 @@
-import { EmailRegisterInterface } from '@musira/api-interfaces/user/email.dto';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { FastifyReply } from 'fastify';
 import { UsersService } from '../../../users/users.service';
 import { AuthService } from '../../auth.service';
 import { RegisterController } from './register.controller';
+import { EmailRegisterInterface } from '@musira/api-interfaces';
 describe('RegisterController', () => {
   let registerController: RegisterController;
   const usersService = { emailRegister: jest.fn() };
