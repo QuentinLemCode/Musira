@@ -5,7 +5,7 @@
     <img src="/assets/logo-with-title-dark.webp" alt="logo" />
   </div>
   <div class="login-box">
-    <a (click)="fbLogin()">Facebook</a>
+    <a (click)="fbLogin()">Se connecter avec Facebook</a>
     <a (click)="emailLogin = !emailLogin">Se connecter avec un email</a>
     <ng-container *ngIf="emailLogin">
       <form [formGroup]="form" (ngSubmit)="submit()">

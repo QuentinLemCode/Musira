@@ -80,14 +80,17 @@ export class AuthenticationService {
   }
 
   emailRegister(email: string, username: string, password: string) {
-    return this.http.post<UserResponseDTO>(
-      this.usersEndpoint + '/email/register',
-      {
+    return this.http
+      .post<JwtToken>(this.usersEndpoint + '/email/register', {
         email,
         username,
         password,
-      },
-    );
+      })
+      .pipe(
+        tap((data) => {
+          this.saveToken(data.accessToken);
+        }),
+      );
   }
 
   getAllUsers() {
