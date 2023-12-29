@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OAuthUser } from '../../users/user.oauth.entity';
 import { UsersService } from '../../users/users.service';
 import { OAuthService } from './oauth.service';
-import { OAuthProvider } from '@musira/api-interfaces';
+import { OAuthProvider, OAuthProviderType } from '@musira/api-interfaces';
 describe('OAuthService', () => {
   let service: OAuthService;
   let usersService: UsersService;
@@ -31,7 +31,7 @@ describe('OAuthService', () => {
 
   describe('login', () => {
     it('should throw ServiceUnavailableException for unsupported provider', () => {
-      const unsupportedProvider = -1 as OAuthProvider; // Replace with unsupported provider
+      const unsupportedProvider = 'unsupported' as OAuthProviderType; // Replace with unsupported provider
       expect(() => service.login(unsupportedProvider, 'code')).toThrow(
         ServiceUnavailableException,
       );
