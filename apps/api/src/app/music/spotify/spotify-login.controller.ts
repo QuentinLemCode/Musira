@@ -16,7 +16,7 @@ import { MusicSessionService } from '../../music-session/music-session.service';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { isResponseError } from '../../utils/type-guards';
-import { type SpotifyOAuthDTO } from '../music.interface';
+import type { SpotifyOAuthDTO } from '../music.interface';
 import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
 import { SpotifyApiService } from './spotify-api/spotify-api.service';
 import type { JwtUser } from '@musira/api-interfaces';
