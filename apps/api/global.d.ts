@@ -19,6 +19,9 @@ declare namespace NodeJS {
     JWT_EXPIRATION?: string;
     JWT_REFRESH_SECRET?: string;
     JWT_REFRESH_EXPIRATION?: string;
+    FACEBOOK_APP_ID?: string;
+    FACEBOOK_APP_SECRET?: string;
+    JWT_SIGNATURE_SECRET?: string;
   }
 }
 

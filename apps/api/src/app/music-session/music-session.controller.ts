@@ -1,4 +1,4 @@
-import type { MusicSessionDto } from '@musira/api-interfaces/index';
+import type { JwtUser, MusicSessionDto } from '@musira/api-interfaces/index';
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import type { DeletedMusicSessionDto } from '@musira/api-interfaces/sessions/deleted-music-session.dto';
 import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
@@ -12,16 +12,15 @@ import {
   NotFoundException,
   Patch,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
-import { type JWTPayload } from 'jose';
-import { JwtGuard } from '../users/jwt/jwt.guard';
+import { JwtGuard } from '../auth/jwt.guard';
 import { Roles } from '../users/roles.decorator';
 import { RolesGuard } from '../users/roles.guard';
 import { SessionCreatorGuard } from '../users/session-creator.guard';
 import { UserRole } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
-import { Jwt } from '../utils/decorators/jwt.decorator';
 import {
   MusicSessionParam,
   PublicCode,
@@ -40,11 +39,10 @@ export class MusicSessionController {
   @UseGuards(JwtGuard)
   async create(
     @Body() createMusicSessionDto: CreateMusicSessionDto,
-    @Jwt() jwt: JWTPayload,
+    @Request() req: { user: JwtUser },
   ): Promise<MusicSessionDto> {
-    if (!jwt.email || typeof jwt.email !== 'string')
-      throw new ForbiddenException('no jwt');
-    const user = await this.users.findByEmail(jwt.email);
+    if (!req.user.email) throw new ForbiddenException('no jwt');
+    const user = await this.users.findByEmail(req.user.email);
     if (!user) {
       throw new BadRequestException({
         cause: 'user',
@@ -112,11 +110,9 @@ export class MusicSessionController {
   @Delete(':publicCode')
   async remove(
     @PublicCode() code: number,
-    @Jwt() jwt: JWTPayload,
+    @Request() req: { user: JwtUser },
   ): Promise<DeletedMusicSessionDto> {
-    if (!jwt.email || typeof jwt.email !== 'string')
-      throw new ForbiddenException('no jwt');
-    const user = await this.users.findByEmail(jwt.email);
+    const user = await this.users.findByEmail(req.user.email);
     if (!user) {
       throw new BadRequestException({
         cause: 'user',

@@ -1,21 +1,21 @@
+import type { JwtUser } from '@musira/api-interfaces/index';
 import {
   BadRequestException,
   Body,
   Controller,
   Get,
   Post,
+  Request,
   ServiceUnavailableException,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { JwtGuard } from '../../auth/jwt.guard';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { MusicSessionService } from '../../music-session/music-session.service';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
-import type { User } from '../../users/user.entity';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
-import { UserFromRequest } from '../../utils/decorators/user-from-request.decorator';
 import { isResponseError } from '../../utils/type-guards';
 import { type SpotifyOAuthDTO } from '../music.interface';
 import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
@@ -61,7 +61,7 @@ export class SpotifyLoginController {
   @UseGuards(JwtGuard)
   async spotifyAuthentication(
     @Body() spotifyOAuth: SpotifyOAuthDTO,
-    @UserFromRequest() user: User,
+    @Request() req: { user: JwtUser },
   ) {
     const [publicCode, state] = spotifyOAuth.state.split('*');
     if (!publicCode)
@@ -71,7 +71,7 @@ export class SpotifyLoginController {
     if (musicSession.spotifyAuthUuid !== state)
       throw new BadRequestException('Invalid state');
 
-    if (musicSession.creator.id !== user.id)
+    if (musicSession.creator.id !== req.user.id)
       throw new UnauthorizedException(
         'Only the session creator can register a player',
       );

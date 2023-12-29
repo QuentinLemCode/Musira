@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
-import { JwtGuard } from '../../users/jwt/jwt.guard';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { MusicSession } from '../entities/music-session.entity';
 import { SettingsService } from './settings.service';
+import { JwtGuard } from '../../auth/jwt.guard';
 
 export interface SettingsQuery {
   maxVotes: number;

@@ -1,7 +1,7 @@
 import type {
   EmailLoginInterface,
   EmailRegisterInterface,
-  SocialLoginUserInterface,
+  OAuthProvider,
 } from '@musira/api-interfaces/index';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,13 +11,13 @@ import type { MusicSession } from '../music-session/entities/music-session.entit
 import { hashPassword } from '../utils/hash';
 import { EmailUser } from './user.email.entity';
 import { User } from './user.entity';
-import { SocialLoginUser } from './user.social-login.entity';
+import { OAuthUser } from './user.oauth.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(SocialLoginUser)
-    private readonly socialUsers: Repository<SocialLoginUser>,
+    @InjectRepository(OAuthUser)
+    private readonly oAuthUsers: Repository<OAuthUser>,
     @InjectRepository(EmailUser)
     private readonly emailUsers: Repository<EmailUser>,
     @InjectRepository(User)
@@ -52,9 +52,15 @@ export class UsersService {
     });
   }
 
-  findOneSocialLoginByEmail(email: string) {
-    return this.socialUsers.findOneBy({
+  findOneOAuthLoginByEmail(email: string) {
+    return this.oAuthUsers.findOneBy({
       email,
+    });
+  }
+
+  findOneOAuthLoginByExternalId(externalId: string) {
+    return this.oAuthUsers.findOneBy({
+      externalId,
     });
   }
 
@@ -90,6 +96,37 @@ export class UsersService {
     return queuedMusics.filter((q) => q.userId === id);
   }
 
+  async OAuthLogin(
+    email: string,
+    firstName: string,
+    lastName: string,
+    photoUrl: string,
+    externalId: string,
+    provider: OAuthProvider,
+  ) {
+    const existingUser = await this.findOneOAuthLoginByExternalId(externalId);
+    if (existingUser !== null) {
+      await this.oAuthUsers.update(
+        { id: existingUser.id },
+        {
+          firstName,
+          lastName,
+          photoUrl,
+          email,
+        },
+      );
+      return await this.oAuthUsers.findOneByOrFail({ id: existingUser.id });
+    }
+    const user = this.oAuthUsers.create();
+    user.email = email;
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.photoUrl = photoUrl;
+    user.provider = provider;
+    user.externalId = externalId;
+    return this.users.save(user);
+  }
+
   async emailRegister(registerDTO: EmailRegisterInterface) {
     const user = this.emailUsers.create();
     user.salt = randomBytes(16).toString('base64');
@@ -118,30 +155,6 @@ export class UsersService {
     user.loginTries = 0;
     await this.emailUsers.save(user);
     return user;
-  }
-
-  async socialLogin(socialUserDTO: SocialLoginUserInterface) {
-    const existingUser = await this.findOneSocialLoginByEmail(
-      socialUserDTO.email,
-    );
-    if (existingUser !== null) {
-      await this.socialUsers.update(
-        { id: existingUser.id },
-        {
-          name: socialUserDTO.name,
-          photoUrl: socialUserDTO.photoUrl,
-          firstName: socialUserDTO.firstName,
-          lastName: socialUserDTO.lastName,
-        },
-      );
-      return await this.socialUsers.findOneByOrFail({ id: existingUser.id });
-    }
-    const user = this.socialUsers.create();
-    user.email = socialUserDTO.email;
-    user.name = socialUserDTO.name;
-    user.photoUrl = socialUserDTO.photoUrl;
-    user.provider = socialUserDTO.provider;
-    return this.users.save(user);
   }
 
   addLoginTry(user: EmailUser) {

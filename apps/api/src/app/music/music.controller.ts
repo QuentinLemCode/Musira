@@ -7,7 +7,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { MusicSession } from '../music-session/entities/music-session.entity';
-import { JwtGuard } from '../users/jwt/jwt.guard';
 import { SessionCreatorGuard } from '../users/session-creator.guard';
 import { MusicSessionParam } from '../utils/decorators/music-session.decorator';
 import type { CurrentMusic, Music } from './music.interface';
@@ -19,6 +18,7 @@ import type {
   SearchResponse,
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
+import { JwtGuard } from '../auth/jwt.guard';
 
 @Controller('session/:publicCode/music')
 export class MusicController {

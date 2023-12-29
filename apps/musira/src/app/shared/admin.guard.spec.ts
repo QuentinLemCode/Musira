@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { UserService } from '../user/user.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 import { AdminGuard } from './admin.guard';
 import { signal } from '@angular/core';
 
 describe('AdminGuard', () => {
   let adminGuard: AdminGuard;
   const userServiceMock = {
-    loggedUser: signal({ isLoggedIn: true, isAdmin: false }),
+    loggedUser: signal({ isLoggedIn: true, admin: false }),
   };
   let routerMock: Partial<Router>;
 
@@ -19,7 +19,7 @@ describe('AdminGuard', () => {
     TestBed.configureTestingModule({
       providers: [
         AdminGuard,
-        { provide: UserService, useValue: userServiceMock },
+        { provide: AuthenticationService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock },
       ],
     });
@@ -38,7 +38,7 @@ describe('AdminGuard', () => {
   });
 
   it('should return true if logged in and admin', () => {
-    userServiceMock.loggedUser.set({ isLoggedIn: true, isAdmin: true });
+    userServiceMock.loggedUser.set({ isLoggedIn: true, admin: true });
 
     const result = adminGuard.canActivate();
 

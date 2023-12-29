@@ -1,10 +1,11 @@
+import { JwtUser } from '@musira/api-interfaces/index';
 import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../users/users.service';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionController } from './music-session.controller';
 import { MusicSessionService } from './music-session.service';
-import { JwtService } from '../users/jwt/jwt.service';
+import { JwtService } from '@nestjs/jwt';
 
 // Mocking MusicSessionService
 const mockSessionService = {
@@ -49,14 +50,14 @@ describe('MusicSessionController', () => {
       const createDto: CreateMusicSessionDto = {
         name: 'toto',
       }; // Provide valid DTO here
-      const jwtPayload = { email: 'user@example.com' };
+      const request = { user: { email: 'user@example.com' } as JwtUser };
       mockUsersService.findByEmail.mockResolvedValue({ id: 1 });
       mockSessionService.create.mockResolvedValue({
         creator: { name: 'test' },
         name: 'toto',
       });
 
-      const result = await controller.create(createDto, jwtPayload);
+      const result = await controller.create(createDto, request);
 
       expect(result).toBeDefined();
     });

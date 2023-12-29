@@ -13,11 +13,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Backlog } from '../../music/backlog/backlog.entity';
-import { Queue } from '../../music/queue/queue.entity';
-import { SpotifyAccount } from '../../music/spotify/spotify-account.entity';
-import { User } from '../../users/user.entity';
-import { Settings } from '../settings/settings.entity';
+import type { Backlog } from '../../music/backlog/backlog.entity';
+import type { Queue } from '../../music/queue/queue.entity';
+import type { SpotifyAccount } from '../../music/spotify/spotify-account.entity';
+import type { User } from '../../users/user.entity';
+import type { Settings } from '../settings/settings.entity';
 
 @Entity()
 export class MusicSession {
@@ -59,29 +59,26 @@ export class MusicSession {
   @Column()
   name: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne('User')
   @JoinColumn()
   creator: User;
 
-  @ManyToMany(() => User, { cascade: true })
+  @ManyToMany('User', { cascade: true })
   @JoinTable()
   participants: User[];
 
-  @OneToMany(() => Queue, (queue) => queue.music_session)
+  @OneToMany('Queue', 'music_session')
   queued_musics: Promise<Queue[]>;
 
-  @OneToMany(() => Backlog, (backlog) => backlog.music_session)
+  @OneToMany('Backlog', 'music_session')
   backlog_musics: Promise<Backlog[]>;
 
-  @OneToOne(() => Settings, (settings) => settings.music_session, {
+  @OneToOne('Settings', 'music_session', {
     cascade: true,
   })
   settings: Promise<Settings>;
 
-  @OneToOne(
-    () => SpotifyAccount,
-    (spotify_account) => spotify_account.music_session,
-  )
+  @OneToOne('SpotifyAccount', 'music_session')
   spotify_account: Promise<SpotifyAccount | null>;
 
   @Column({ default: true })

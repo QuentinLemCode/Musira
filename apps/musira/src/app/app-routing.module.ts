@@ -5,23 +5,28 @@ import { AdminComponent } from './admin/admin/admin.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
 import { CreateSessionComponent } from './sessions/create-session/create-session.component';
-import { RegisterComponent } from './user/register/register.component';
+import { RegisterComponent } from './authentication/register/register.component';
 import { AdminGuard } from './shared/admin.guard';
 import { AuthGuard } from './shared/auth.guard';
 import { musicSessionGuard } from './shared/music-session.guard';
 import { NotAuthGuard } from './shared/not-auth.guard';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
-import { LoginComponent } from './user/login/login.component';
+import { LoginComponent } from './authentication/login/login.component';
 import { SessionSettingsComponent } from './sessions/session-settings/session-settings.component';
 import { MusicSessionComponent } from './sessions/music-session/music-session.component';
 import { JoinSessionComponent } from './sessions/join-session/join-session.component';
+import { CallbackComponent } from './authentication/callback/callback.component';
 
 const routes: Routes = [
   {
     path: ':sessionId/session-settings',
     component: SessionSettingsComponent,
     canActivate: [musicSessionGuard, AuthGuard],
+  },
+  {
+    path: 'oauth/callback',
+    component: CallbackComponent,
   },
   {
     path: 'create-session',

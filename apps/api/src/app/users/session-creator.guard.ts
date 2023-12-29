@@ -1,6 +1,6 @@
+import type { JwtUser } from '@musira/api-interfaces/index';
 import type { CanActivate, ExecutionContext } from '@nestjs/common';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import type { JWTPayload } from 'jose';
 import { publicCodeFromRequest } from '../utils/decorators/music-session.decorator';
 import { UsersService } from './users.service';
 
@@ -14,8 +14,8 @@ export class SessionCreatorGuard implements CanActivate {
   logger = new Logger(SessionCreatorGuard.name);
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const { jwt } = context.switchToHttp().getRequest<{ jwt: JWTPayload }>();
-    const email = jwt.email;
+    const { user } = context.switchToHttp().getRequest<{ user: JwtUser }>();
+    const email = user.email;
     if (!email || typeof email !== 'string') {
       this.logger.debug('invalid email : ' + email);
       return false;

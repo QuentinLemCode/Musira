@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "@fastify/cookie/types/plugin.d.ts"],
     "verbatimModuleSyntax": false
   },
   "include": [
@@ -11,8 +11,8 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/*.d.ts",
-    "../../libs/api-interfaces/src/*",
     "setup-jest.js",
-    "src/test-utils/*.ts"
+    "src/test-utils/*.ts",
+    "@fastify/cookie/types/plugin.d.ts"
   ]
 }

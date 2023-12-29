@@ -1,16 +1,22 @@
-import type {
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
+import {
+  HTTP_INTERCEPTORS,
+  type HttpEvent,
+  type HttpHandler,
+  type HttpInterceptor,
+  type HttpRequest,
 } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import type { Observable } from 'rxjs';
+import { StorageService } from '../services/storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class JwtInterceptor implements HttpInterceptor {
+  constructor(
+    @Inject(StorageService) private readonly storageService: StorageService,
+  ) {}
+
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler,
@@ -32,6 +38,14 @@ export class JwtInterceptor implements HttpInterceptor {
   }
 
   private getTokenFromLocalStorage() {
-    return localStorage.getItem('token');
+    return this.storageService.getLocalItem<string>('token');
   }
 }
+
+export const jwtInterceptor = [
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: JwtInterceptor,
+    multi: true,
+  },
+];

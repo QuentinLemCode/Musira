@@ -10,7 +10,7 @@ import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { CONSTANTS } from '../constants';
 import { StorageService } from '../services/storage.service';
-import { UserService } from '../user/user.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 interface SessionHistory {
   musicSession: MusicSessionDto;
@@ -30,7 +30,7 @@ export class MusicSessionsService {
     @Inject(HttpClient) private readonly http: HttpClient,
     @Inject(Router) private readonly router: Router,
     @Inject(StorageService) private readonly storage: StorageService,
-    @Inject(UserService) private readonly user: UserService,
+    @Inject(AuthenticationService) private readonly user: AuthenticationService,
   ) {
     this.router.events.subscribe({
       next: (event) => {
