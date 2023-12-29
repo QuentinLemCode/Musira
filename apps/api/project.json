@@ -12,7 +12,13 @@
         "outputPath": "dist/apps/api",
         "main": "apps/api/src/main.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
-        "assets": []
+        "swcrc": "apps/api/.swcrc"
+      },
+      "configurations": {
+        "production": {
+          "swcrc": "apps/api/.prod.swcrc",
+          "clean": true
+        }
       }
     },
     "serve": {
