@@ -33,7 +33,7 @@ export class AuthService {
           role: user.role,
           name:
             user instanceof EmailUser
-              ? user.name
+              ? user.name ?? ''
               : `${user.firstName} ${user.lastName}`,
           admin: user.role === UserRole.ADMIN,
         },

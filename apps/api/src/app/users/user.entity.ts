@@ -37,12 +37,12 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { unique: true })
-  email: string;
-
   @Column('varchar')
   @Index({ unique: true })
-  name: string;
+  email: string;
+
+  @Column('varchar', { nullable: true })
+  name: string | null;
 
   @Column({
     type: 'int',
