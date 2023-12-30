@@ -1,6 +1,6 @@
 import { Component, Inject, type OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { OAuthProvider } from '@musira/api-interfaces';
+import { isOAuthProvider } from '@musira/api-interfaces';
 import { AuthenticationService } from '../authentication.service';
 
 @Component({
@@ -19,18 +19,28 @@ export class CallbackComponent implements OnInit {
 
   ngOnInit(): void {
     const { code, state } = this.oauthData;
-    if (state && code) {
-      this.auth.oAuthLogin(OAuthProvider.FACEBOOK, code, state).subscribe({
-        next: () => {
-          this.router.navigate(['/']);
-        },
-        error: (err) => {
-          this.error = err?.error?.error || err?.error?.message;
-        },
-      });
+    const provider = this.provider;
+    if (!isOAuthProvider(provider)) {
+      this.error = 'Invalid provider';
       return;
     }
-    this.error = 'Invalid request';
+    if (state && code) {
+      try {
+        this.auth.oAuthLogin(provider, code, state).subscribe({
+          next: () => {
+            this.router.navigate(['/']);
+          },
+          error: (err) => {
+            this.error = err?.error?.error || err?.error?.message;
+          },
+        });
+        return;
+      } catch (err) {
+        this.error = 'Invalid request';
+      }
+    } else {
+      this.error = 'Invalid request';
+    }
   }
 
   get oauthData() {
@@ -38,5 +48,9 @@ export class CallbackComponent implements OnInit {
       code: this.route.snapshot.queryParamMap.get('code'),
       state: this.route.snapshot.queryParamMap.get('state'),
     };
+  }
+
+  get provider() {
+    return this.route.snapshot.paramMap.get('provider');
   }
 }

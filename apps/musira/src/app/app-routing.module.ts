@@ -25,7 +25,7 @@ const routes: Routes = [
     canActivate: [musicSessionGuard, AuthGuard],
   },
   {
-    path: 'oauth/callback',
+    path: 'oauth/callback/:provider',
     component: CallbackComponent,
   },
   {

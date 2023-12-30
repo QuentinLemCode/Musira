@@ -23,8 +23,14 @@
         "main": "libs/api-interfaces/src/index.ts",
         "tsConfig": "libs/api-interfaces/tsconfig.lib.json",
         "assets": [],
-        "skipTypeCheck": true,
+        "skipTypeCheck": false,
         "clean": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "skipTypeCheck": true
+        }
       }
     }
   },
