@@ -4,23 +4,16 @@ import {
   OAuthProvider,
   type JwtPayload,
   type JwtToken,
-} from '@musira/api-interfaces/index';
+  type OAuthProviderType,
+} from '@musira/api-interfaces';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { StorageService } from '../services/storage.service';
 
-enum LocalStorageKeys {
-  TOKEN = 'token',
-  USERNAME = 'username',
-  USER_ID = 'user_id',
-  SESSIONS_CREATOR = 'sessions_creator',
-  EXPIRES_AT = 'expires_at',
-  ROLE = 'role',
-  TYPE = 'type',
-  PROVIDER = 'provider',
-  EMAIL = 'email',
-  REFRESH_TOKEN = 'refresh_token',
-}
+const LocalStorageKeys = {
+  TOKEN: 'token',
+  SESSIONS_CREATOR: 'sessions_creator',
+} as const;
 
 interface BaseUserState {
   username: string;
@@ -46,7 +39,7 @@ export class AuthenticationService {
     @Inject(StorageService) private readonly storage: StorageService,
   ) {}
 
-  oAuthLogin(provider: OAuthProvider, code: string, state: string) {
+  oAuthLogin(provider: OAuthProviderType, code: string, state: string) {
     return this.http
       .post<JwtToken>(this.authEndpoint + '/oauth/login', {
         code,
@@ -160,7 +153,7 @@ export class AuthenticationService {
     });
   }
 
-  loginUrl(provider: OAuthProvider): string {
+  loginUrl(provider: OAuthProviderType): string {
     const url = new URL(this.authUrl(provider));
 
     Object.entries(this.params(provider)).forEach(([key, value]) => {
@@ -170,7 +163,7 @@ export class AuthenticationService {
     return url.toString();
   }
 
-  private authUrl(provider: OAuthProvider) {
+  private authUrl(provider: OAuthProviderType) {
     switch (provider) {
       case OAuthProvider.FACEBOOK:
         return 'https://www.facebook.com/v18.0/dialog/oauth';
@@ -181,7 +174,7 @@ export class AuthenticationService {
     }
   }
 
-  private params(provider: OAuthProvider) {
+  private params(provider: OAuthProviderType) {
     const uuid = crypto.randomUUID();
     switch (provider) {
       case OAuthProvider.FACEBOOK:

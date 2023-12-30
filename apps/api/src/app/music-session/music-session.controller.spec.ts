@@ -1,28 +1,27 @@
-import { JwtUser } from '@musira/api-interfaces/index';
-import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../users/users.service';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionController } from './music-session.controller';
 import { MusicSessionService } from './music-session.service';
 import { JwtService } from '@nestjs/jwt';
+import { CreateMusicSessionDto, JwtUser } from '@musira/api-interfaces';
 
 // Mocking MusicSessionService
 const mockSessionService = {
-  create: jest.fn(),
-  findAll: jest.fn(),
-  findOne: jest.fn(),
-  update: jest.fn(),
-  remove: jest.fn(),
+  create: vi.fn(),
+  findAll: vi.fn(),
+  findOne: vi.fn(),
+  update: vi.fn(),
+  remove: vi.fn(),
 };
 
 // Mocking UsersService
 const mockUsersService = {
-  findByEmail: jest.fn(),
+  findByEmail: vi.fn(),
 };
 
 const mockJwt = {
-  validateToken: jest.fn(),
+  validateToken: vi.fn(),
 };
 
 describe('MusicSessionController', () => {

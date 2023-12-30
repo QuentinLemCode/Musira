@@ -5,22 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
+    {
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",
       "url": "https://localhost:4200",
       "webRoot": "${workspaceFolder}"
-    },
-    {
-      "name": "Launch API",
-      "request": "launch",
-      "type": "node",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "serve", "api"],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/apps/api",
-      "sourceMaps": true,
-      "trace": true
     }
   ]
 }

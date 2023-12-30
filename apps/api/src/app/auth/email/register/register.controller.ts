@@ -1,4 +1,3 @@
-import { type EmailRegisterInterface } from '@musira/api-interfaces/user/email.dto';
 import {
   BadRequestException,
   Body,
@@ -9,6 +8,7 @@ import {
 import type { FastifyReply } from 'fastify';
 import { UsersService } from '../../../users/users.service';
 import { AuthService } from '../../auth.service';
+import type { EmailRegisterInterface } from '@musira/api-interfaces';
 @Controller('auth/email/register')
 export class RegisterController {
   constructor(

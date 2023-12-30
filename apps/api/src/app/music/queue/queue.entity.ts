@@ -16,6 +16,7 @@ import type { MusicSession } from '../../music-session/entities/music-session.en
 import type { User } from '../../users/user.entity';
 import type { Music } from '../music.entity';
 
+// eslint-disable-next-line no-restricted-syntax
 export enum Status {
   PENDING,
   PLAYING,
@@ -28,9 +29,7 @@ export class Queue {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
-    type: 'enum',
-    enum: Status,
+  @Column('int', {
     default: Status.PENDING,
   })
   status: Status = Status.PENDING;

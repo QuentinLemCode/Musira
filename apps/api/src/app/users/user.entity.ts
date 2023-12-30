@@ -13,10 +13,12 @@ import {
 import { MusicSession } from '../music-session/entities/music-session.entity';
 import { Queue } from '../music/queue/queue.entity';
 
-export enum UserRole {
-  ADMIN = 1,
-  USER = 0,
-}
+export const UserRole = {
+  ADMIN: 1,
+  USER: 0,
+} as const;
+
+export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
 
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'type' } })
@@ -35,19 +37,18 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column('varchar', { unique: true })
   email: string;
 
-  @Column()
+  @Column('varchar')
   @Index({ unique: true })
   name: string;
 
   @Column({
-    type: 'enum',
-    enum: UserRole,
+    type: 'int',
     default: UserRole.USER,
   })
-  role: UserRole;
+  role: UserRoleType;
 
   @Column({ type: 'datetime' })
   public created_at: Date;

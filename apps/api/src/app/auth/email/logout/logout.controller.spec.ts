@@ -7,12 +7,12 @@ import type { FastifyReply } from 'fastify';
 
 // Mocking Service
 const mockUserService = {
-  removeRefreshUUID: jest.fn(),
+  removeRefreshUUID: vi.fn(),
 };
 
 describe('LogoutController', () => {
   let controller: LogoutController;
-  const authService = { logout: jest.fn() };
+  const authService = { logout: vi.fn() };
   let mockFastifyReply: FastifyReply;
 
   beforeEach(async () => {
@@ -26,8 +26,8 @@ describe('LogoutController', () => {
 
     controller = module.get<LogoutController>(LogoutController);
     mockFastifyReply = {
-      clearCookie: jest.fn(),
-      setCookie: jest.fn(),
+      clearCookie: vi.fn(),
+      setCookie: vi.fn(),
     } as unknown as FastifyReply;
   });
 

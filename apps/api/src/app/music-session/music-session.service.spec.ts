@@ -1,22 +1,22 @@
-import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionService } from './music-session.service';
 import { PublicCodeGeneratorService } from './public-code-generator/public-code-generator.service';
+import { CreateMusicSessionDto } from '@musira/api-interfaces';
 
 // Mocking Repositories and Services
 const mockRepository = {
-  create: jest.fn(),
-  findOneOrFail: jest.fn(),
-  find: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
+  create: vi.fn(),
+  findOneOrFail: vi.fn(),
+  find: vi.fn(),
+  save: vi.fn(),
+  delete: vi.fn(),
 };
 
 const mockPublicCodeGeneratorService = {
-  generatePublicCode: jest.fn(),
+  generatePublicCode: vi.fn(),
 };
 
 describe('MusicSessionService', () => {

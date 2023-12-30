@@ -12,20 +12,20 @@ import { JwtGuard } from '../../auth/jwt.guard';
 
 // Mocking Services and Guards
 const mockBacklogService = {
-  push: jest.fn(),
-  delete: jest.fn(),
-  get: jest.fn(),
+  push: vi.fn(),
+  delete: vi.fn(),
+  get: vi.fn(),
 };
 
 const mockJwtGuard = {
-  canActivate: jest.fn().mockReturnValue(true),
+  canActivate: vi.fn().mockReturnValue(true),
 };
 
 const mockSessionCreatorGuard = {
-  canActivate: jest.fn().mockReturnValue(true),
+  canActivate: vi.fn().mockReturnValue(true),
 };
 
-const mockMusicSessionParam = jest.fn().mockReturnValue(new MusicSession());
+const mockMusicSessionParam = vi.fn().mockReturnValue(new MusicSession());
 
 describe('BacklogController', () => {
   let controller: BacklogController;

@@ -1,7 +1,3 @@
-import type { JwtUser, MusicSessionDto } from '@musira/api-interfaces/index';
-import { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
-import type { DeletedMusicSessionDto } from '@musira/api-interfaces/sessions/deleted-music-session.dto';
-import { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
 import {
   BadRequestException,
   Body,
@@ -27,6 +23,13 @@ import {
 } from '../utils/decorators/music-session.decorator';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionService } from './music-session.service';
+import type {
+  CreateMusicSessionDto,
+  DeletedMusicSessionDto,
+  JwtUser,
+  MusicSessionDto,
+  UpdateMusicSessionDto,
+} from '@musira/api-interfaces';
 
 @Controller('music-session')
 export class MusicSessionController {

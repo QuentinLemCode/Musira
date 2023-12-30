@@ -5,29 +5,20 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
+      "dependsOn": ["api-interfaces:build"],
+      "executor": "@nx/js:swc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api",
         "main": "apps/api/src/main.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
-        "assets": ["apps/api/src/assets"],
-        "target": "node",
-        "compiler": "tsc",
-        "sourceMap": true,
-        "webpackConfig": "apps/api/webpack.config.js"
+        "swcrc": "apps/api/.swcrc"
       },
       "configurations": {
         "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/api/src/environments/environment.ts",
-              "with": "apps/api/src/environments/environment.prod.ts"
-            }
-          ]
+          "swcrc": "apps/api/.prod.swcrc",
+          "clean": true,
+          "skipTypeCheck": true
         }
       }
     },
@@ -50,12 +41,16 @@
         "lintFilePatterns": ["apps/api/**/*.ts"]
       }
     },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/api"],
+    "check-circular-dependencies": {
+      "executor": "nx:run-commands",
       "options": {
-        "jestConfig": "apps/api/jest.config.ts"
+        "command": "dpdm --tsconfig apps/api/tsconfig.app.json --no-warning --no-tree -T --exit-code circular:1 apps/api/src/main.ts"
       }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/apps/api"],
+      "options": {}
     },
     "docker-build": {
       "dependsOn": ["build"],

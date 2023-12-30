@@ -3,12 +3,12 @@ import { User } from './user.entity';
 
 @ChildEntity()
 export class EmailUser extends User {
-  @Column({
+  @Column('int', {
     default: 0,
   })
   loginTries: number;
 
-  @Column({
+  @Column('bool', {
     default: false,
   })
   locked: boolean;

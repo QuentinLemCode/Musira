@@ -12,24 +12,24 @@ import { JwtGuard } from '../../auth/jwt.guard';
 
 // Mocking Services
 const mockQueueService = {
-  get: jest.fn(),
-  push: jest.fn(),
-  delete: jest.fn(),
-  countQueuedItemForUser: jest.fn(),
+  get: vi.fn(),
+  push: vi.fn(),
+  delete: vi.fn(),
+  countQueuedItemForUser: vi.fn(),
 };
 
 const mockUsersService = {
-  getQueuedMusicForUser: jest.fn(),
-  findById: jest.fn(),
-  findByEmail: jest.fn(),
+  getQueuedMusicForUser: vi.fn(),
+  findById: vi.fn(),
+  findByEmail: vi.fn(),
 };
 
 const mockQueueEngineService = {
-  forward: jest.fn(),
+  forward: vi.fn(),
 };
 
 const mockBacklogService = {
-  getNominatedBacklog: jest.fn(),
+  getNominatedBacklog: vi.fn(),
 };
 
 describe('QueueController', () => {

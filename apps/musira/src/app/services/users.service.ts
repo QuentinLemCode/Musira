@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import type { UserResponseDTO } from '@musira/api-interfaces/index';
+import type { UserResponseDTO } from '@musira/api-interfaces';
 import { environment } from '../../environments/environment';
 
 @Injectable({

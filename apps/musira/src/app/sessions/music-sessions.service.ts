@@ -2,15 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import type { CreateMusicSessionDto } from '@musira/api-interfaces/sessions/create-music-session.dto';
-import type { DeletedMusicSessionDto } from '@musira/api-interfaces/sessions/deleted-music-session.dto';
-import type { MusicSessionDto } from '@musira/api-interfaces/sessions/music-session.dto';
-import type { UpdateMusicSessionDto } from '@musira/api-interfaces/sessions/update-music-session.dto';
+import type {
+  CreateMusicSessionDto,
+  DeletedMusicSessionDto,
+  MusicSessionDto,
+  UpdateMusicSessionDto,
+} from '@musira/api-interfaces';
 import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { AuthenticationService } from '../authentication/authentication.service';
 import { CONSTANTS } from '../constants';
 import { StorageService } from '../services/storage.service';
-import { AuthenticationService } from '../authentication/authentication.service';
 
 interface SessionHistory {
   musicSession: MusicSessionDto;

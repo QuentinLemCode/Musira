@@ -35,6 +35,7 @@ jobs:
       - run: npm i
       - run: npm run format:check
       - run: npx nx affected -t lint --parallel=3
+      - run: npx nx run api:check-circular-dependencies
       - run: npx nx affected -t test --parallel=3 --configuration=ci
   build:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'build') }}

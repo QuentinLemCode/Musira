@@ -9,8 +9,8 @@ import { JwtGuard } from '../../jwt.guard';
 describe('UnlockController', () => {
   let controller: UnlockController;
   const mockUser = {
-    unlock: jest.fn(),
-    getAll: jest.fn(),
+    unlock: vi.fn(),
+    getAll: vi.fn(),
   };
 
   beforeEach(async () => {

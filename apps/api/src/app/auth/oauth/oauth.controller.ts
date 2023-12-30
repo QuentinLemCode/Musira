@@ -1,8 +1,8 @@
+import type { OAuthProviderType } from '@musira/api-interfaces';
 import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
-import { OAuthService } from './oauth.service';
-import type { OAuthProvider } from '@musira/api-interfaces/index';
-import { AuthService } from '../auth.service';
 import type { FastifyReply } from 'fastify';
+import { AuthService } from '../auth.service';
+import { OAuthService } from './oauth.service';
 
 @Controller('auth/oauth')
 export class OauthController {
@@ -11,7 +11,7 @@ export class OauthController {
 
   @Post('login')
   async login(
-    @Body('provider') provider: OAuthProvider,
+    @Body('provider') provider: OAuthProviderType,
     @Body('code') code: string,
     @Res({ passthrough: true }) res: FastifyReply,
   ) {

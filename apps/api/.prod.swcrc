@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+  "sourceMaps": false,
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "decorators": true,
+      "dynamicImport": true
+    },
+    "transform": {
+      "legacyDecorator": true,
+      "decoratorMetadata": true
+    },
+    "baseUrl": "./",
+    "paths": {
+      "@musira/api-interfaces": ["../../libs/api-interfaces/src/index.ts"]
+    }
+  },
+  "module": {
+    "type": "commonjs"
+  },
+  "exclude": ["vite.config.ts", ".*.spec.tsx?$", ".*.test.tsx?$", ".*.js$", "global.d.ts", ".*\/test-utils\/.*"],
+  "minify": true
+}
