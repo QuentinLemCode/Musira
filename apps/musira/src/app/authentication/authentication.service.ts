@@ -184,7 +184,7 @@ export class AuthenticationService {
           response_type: 'code',
           client_id: environment.facebookClientId,
           scope: 'email',
-          redirect_uri: this.redirectUrl,
+          redirect_uri: this.redirectUrl(provider),
           state: uuid,
         };
       case OAuthProvider.SPOTIFY:
@@ -192,7 +192,7 @@ export class AuthenticationService {
           response_type: 'code',
           client_id: environment.spotifyClientId,
           scope: 'user-read-email user-read-private',
-          redirect_uri: this.redirectUrl,
+          redirect_uri: this.redirectUrl(provider),
           state: uuid,
         };
       case OAuthProvider.GOOGLE:
@@ -200,7 +200,7 @@ export class AuthenticationService {
           response_type: 'code',
           client_id: environment.googleClientId,
           scope: 'email profile',
-          redirect_uri: this.redirectUrl,
+          redirect_uri: this.redirectUrl(provider),
           access_type: 'offline',
           state: uuid,
         };
@@ -222,7 +222,7 @@ export class AuthenticationService {
     return;
   }
 
-  private get redirectUrl() {
-    return `https://${window.location.host}/oauth/callback`;
+  private redirectUrl(provider: OAuthProviderType) {
+    return `https://${window.location.host}/oauth/callback/${provider}`;
   }
 }
