@@ -10,4 +10,4 @@ ENV TZ=Europe/Paris
 
 USER node
 EXPOSE 80
-CMD ["dumb-init", "node", "dist/api/src/main.js"]
+CMD ["dumb-init", "node", "dist/apps/api/src/main.js"]
