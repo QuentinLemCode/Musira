@@ -28,7 +28,7 @@ if (isProd) {
   logger.log('Production mode');
   modules.push(
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'musira'),
+      rootPath: join(__dirname, '..', '..', '..', 'musira'),
       exclude: ['/api/(.*)'],
     }),
   );
