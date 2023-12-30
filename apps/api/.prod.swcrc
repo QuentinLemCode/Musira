@@ -19,5 +19,6 @@
   "module": {
     "type": "commonjs"
   },
+  "exclude": ["vite.config.ts", ".*.spec.tsx?$", ".*.test.tsx?$", ".*.js$", "global.d.ts", ".*\/test-utils\/.*"],
   "minify": true
 }

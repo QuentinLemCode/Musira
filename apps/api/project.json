@@ -17,7 +17,8 @@
       "configurations": {
         "production": {
           "swcrc": "apps/api/.prod.swcrc",
-          "clean": true
+          "clean": true,
+          "skipTypeCheck": true
         }
       }
     },

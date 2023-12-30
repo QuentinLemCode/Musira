@@ -22,7 +22,9 @@
         "outputPath": "dist/libs/api-interfaces",
         "main": "libs/api-interfaces/src/index.ts",
         "tsConfig": "libs/api-interfaces/tsconfig.lib.json",
-        "assets": []
+        "assets": [],
+        "skipTypeCheck": true,
+        "clean": true
       }
     }
   },

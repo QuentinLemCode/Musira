@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/swcrc",
   "jsc": {
     "target": "es2017",
     "parser": {
@@ -16,7 +17,8 @@
   "module": {
     "type": "commonjs"
   },
-  "sourceMaps": true,
+  "sourceMaps": false,
+  "minify": true,
   "exclude": [
     "jest.config.ts",
     ".*\\.spec.tsx?$",

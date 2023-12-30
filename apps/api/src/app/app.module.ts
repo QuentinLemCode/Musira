@@ -1,18 +1,17 @@
 import {
+  Logger,
   Module,
   type DynamicModule,
-  type Type,
   type ForwardReference,
-  Logger,
+  type Type,
 } from '@nestjs/common';
-import { CoreModule } from './core/core.module';
-import { MusicModule } from './music/music.module';
-import { MusicSessionModule } from './music-session/music-session.module';
-import { UsersModule } from './users/users.module';
-import { environment } from '../environments/environment';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
+import { CoreModule } from './core/core.module';
+import { MusicSessionModule } from './music-session/music-session.module';
+import { MusicModule } from './music/music.module';
+import { UsersModule } from './users/users.module';
 
 const modules: (
   | Type<any>
@@ -23,7 +22,9 @@ const modules: (
 
 const logger = new Logger('AppModule');
 
-if (environment.production) {
+const isProd = process.env.NODE_ENV === 'production';
+
+if (isProd) {
   logger.log('Production mode');
   modules.push(
     ServeStaticModule.forRoot({
