@@ -20,7 +20,12 @@ describe('CallbackComponent', () => {
         CallbackComponent,
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { queryParamMap: { get: jest.fn() } } },
+          useValue: {
+            snapshot: {
+              queryParamMap: { get: jest.fn() },
+              paramMap: { get: jest.fn() },
+            },
+          },
         },
         { provide: Router, useValue: { navigate: jest.fn() } },
         { provide: AuthenticationService, useValue: { oAuthLogin: jest.fn() } },
@@ -30,6 +35,11 @@ describe('CallbackComponent', () => {
     mockRouter = TestBed.inject(Router);
     mockRoute = TestBed.inject(ActivatedRoute);
     mockAuthService = TestBed.inject(AuthenticationService);
+    (mockRoute.snapshot.paramMap.get as jest.Mock).mockImplementation(
+      (param: string) => {
+        return param === 'provider' ? OAuthProvider.FACEBOOK : null;
+      },
+    );
   });
 
   it('should create', () => {
@@ -44,6 +54,7 @@ describe('CallbackComponent', () => {
         return param === 'code' ? code : state;
       },
     );
+
     const authServiceSpy = jest
       .spyOn(mockAuthService, 'oAuthLogin')
       .mockReturnValue(of(mockToken));

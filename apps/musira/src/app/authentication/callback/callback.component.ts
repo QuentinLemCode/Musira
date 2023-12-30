@@ -35,9 +35,11 @@ export class CallbackComponent implements OnInit {
           },
         });
         return;
-      } finally {
+      } catch (err) {
         this.error = 'Invalid request';
       }
+    } else {
+      this.error = 'Invalid request';
     }
   }
 
