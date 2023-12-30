@@ -66,8 +66,12 @@ export class AdminComponent implements OnInit {
       .delete(id)
       .pipe(mergeMap(() => this.users.getAllUsers()))
       .subscribe({
-        next: (users) => {
-          this.usersList = users;
+        next: () => {
+          this.users.getAllUsers().subscribe({
+            next: (users) => {
+              this.usersList = users;
+            },
+          });
         },
       });
   }

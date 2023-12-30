@@ -61,7 +61,7 @@ export class MusicSessionController {
       id: createdSession.id,
       name: createdSession.name,
       code: createdSession.publicCode,
-      creator: createdSession.creator.name,
+      creator: createdSession.creator.name ?? '',
       linkedToSpotify: createdSession.spotifyAuthUuid !== null,
     };
   }
@@ -75,7 +75,7 @@ export class MusicSessionController {
       id: musicSession.id,
       name: musicSession.name,
       code: musicSession.publicCode,
-      creator: musicSession.creator.name,
+      creator: musicSession.creator.name ?? '',
       linkedToSpotify: musicSession.spotifyAuthUuid !== null,
     }));
   }
@@ -88,7 +88,7 @@ export class MusicSessionController {
       id: musicSession.id,
       name: musicSession.name,
       code: musicSession.publicCode,
-      creator: musicSession.creator.name,
+      creator: musicSession.creator.name ?? '',
       linkedToSpotify: musicSession.spotifyAuthUuid !== null,
     };
   }
@@ -104,7 +104,7 @@ export class MusicSessionController {
       id: musicSession.id,
       name: musicSession.name,
       code: musicSession.publicCode,
-      creator: musicSession.creator.name,
+      creator: musicSession.creator.name ?? '',
       linkedToSpotify: musicSession.spotifyAuthUuid !== null,
     };
   }
