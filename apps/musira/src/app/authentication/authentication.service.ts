@@ -13,6 +13,7 @@ import { StorageService } from '../services/storage.service';
 const LocalStorageKeys = {
   TOKEN: 'token',
   SESSIONS_CREATOR: 'sessions_creator',
+  STATE: 'state',
 } as const;
 
 interface BaseUserState {
@@ -40,6 +41,7 @@ export class AuthenticationService {
   ) {}
 
   oAuthLogin(provider: OAuthProviderType, code: string, state: string) {
+    this.checkState(state);
     return this.http
       .post<JwtToken>(this.authEndpoint + '/oauth/login', {
         code,
@@ -175,7 +177,7 @@ export class AuthenticationService {
   }
 
   private params(provider: OAuthProviderType) {
-    const uuid = crypto.randomUUID();
+    const uuid = this.generateState();
     switch (provider) {
       case OAuthProvider.FACEBOOK:
         return {
@@ -199,9 +201,25 @@ export class AuthenticationService {
           client_id: environment.googleClientId,
           scope: 'email profile',
           redirect_uri: this.redirectUrl,
+          access_type: 'offline',
           state: uuid,
         };
     }
+  }
+
+  private generateState() {
+    const uuid = crypto.randomUUID();
+    this.storage.setLocalItem(LocalStorageKeys.STATE, uuid);
+    return uuid;
+  }
+
+  private checkState(state: string) {
+    this.storage.getLocalItem(LocalStorageKeys.STATE);
+    if (state !== this.storage.getLocalItem(LocalStorageKeys.STATE)) {
+      throw new Error('Invalid state');
+    }
+    this.storage.removeLocalItem(LocalStorageKeys.STATE);
+    return;
   }
 
   private get redirectUrl() {
