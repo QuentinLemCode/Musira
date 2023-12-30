@@ -117,7 +117,7 @@ export class OAuthService {
     url.searchParams.set('client_id', process.env.FACEBOOK_APP_ID || '');
     url.searchParams.set(
       'redirect_uri',
-      process.env.REDIRECT_HOST + '/oauth/callback' + OAuthProvider.FACEBOOK,
+      process.env.REDIRECT_HOST + '/oauth/callback/' + OAuthProvider.FACEBOOK,
     );
     url.searchParams.set(
       'client_secret',
@@ -127,6 +127,11 @@ export class OAuthService {
 
     const fbRequest = await fetch(url.toString());
     if (!fbRequest.ok) {
+      this.logger.log(
+        `Facebook request failed: ${
+          fbRequest.statusText
+        }. Url : ${url.toString()}. response : ${await fbRequest.text()}`,
+      );
       throw new BadRequestException('Invalid code');
     }
     const fbResponse: FacebookToken = await fbRequest.json();
@@ -150,6 +155,13 @@ export class OAuthService {
         Authorization: `Bearer ${token}`,
       },
     });
+    if (!fbRequest.ok) {
+      this.logger.log(
+        `Facebook request failed: ${
+          fbRequest.statusText
+        }. Url : ${url.toString()}. response : ${await fbRequest.text()}`,
+      );
+    }
     const fbResponse: FacebookPermission = await fbRequest.json();
     const permissions = fbResponse.data
       .filter((perm) => perm.status === 'granted')
@@ -170,6 +182,13 @@ export class OAuthService {
         Authorization: `Bearer ${token}`,
       },
     });
+    if (!request.ok) {
+      this.logger.log(
+        `Facebook request failed: ${
+          request.statusText
+        }. Url : ${url.toString()}. response : ${await request.text()}`,
+      );
+    }
     return request.json();
   }
 }

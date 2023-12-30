@@ -17,6 +17,7 @@ import { SessionSettingsComponent } from './sessions/session-settings/session-se
 import { MusicSessionComponent } from './sessions/music-session/music-session.component';
 import { JoinSessionComponent } from './sessions/join-session/join-session.component';
 import { CallbackComponent } from './authentication/callback/callback.component';
+import { DeleteAccountComponent } from './authentication/delete-account/delete-account.component';
 
 const routes: Routes = [
   {
@@ -51,6 +52,11 @@ const routes: Routes = [
     path: 'user/register',
     component: RegisterComponent,
     canActivate: [NotAuthGuard],
+  },
+  {
+    path: 'user/delete-account',
+    component: DeleteAccountComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: ':sessionId/dashboard',

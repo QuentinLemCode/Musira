@@ -15,8 +15,10 @@ export class UsersService {
     return this.http.get<UserResponseDTO[]>(this.userEndpoint);
   }
 
-  delete(id: number) {
-    return this.http.delete<UserResponseDTO[]>(this.userEndpoint + '/' + id);
+  delete(id?: number) {
+    return this.http.delete<UserResponseDTO[]>(
+      this.userEndpoint + '/' + (id ?? ''),
+    );
   }
 
   unlock(id: number) {

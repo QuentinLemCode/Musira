@@ -56,7 +56,7 @@ describe('UsersController', () => {
         } as JwtUser,
       };
 
-      await controller.delete(userId, request);
+      await controller.delete(request, userId);
 
       expect(mockUsersService.delete).toHaveBeenCalledWith(+userId);
     });
@@ -71,7 +71,7 @@ describe('UsersController', () => {
         } as JwtUser,
       };
 
-      await expect(controller.delete(userId, request)).rejects.toThrow(
+      await expect(controller.delete(request, userId)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -87,7 +87,7 @@ describe('UsersController', () => {
         } as JwtUser,
       };
 
-      await expect(controller.delete(userId, request)).rejects.toThrow(
+      await expect(controller.delete(request, userId)).rejects.toThrow(
         ForbiddenException,
       );
     });
@@ -103,7 +103,7 @@ describe('UsersController', () => {
         } as JwtUser,
       };
 
-      await controller.delete(userId, request);
+      await controller.delete(request, userId);
 
       expect(mockUsersService.delete).toHaveBeenCalledWith(+userId);
     });
@@ -119,7 +119,7 @@ describe('UsersController', () => {
         } as JwtUser,
       };
 
-      await expect(controller.delete(userId, request)).rejects.toThrow(
+      await expect(controller.delete(request, userId)).rejects.toThrow(
         ForbiddenException,
       );
     });

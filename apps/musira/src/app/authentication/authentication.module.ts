@@ -7,6 +7,7 @@ import { ComponentsModule } from '../components/components.module';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { CallbackComponent } from './callback/callback.component';
+import { DeleteAccountComponent } from './delete-account/delete-account.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { CallbackComponent } from './callback/callback.component';
     RegisterComponent,
     LoginComponent,
     CallbackComponent,
+    DeleteAccountComponent,
   ],
   imports: [
     CommonModule,

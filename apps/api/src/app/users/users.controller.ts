@@ -26,12 +26,14 @@ export class UsersController {
   }
 
   @UseGuards(JwtGuard)
-  @Delete(':id')
-  async delete(@Param('id') id: string, @Request() req: { user: JwtUser }) {
-    if (req.user.id !== +id && !req.user.admin) throw new ForbiddenException();
-    if (req.user.admin && req.user.id === +id)
-      throw new ForbiddenException('admin cannot delete himself');
-    await this.users.delete(+id);
+  @Delete(':id?')
+  async delete(@Request() req: { user: JwtUser }, @Param('id') id?: string) {
+    if (id) {
+      if (!req.user.admin) throw new ForbiddenException('not admin');
+      await this.users.delete(+id);
+    } else {
+      await this.users.delete(req.user.id);
+    }
     return;
   }
 }

@@ -40,6 +40,10 @@ export class AuthenticationService {
     @Inject(StorageService) private readonly storage: StorageService,
   ) {}
 
+  deleteAccount() {
+    return this.http.delete(this.authEndpoint + '/account');
+  }
+
   oAuthLogin(provider: OAuthProviderType, code: string, state: string) {
     this.checkState(state);
     return this.http
