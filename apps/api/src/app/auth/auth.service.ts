@@ -39,7 +39,6 @@ export class AuthService {
         },
       },
     };
-    this.logger.log('ah');
     const jwtid = randomUUID();
     const signature = this.generateSignature(jwtid);
     res.setCookie('signature', signature, {

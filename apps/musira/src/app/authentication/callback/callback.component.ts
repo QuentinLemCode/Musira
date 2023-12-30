@@ -25,17 +25,20 @@ export class CallbackComponent implements OnInit {
       return;
     }
     if (state && code) {
-      this.auth.oAuthLogin(provider, code, state).subscribe({
-        next: () => {
-          this.router.navigate(['/']);
-        },
-        error: (err) => {
-          this.error = err?.error?.error || err?.error?.message;
-        },
-      });
-      return;
+      try {
+        this.auth.oAuthLogin(provider, code, state).subscribe({
+          next: () => {
+            this.router.navigate(['/']);
+          },
+          error: (err) => {
+            this.error = err?.error?.error || err?.error?.message;
+          },
+        });
+        return;
+      } finally {
+        this.error = 'Invalid request';
+      }
     }
-    this.error = 'Invalid request';
   }
 
   get oauthData() {

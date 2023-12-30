@@ -142,7 +142,7 @@ export class AuthenticationService {
     try {
       return JSON.parse(parsedToken) as JwtPayload;
     } catch (e) {
-      this.storage.clearLocal();
+      this.storage.removeLocalItem(LocalStorageKeys.TOKEN);
     }
     return null;
   }
@@ -199,7 +199,8 @@ export class AuthenticationService {
         return {
           response_type: 'code',
           client_id: environment.googleClientId,
-          scope: 'email profile',
+          scope:
+            'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
           redirect_uri: this.redirectUrl(provider),
           access_type: 'offline',
           state: uuid,
