@@ -46,7 +46,6 @@ describe('UsersController', () => {
 
   describe('delete', () => {
     it('should delete himself', async () => {
-      const userId = '123';
       mockUsersService.delete.mockResolvedValue(undefined);
       mockUsersService.getAll.mockResolvedValue([]);
       const request = {
@@ -56,9 +55,9 @@ describe('UsersController', () => {
         } as JwtUser,
       };
 
-      await controller.delete(request, userId);
+      await controller.delete(request);
 
-      expect(mockUsersService.delete).toHaveBeenCalledWith(+userId);
+      expect(mockUsersService.delete).toHaveBeenCalledWith(123);
     });
 
     it('should throw NotFoundException for non-existing user', async () => {
@@ -109,7 +108,6 @@ describe('UsersController', () => {
     });
 
     it('should not allow an admin to delete himself', async () => {
-      const userId = '123';
       mockUsersService.delete.mockResolvedValue(undefined);
       mockUsersService.getAll.mockResolvedValue([]);
       const request = {
@@ -119,7 +117,7 @@ describe('UsersController', () => {
         } as JwtUser,
       };
 
-      await expect(controller.delete(request, userId)).rejects.toThrow(
+      await expect(controller.delete(request)).rejects.toThrow(
         ForbiddenException,
       );
     });

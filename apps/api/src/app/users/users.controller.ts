@@ -31,8 +31,10 @@ export class UsersController {
     if (id) {
       if (!req.user.admin) throw new ForbiddenException('not admin');
       await this.users.delete(+id);
-    } else {
+    } else if (!req.user.admin) {
       await this.users.delete(req.user.id);
+    } else {
+      throw new ForbiddenException("An admin can't delete himself");
     }
     return;
   }
