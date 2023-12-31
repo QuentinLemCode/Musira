@@ -17,6 +17,7 @@ import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { withCredentialsInterceptor } from './shared/with-credentials.interceptor';
 import { jwtInterceptor } from './shared/jwt.interceptor';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { jwtInterceptor } from './shared/jwt.interceptor';
     AdminComponent,
     DashboardComponent,
     SpotifyAuthComponent,
+    PrivacyPolicyComponent,
   ],
   imports: [
     CommonModule,
