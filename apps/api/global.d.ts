@@ -22,6 +22,8 @@ declare namespace NodeJS {
     FACEBOOK_APP_ID?: string;
     FACEBOOK_APP_SECRET?: string;
     JWT_SIGNATURE_SECRET?: string;
+    MICROSOFT_APP_ID?: string;
+    MICROSOFT_APP_SECRET?: string;
   }
 }
 

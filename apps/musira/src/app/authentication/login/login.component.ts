@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { OAuthProvider } from '@musira/api-interfaces';
 import { AuthenticationService } from '../authentication.service';
+import { faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 
 @Component({
   selector: 'musira-login',
@@ -21,6 +22,8 @@ export class LoginComponent {
   }
 
   faCircle = faCircleNotch;
+  faGoogle = faGoogle;
+  faMicrosoft = faMicrosoft;
   emailLogin = false;
   loading = false;
   form = new FormGroup({
@@ -61,5 +64,9 @@ export class LoginComponent {
 
   googleLogin() {
     window.location.href = this.auth.loginUrl(OAuthProvider.GOOGLE);
+  }
+
+  microsoftLogin() {
+    window.location.href = this.auth.loginUrl(OAuthProvider.MICROSOFT);
   }
 }

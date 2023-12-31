@@ -5,8 +5,13 @@
     <img src="/assets/logo-with-title-dark.webp" alt="logo" />
   </div>
   <div class="login-box">
-    <a (click)="fbLogin()">Se connecter avec Facebook</a>
-    <a (click)="googleLogin()">Se connecter avec Google</a>
+    <!-- <a (click)="fbLogin()">Se connecter avec Facebook</a> -->
+    <button class="google-login" (click)="googleLogin()">
+      <fa-icon [icon]="faGoogle"></fa-icon> Se connecter avec Google
+    </button>
+    <button class="microsoft-login-btn" (click)="microsoftLogin()">
+      <fa-icon [icon]="faMicrosoft"></fa-icon> Login with Microsoft
+    </button>
     <a (click)="emailLogin = !emailLogin">Se connecter avec un email</a>
     <ng-container *ngIf="emailLogin">
       <form [formGroup]="form" (ngSubmit)="submit()">

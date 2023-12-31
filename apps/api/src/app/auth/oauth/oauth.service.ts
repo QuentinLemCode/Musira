@@ -56,6 +56,23 @@ interface GoogleUser {
   picture: string;
 }
 
+interface MicrosoftToken {
+  token_type: string;
+  scope: string;
+  expires_in: number;
+  access_token: string;
+  refresh_token?: string;
+  id_token: string;
+}
+
+interface MicrosoftUser {
+  id: string;
+  mail: string;
+  displayName: string;
+  surname: string;
+  givenName: string;
+}
+
 @Injectable()
 export class OAuthService {
   private logger = new Logger(OAuthService.name);
@@ -68,9 +85,62 @@ export class OAuthService {
         return this.facebookLogin(code);
       case OAuthProvider.GOOGLE:
         return this.googleLogin(code);
+      case OAuthProvider.MICROSOFT:
+        return this.microsoftLogin(code);
       default:
         throw new ServiceUnavailableException();
     }
+  }
+
+  private async microsoftLogin(code: string) {
+    const url = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token';
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    const body = new URLSearchParams({
+      client_id: process.env.MICROSOFT_APP_ID || '',
+      client_secret: process.env.MICROSOFT_APP_SECRET || '',
+      code: code,
+      grant_type: 'authorization_code',
+      redirect_uri: this.redirectUri(OAuthProvider.MICROSOFT),
+      scope: 'https://graph.microsoft.com/User.Read openid profile email',
+    });
+
+    const microsoftRequest = await fetch(url.toString(), {
+      method: 'POST',
+      headers,
+      body,
+    });
+    if (!microsoftRequest.ok) {
+      this.logError(microsoftRequest);
+      throw new BadRequestException('Invalid code');
+    }
+    const microsoftResponse: MicrosoftToken = await microsoftRequest.json();
+
+    const microsoftUserRequest = await fetch(
+      'https://graph.microsoft.com/v1.0/me',
+      {
+        headers: {
+          Authorization: `Bearer ${microsoftResponse.access_token}`,
+        },
+      },
+    );
+    if (!microsoftUserRequest.ok) {
+      this.logError(microsoftUserRequest);
+      throw new ServiceUnavailableException();
+    }
+    const microsoftUser: MicrosoftUser = await microsoftUserRequest.json();
+
+    this.logger.log(JSON.stringify(microsoftUser));
+
+    return this.users.OAuthLogin(
+      microsoftUser.mail,
+      microsoftUser.givenName,
+      microsoftUser.surname,
+      '',
+      microsoftUser.id,
+      OAuthProvider.MICROSOFT,
+    );
   }
 
   private async googleLogin(code: string) {
@@ -86,7 +156,8 @@ export class OAuthService {
 
     const googleRequest = await fetch(url.toString(), { method: 'POST' });
     if (!googleRequest.ok) {
-      throw new BadRequestException('Invalid code');
+      this.logError(googleRequest);
+      throw new ServiceUnavailableException();
     }
     const googleResponse: GoogleToken = await googleRequest.json();
     const googleUser = await fetch(
@@ -98,10 +169,10 @@ export class OAuthService {
       },
     );
     if (!googleUser.ok) {
+      this.logError(googleUser);
       throw new ServiceUnavailableException();
     }
     const user: GoogleUser = await googleUser.json();
-    this.logger.log(user);
     return this.users.OAuthLogin(
       user.email,
       user.given_name,
@@ -117,7 +188,7 @@ export class OAuthService {
     url.searchParams.set('client_id', process.env.FACEBOOK_APP_ID || '');
     url.searchParams.set(
       'redirect_uri',
-      process.env.REDIRECT_HOST + '/oauth/callback/' + OAuthProvider.FACEBOOK,
+      this.redirectUri(OAuthProvider.FACEBOOK),
     );
     url.searchParams.set(
       'client_secret',
@@ -127,12 +198,8 @@ export class OAuthService {
 
     const fbRequest = await fetch(url.toString());
     if (!fbRequest.ok) {
-      this.logger.log(
-        `Facebook request failed: ${
-          fbRequest.statusText
-        }. Url : ${url.toString()}. response : ${await fbRequest.text()}`,
-      );
-      throw new BadRequestException('Invalid code');
+      this.logError(fbRequest);
+      throw new ServiceUnavailableException();
     }
     const fbResponse: FacebookToken = await fbRequest.json();
     await this.checkFacebookPermission(fbResponse.access_token);
@@ -156,11 +223,8 @@ export class OAuthService {
       },
     });
     if (!fbRequest.ok) {
-      this.logger.log(
-        `Facebook request failed: ${
-          fbRequest.statusText
-        }. Url : ${url.toString()}. response : ${await fbRequest.text()}`,
-      );
+      this.logError(fbRequest);
+      throw new ServiceUnavailableException();
     }
     const fbResponse: FacebookPermission = await fbRequest.json();
     const permissions = fbResponse.data
@@ -183,12 +247,22 @@ export class OAuthService {
       },
     });
     if (!request.ok) {
-      this.logger.log(
-        `Facebook request failed: ${
-          request.statusText
-        }. Url : ${url.toString()}. response : ${await request.text()}`,
-      );
+      this.logError(request);
+      throw new ServiceUnavailableException();
     }
     return request.json();
+  }
+
+  private async logError(response: Response) {
+    const body = await response.json();
+    this.logger.log(
+      `Request failed to ${response.url} : ${
+        response.statusText
+      }. response : ${JSON.stringify(body)}`,
+    );
+  }
+
+  private redirectUri(provider: OAuthProviderType) {
+    return process.env.REDIRECT_HOST + '/oauth/callback/' + provider;
   }
 }

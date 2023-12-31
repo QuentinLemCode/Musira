@@ -177,6 +177,8 @@ export class AuthenticationService {
         return 'https://accounts.spotify.com/authorize';
       case OAuthProvider.GOOGLE:
         return 'https://accounts.google.com/o/oauth2/v2/auth';
+      case OAuthProvider.MICROSOFT:
+        return 'https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize';
     }
   }
 
@@ -207,6 +209,15 @@ export class AuthenticationService {
             'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
           redirect_uri: this.redirectUrl(provider),
           access_type: 'offline',
+          state: uuid,
+        };
+      case OAuthProvider.MICROSOFT:
+        return {
+          response_type: 'code',
+          client_id: environment.microsoftClientId,
+          scope:
+            'https://graph.microsoft.com/User.Read openid profile email offline_access',
+          redirect_uri: this.redirectUrl(provider),
           state: uuid,
         };
     }

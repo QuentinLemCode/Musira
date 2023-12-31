@@ -15,7 +15,11 @@
         "polyfills": "apps/musira/src/polyfills.ts",
         "tsConfig": "apps/musira/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "assets": ["apps/musira/src/favicon.ico", "apps/musira/src/assets"],
+        "assets": [
+          "apps/musira/src/favicon.ico",
+          "apps/musira/src/assets",
+          "apps/musira/src/.well-known"
+        ],
         "styles": ["apps/musira/src/styles.scss"],
         "scripts": []
       },

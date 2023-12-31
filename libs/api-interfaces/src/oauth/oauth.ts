@@ -2,6 +2,7 @@ export const OAuthProvider = {
   FACEBOOK: 'facebook',
   SPOTIFY: 'spotify',
   GOOGLE: 'google',
+  MICROSOFT: 'microsoft',
 } as const;
 
 export type OAuthProviderType =

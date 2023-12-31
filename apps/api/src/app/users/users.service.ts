@@ -118,6 +118,9 @@ export class UsersService {
       return await this.oAuthUsers.findOneByOrFail({ id: existingUser.id });
     }
     const user = this.oAuthUsers.create();
+    if ((firstName + lastName).trim() === '') {
+      user.firstName = email;
+    }
     user.email = email;
     user.firstName = firstName;
     user.lastName = lastName;
