@@ -61,7 +61,7 @@ export class NavigationComponent {
 
   get isSessionCreator() {
     if (!this.currentSession) return false;
-    return this.user.isSessionCreator(this.currentSession.code);
+    return this.sessions.isCreator();
   }
 
   exitSession() {

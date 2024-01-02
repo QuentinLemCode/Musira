@@ -10,7 +10,6 @@ import type {
 } from '@musira/api-interfaces';
 import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuthenticationService } from '../authentication/authentication.service';
 import { CONSTANTS } from '../constants';
 import { StorageService } from '../services/storage.service';
 
@@ -37,7 +36,6 @@ export class MusicSessionsService {
     @Inject(HttpClient) private readonly http: HttpClient,
     @Inject(Router) private readonly router: Router,
     @Inject(StorageService) private readonly storage: StorageService,
-    @Inject(AuthenticationService) private readonly user: AuthenticationService,
   ) {
     this.router.events.subscribe({
       next: (event) => {
@@ -54,12 +52,9 @@ export class MusicSessionsService {
   }
 
   public create(musicSessionDto: CreateMusicSessionDto) {
-    return this.http.post<MusicSessionDto>(this.endpoint, musicSessionDto).pipe(
-      this.tapCurrentSession,
-      tap((session) => {
-        this.user.addSessionCreator(session.code);
-      }),
-    );
+    return this.http
+      .post<MusicSessionDto>(this.endpoint, musicSessionDto)
+      .pipe(this.tapCurrentSession);
   }
 
   public update(musicSessionDto: UpdateMusicSessionDto, code: string) {
@@ -90,7 +85,6 @@ export class MusicSessionsService {
       .pipe(
         tap((result) => {
           this.deleteSessionInHistory(result.publicCode);
-          this.user.deleteSessionCreator(result.publicCode);
           this.currentSession.set(null);
         }),
       );
