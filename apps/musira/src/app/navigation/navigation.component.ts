@@ -1,4 +1,10 @@
-import { Component, Inject, computed } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Inject,
+  ViewChild,
+  computed,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
@@ -24,12 +30,19 @@ export class NavigationComponent {
     return false;
   });
 
+  @ViewChild('menuList', { static: true })
+  private menuList: ElementRef<HTMLUListElement>;
+
   constructor(
     @Inject(AuthenticationService) readonly user: AuthenticationService,
     @Inject(MusicSessionsService)
     private readonly sessions: MusicSessionsService,
     @Inject(Router) private readonly router: Router,
   ) {}
+
+  isListEmpty() {
+    return this.menuList.nativeElement.children.length === 0;
+  }
 
   toggleMenu() {
     this.showMenu = !this.showMenu;
