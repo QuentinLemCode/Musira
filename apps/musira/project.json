@@ -18,7 +18,11 @@
         "assets": [
           "apps/musira/src/favicon.ico",
           "apps/musira/src/assets",
-          "apps/musira/src/.well-known"
+          {
+            "glob": "microsoft-identity-association.json",
+            "input": "apps/musira/src/.well-known/",
+            "output": "/.well-known/"
+          }
         ],
         "styles": ["apps/musira/src/styles.scss"],
         "scripts": []
