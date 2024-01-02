@@ -99,7 +99,7 @@
     "@types/passport-jwt": "^3.0.13",
     "@types/passport-local": "^1.0.38",
     "@types/qrcode": "^1.5.5",
-    "@typescript-eslint/eslint-plugin": "6.16.0",
+    "@typescript-eslint/eslint-plugin": "6.17.0",
     "@typescript-eslint/parser": "6.17.0",
     "@vitest/coverage-v8": "~1.1.1",
     "@vitest/ui": "~1.1.1",
