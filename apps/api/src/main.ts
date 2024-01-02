@@ -35,6 +35,7 @@ async function bootstrap() {
   //     this.send('');
   //   });
 
+  // @ts-expect-error bad fastify cookie type
   await app.register(fastifyCookie, {
     secret: env.COOKIE_SECRET || 'defaultSecret',
   });
