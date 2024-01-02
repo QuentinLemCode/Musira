@@ -1,3 +1,4 @@
+import type { JwtUser } from '@musira/api-interfaces';
 import {
   BadRequestException,
   Body,
@@ -10,7 +11,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { JwtGuard } from '../../auth/jwt.guard';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { MusicSessionService } from '../../music-session/music-session.service';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
@@ -19,7 +19,6 @@ import { isResponseError } from '../../utils/type-guards';
 import type { SpotifyOAuthDTO } from '../music.interface';
 import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
 import { SpotifyApiService } from './spotify-api/spotify-api.service';
-import type { JwtUser } from '@musira/api-interfaces';
 
 @Controller('spotify')
 export class SpotifyLoginController {
@@ -29,7 +28,7 @@ export class SpotifyLoginController {
     private readonly queueEngine: QueueEngineService,
   ) {}
 
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(SessionCreatorGuard)
   @Get(':publicCode/spotify-login')
   async spotifyLogin(@MusicSessionParam() musicSession: MusicSession) {
     const uuid = randomUUID();
@@ -58,7 +57,6 @@ export class SpotifyLoginController {
   }
 
   @Post('register-player')
-  @UseGuards(JwtGuard)
   async spotifyAuthentication(
     @Body() spotifyOAuth: SpotifyOAuthDTO,
     @Request() req: { user: JwtUser },
@@ -92,7 +90,7 @@ export class SpotifyLoginController {
   }
 
   @Post(':publicCode/logout-player')
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(SessionCreatorGuard)
   async spotifyLogout(@MusicSessionParam() musicSession: MusicSession) {
     await this.spotify.unregisterPlayer(musicSession);
     this.queueEngine.stop();

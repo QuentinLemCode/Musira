@@ -9,12 +9,15 @@ import type { FastifyReply } from 'fastify';
 import { UsersService } from '../../../users/users.service';
 import { AuthService } from '../../auth.service';
 import type { EmailRegisterInterface } from '@musira/api-interfaces';
+import { Public } from '../../public-routes.decorator';
 @Controller('auth/email/register')
 export class RegisterController {
   constructor(
     private readonly auth: AuthService,
     private readonly users: UsersService,
   ) {}
+
+  @Public()
   @Post()
   async create(
     @Body() infos: EmailRegisterInterface,

@@ -4,4 +4,5 @@ export interface MusicSessionDto {
   code: number;
   creator: string;
   linkedToSpotify: boolean;
+  isCreator: boolean;
 }
