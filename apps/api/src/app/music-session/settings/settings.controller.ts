@@ -3,7 +3,6 @@ import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { MusicSession } from '../entities/music-session.entity';
 import { SettingsService } from './settings.service';
-import { JwtGuard } from '../../auth/jwt.guard';
 
 export interface SettingsQuery {
   maxVotes: number;
@@ -14,7 +13,7 @@ export interface SettingsQuery {
 export class SettingsController {
   constructor(private readonly settings: SettingsService) {}
 
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(SessionCreatorGuard)
   @Put()
   async setSettings(
     @MusicSessionParam() musicSession: MusicSession,
@@ -32,7 +31,7 @@ export class SettingsController {
     };
   }
 
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(SessionCreatorGuard)
   @Get()
   async getSettings(
     @MusicSessionParam() musicSession: MusicSession,

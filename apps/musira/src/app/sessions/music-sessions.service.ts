@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, signal } from '@angular/core';
+import { Inject, Injectable, computed, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import type {
@@ -26,6 +26,11 @@ export class MusicSessionsService {
   private readonly endpoint = environment.serverUrl + 'music-session';
 
   public currentSession = signal<MusicSessionDto | null>(null);
+  public isCreator = computed(() => {
+    const session = this.currentSession();
+    if (!session) return false;
+    return session.isCreator;
+  });
   public currentSession$ = toObservable(this.currentSession);
 
   constructor(

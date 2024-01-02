@@ -3,11 +3,13 @@ import type { FastifyReply } from 'fastify';
 import type { EmailUser } from '../../../users/user.email.entity';
 import { AuthService } from '../../auth.service';
 import { LocalAuthGuard } from '../../local-auth.guard';
+import { Public } from '../../public-routes.decorator';
 
 @Controller('auth/email/login')
 export class LoginController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post()
   login(

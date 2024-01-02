@@ -39,6 +39,5 @@ if (isProd) {
 @Module({
   imports: modules,
   controllers: [],
-  providers: [],
 })
 export class AppModule {}

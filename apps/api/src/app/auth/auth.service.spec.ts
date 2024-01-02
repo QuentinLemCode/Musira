@@ -1,6 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import type { FastifyReply } from 'fastify';
 import { EmailUser } from '../users/user.email.entity';
 import { UserRole } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
@@ -11,7 +10,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let usersService: UsersService;
   let jwtService: JwtService;
-  let mockFastifyReply: FastifyReply;
+  let mockFastifyReply: any;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -38,7 +37,7 @@ describe('AuthService', () => {
     mockFastifyReply = {
       clearCookie: vi.fn(),
       setCookie: vi.fn(),
-    } as unknown as FastifyReply;
+    };
   });
 
   it('should be defined', () => {
