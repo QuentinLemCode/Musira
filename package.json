@@ -47,7 +47,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.19"
   },
   "devDependencies": {
     "@angular-devkit/architect": "0.1700.9",
