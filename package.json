@@ -125,7 +125,7 @@
     "reflect-metadata": "^0.1.14",
     "rxjs": "7.8.1",
     "swc-loader": "^0.2.3",
-    "tailwindcss": "^3.4.0",
+    "tailwindcss": "^3.4.1",
     "ts-jest": "29.1.1",
     "ts-node": "10.9.2",
     "tslib": "^2.6.2",
