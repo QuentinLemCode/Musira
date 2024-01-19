@@ -24,7 +24,7 @@
     "tsc-alias": "tsc-alias -p apps/api/tsconfig.debug.json -w"
   },
   "dependencies": {
-    "@fastify/cookie": "^9.3.0",
+    "@fastify/cookie": "^9.3.1",
     "@fastify/cors": "^8.5.0",
     "@fastify/formbody": "^7.4.0",
     "@fastify/static": "^6.12.0",
