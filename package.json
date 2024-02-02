@@ -94,7 +94,7 @@
     "@swc/helpers": "^0.5.3",
     "@swc/jest": "^0.2.31",
     "@types/cookie-parser": "^1.4.6",
-    "@types/jest": "29.5.11",
+    "@types/jest": "29.5.12",
     "@types/node": "^20.11.16",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
