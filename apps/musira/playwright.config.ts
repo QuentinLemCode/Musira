@@ -32,14 +32,14 @@ export default defineConfig({
       ignoreHTTPSErrors: true,
       reuseExistingServer: !process.env['CI'],
       cwd: workspaceRoot,
-      timeout: 120 * 1000,
+      timeout: 30 * 1000,
     },
     {
       command: 'npx nx serve api',
       url: 'http://localhost:3000/api/health',
       reuseExistingServer: !process.env['CI'],
       cwd: workspaceRoot,
-      timeout: 120 * 1000,
+      timeout: 30 * 1000,
     },
   ],
 });
