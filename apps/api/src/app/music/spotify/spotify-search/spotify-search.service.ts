@@ -17,7 +17,14 @@ export class SpotifySearchService implements OnModuleInit {
   constructor(private http: HttpService) {}
 
   async onModuleInit() {
-    await this.loadToken();
+    try {
+      await this.loadToken();
+    } catch (error) {
+      this.logger.error(
+        'Error while loading token. Spotify search unusable',
+        error,
+      );
+    }
   }
 
   async search(query: string): Promise<SearchResponse> {
@@ -76,8 +83,9 @@ export class SpotifySearchService implements OnModuleInit {
   private async loadToken(): Promise<Token> {
     if (this.currentToken?.expiryDate) {
       this.logger.log(
-        `App token expired at current date : ${new Date()} for token expiry date : ${this
-          .currentToken?.expiryDate}. Refreshing...`,
+        `App token expired at current date : ${new Date()} for token expiry date : ${
+          this.currentToken?.expiryDate
+        }. Refreshing...`,
       );
     }
     const token = await this.getToken();

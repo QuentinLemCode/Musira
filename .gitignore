@@ -45,3 +45,7 @@ Thumbs.db
 apps/musira-e2e/cypress/downloads
 
 .nx/cache
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
