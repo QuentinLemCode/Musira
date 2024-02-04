@@ -20,7 +20,10 @@ export class SpotifySearchService implements OnModuleInit {
     try {
       await this.loadToken();
     } catch (error) {
-      this.logger.error('Error while loading token', error);
+      this.logger.error(
+        'Error while loading token. Spotify search unusable',
+        error,
+      );
     }
   }
 
