@@ -12,6 +12,8 @@ import { LocalStrategy } from './local.strategy';
 import { OauthController } from './oauth/oauth.controller';
 import { OAuthService } from './oauth/oauth.service';
 import { jwtSecret } from './secret';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtGuard } from './jwt.guard';
 
 @Module({
   imports: [
@@ -32,7 +34,16 @@ import { jwtSecret } from './secret';
       },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, OAuthService],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    OAuthService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtGuard,
+    },
+  ],
   controllers: [
     LoginController,
     OauthController,

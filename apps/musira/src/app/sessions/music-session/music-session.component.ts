@@ -28,6 +28,6 @@ export class MusicSessionComponent {
   }
 
   get isCreator() {
-    return this.user.isSessionCreator(this.currentSession?.code || 0);
+    return this.sessions.isCreator();
   }
 }

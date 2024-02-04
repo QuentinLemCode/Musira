@@ -1,3 +1,10 @@
+import type {
+  CreateMusicSessionDto,
+  DeletedMusicSessionDto,
+  JwtUser,
+  MusicSessionDto,
+  UpdateMusicSessionDto,
+} from '@musira/api-interfaces';
 import {
   BadRequestException,
   Body,
@@ -11,7 +18,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { JwtGuard } from '../auth/jwt.guard';
+import { Public } from '../auth/public-routes.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { SessionCreatorGuard } from '../users/session-creator.guard';
@@ -23,13 +30,6 @@ import {
 } from '../utils/decorators/music-session.decorator';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionService } from './music-session.service';
-import type {
-  CreateMusicSessionDto,
-  DeletedMusicSessionDto,
-  JwtUser,
-  MusicSessionDto,
-  UpdateMusicSessionDto,
-} from '@musira/api-interfaces';
 
 @Controller('music-session')
 export class MusicSessionController {
@@ -39,7 +39,6 @@ export class MusicSessionController {
   ) {}
 
   @Post()
-  @UseGuards(JwtGuard)
   async create(
     @Body() createMusicSessionDto: CreateMusicSessionDto,
     @Request() req: { user: JwtUser },
@@ -63,13 +62,14 @@ export class MusicSessionController {
       code: createdSession.publicCode,
       creator: createdSession.creator.name ?? '',
       linkedToSpotify: createdSession.spotifyAuthUuid !== null,
+      isCreator: this.isSessionCreator(user.id, createdSession),
     };
   }
 
   @Get()
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
-  async findAll(): Promise<MusicSessionDto[]> {
+  async findAll(@Request() req: { user: JwtUser }): Promise<MusicSessionDto[]> {
     const musicSessions = await this.session.findAll();
     return musicSessions.map((musicSession) => ({
       id: musicSession.id,
@@ -77,12 +77,15 @@ export class MusicSessionController {
       code: musicSession.publicCode,
       creator: musicSession.creator.name ?? '',
       linkedToSpotify: musicSession.spotifyAuthUuid !== null,
+      isCreator: this.isSessionCreator(req.user.id, musicSession),
     }));
   }
 
+  @Public()
   @Get(':publicCode')
   async findOne(
     @MusicSessionParam() musicSession: MusicSession,
+    @Request() req: { user?: JwtUser },
   ): Promise<MusicSessionDto> {
     return {
       id: musicSession.id,
@@ -90,12 +93,16 @@ export class MusicSessionController {
       code: musicSession.publicCode,
       creator: musicSession.creator.name ?? '',
       linkedToSpotify: musicSession.spotifyAuthUuid !== null,
+      isCreator: req.user
+        ? this.isSessionCreator(req.user.id, musicSession)
+        : false,
     };
   }
 
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(SessionCreatorGuard)
   @Patch(':publicCode')
   async update(
+    @Request() req: { user: JwtUser },
     @PublicCode() code: number,
     @Body() updateMusicSessionDto: UpdateMusicSessionDto,
   ): Promise<MusicSessionDto> {
@@ -106,10 +113,10 @@ export class MusicSessionController {
       code: musicSession.publicCode,
       creator: musicSession.creator.name ?? '',
       linkedToSpotify: musicSession.spotifyAuthUuid !== null,
+      isCreator: this.isSessionCreator(req.user.id, musicSession),
     };
   }
 
-  @UseGuards(JwtGuard)
   @Delete(':publicCode')
   async remove(
     @PublicCode() code: number,
@@ -138,5 +145,12 @@ export class MusicSessionController {
         message: 'session not found',
       });
     return { deleted: true, publicCode: code };
+  }
+
+  private isSessionCreator(
+    userId: number,
+    musicSession: MusicSession,
+  ): boolean {
+    return userId === musicSession.creator.id;
   }
 }

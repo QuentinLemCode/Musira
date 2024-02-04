@@ -86,40 +86,6 @@ export class AuthenticationService {
       );
   }
 
-  isSessionCreator(sessionId: number) {
-    const sessions = localStorage
-      .getItem(LocalStorageKeys.SESSIONS_CREATOR)
-      ?.split(';');
-    return sessions?.includes(sessionId.toString()) ?? false;
-  }
-
-  addSessionCreator(sessionId: number) {
-    const sessions = localStorage
-      .getItem(LocalStorageKeys.SESSIONS_CREATOR)
-      ?.split(';');
-    if (!sessions?.includes(sessionId.toString())) {
-      sessions?.push(sessionId.toString());
-      localStorage.setItem(
-        LocalStorageKeys.SESSIONS_CREATOR,
-        sessions?.join(';') ?? '',
-      );
-    }
-  }
-
-  deleteSessionCreator(sessionId: number) {
-    const sessions = localStorage
-      .getItem(LocalStorageKeys.SESSIONS_CREATOR)
-      ?.split(';');
-    if (sessions?.includes(sessionId.toString())) {
-      localStorage.setItem(
-        LocalStorageKeys.SESSIONS_CREATOR,
-        sessions
-          ?.filter((session) => session !== sessionId.toString())
-          .join(';') ?? '',
-      );
-    }
-  }
-
   private getSession(): UserState {
     const user = this.tokenPayload;
     if (!user) {

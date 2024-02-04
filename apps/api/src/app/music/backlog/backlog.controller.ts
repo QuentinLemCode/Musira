@@ -8,21 +8,20 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { Roles } from '../../auth/roles.decorator';
 import { RolesGuard } from '../../auth/roles.guard';
+import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { UserRole } from '../../users/user.entity';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { Music } from '../music.entity';
 import { BacklogService } from './backlog.service';
-import { JwtGuard } from '../../auth/jwt.guard';
 
 @Controller('session/:publicCode/backlog')
 export class BacklogController {
   constructor(private readonly backlog: BacklogService) {}
 
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(SessionCreatorGuard)
   @Post()
   pushToBacklog(
     @Body() music: Music,
@@ -31,7 +30,7 @@ export class BacklogController {
     return this.backlog.push(musicSession, music);
   }
 
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(SessionCreatorGuard)
   @Delete(':id')
   async deleteBacklog(@Param('id') id: string) {
     try {
@@ -41,14 +40,14 @@ export class BacklogController {
     }
   }
 
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(SessionCreatorGuard)
   @Get('')
   getBackLog(@MusicSessionParam() musicSession: MusicSession) {
     return this.backlog.get(musicSession);
   }
 
   // TODO: move to its own class
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post('import')
   import(

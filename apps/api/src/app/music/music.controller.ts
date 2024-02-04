@@ -6,6 +6,7 @@ import {
   ServiceUnavailableException,
   UseGuards,
 } from '@nestjs/common';
+import { Public } from '../auth/public-routes.decorator';
 import { MusicSession } from '../music-session/entities/music-session.entity';
 import { SessionCreatorGuard } from '../users/session-creator.guard';
 import { MusicSessionParam } from '../utils/decorators/music-session.decorator';
@@ -18,7 +19,6 @@ import type {
   SearchResponse,
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
-import { JwtGuard } from '../auth/jwt.guard';
 
 @Controller('session/:publicCode/music')
 export class MusicController {
@@ -29,7 +29,6 @@ export class MusicController {
     private readonly queueEngine: QueueEngineService,
   ) {}
 
-  @UseGuards(JwtGuard)
   @Get('search')
   async search(@Query('query') query: string): Promise<Music[]> {
     if (!query) throw new BadRequestException('no query');
@@ -37,7 +36,7 @@ export class MusicController {
     return this.mapResults(results);
   }
 
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(SessionCreatorGuard)
   @Get('start')
   async start(
     @MusicSessionParam() musicSession: MusicSession,
@@ -47,7 +46,7 @@ export class MusicController {
     return this.generateState(musicSession, status.message);
   }
 
-  @UseGuards(JwtGuard, SessionCreatorGuard)
+  @UseGuards(SessionCreatorGuard)
   @Get('stop')
   async stop(
     @MusicSessionParam() musicSession: MusicSession,
@@ -56,6 +55,7 @@ export class MusicController {
     return this.generateState(musicSession);
   }
 
+  @Public()
   @Get()
   async currentState(
     @MusicSessionParam() musicSession: MusicSession,

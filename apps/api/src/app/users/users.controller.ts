@@ -8,7 +8,6 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { JwtGuard } from '../auth/jwt.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { UserRole } from './user.entity';
@@ -18,14 +17,13 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private users: UsersService) {}
 
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   @Get()
   getAll() {
     return this.users.getAll();
   }
 
-  @UseGuards(JwtGuard)
   @Delete(':id?')
   async delete(@Request() req: { user: JwtUser }, @Param('id') id?: string) {
     if (id) {

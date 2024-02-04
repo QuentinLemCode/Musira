@@ -1,3 +1,4 @@
+import type { JwtUser } from '@musira/api-interfaces';
 import {
   BadRequestException,
   Body,
@@ -8,9 +9,8 @@ import {
   Param,
   Post,
   Request,
-  UseGuards,
 } from '@nestjs/common';
-import { JwtGuard } from '../../auth/jwt.guard';
+import { Public } from '../../auth/public-routes.decorator';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { UserRole } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
@@ -21,7 +21,6 @@ import { Music } from '../music.entity';
 import { QueueEngineService } from './queue-engine/queue-engine.service';
 import type { Queue } from './queue.entity';
 import { QueueService } from './queue.service';
-import type { JwtUser } from '@musira/api-interfaces';
 
 interface QueueResponse {
   queue: Queue[];
@@ -37,6 +36,7 @@ export class QueueController {
     private readonly backlog: BacklogService,
   ) {}
 
+  @Public()
   @Get()
   async getQueue(
     @MusicSessionParam() musicSession: MusicSession,
@@ -49,7 +49,6 @@ export class QueueController {
     };
   }
 
-  @UseGuards(JwtGuard)
   @Post()
   async pushToQueue(
     @Body() music: Music,
@@ -80,7 +79,6 @@ export class QueueController {
     );
   }
 
-  @UseGuards(JwtGuard)
   @Delete(':id')
   async deleteFromQueue(
     @Param('id') id: string,
@@ -110,7 +108,6 @@ export class QueueController {
     return this.queue.delete(id);
   }
 
-  @UseGuards(JwtGuard)
   @Post('/:id/forward')
   async forwardQueue(
     @Param('id') id: string,
