@@ -29,6 +29,7 @@ services:
   #       condition: service_healthy
   db:
     image: mysql:5.5
+    platform: linux/x86_64
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -45,6 +46,7 @@ services:
 
   adminer:
     image: adminer
+    platform: linux/x86_64
     restart: unless-stopped
     depends_on:
       - db
