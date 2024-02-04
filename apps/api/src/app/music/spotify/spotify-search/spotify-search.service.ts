@@ -17,7 +17,11 @@ export class SpotifySearchService implements OnModuleInit {
   constructor(private http: HttpService) {}
 
   async onModuleInit() {
-    await this.loadToken();
+    try {
+      await this.loadToken();
+    } catch (error) {
+      this.logger.error('Error while loading token', error);
+    }
   }
 
   async search(query: string): Promise<SearchResponse> {
