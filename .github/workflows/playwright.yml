@@ -18,6 +18,8 @@ jobs:
         run: npm ci
       - name: Launch database
         run: docker-compose -f docker-compose.test.yml up -d
+      - name: Build interfaces
+        run: npx nx build api-interfaces
       - name: Run E2E tests
         run: npx nx run musira:e2e
       - uses: actions/upload-artifact@v3
