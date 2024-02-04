@@ -17,6 +17,9 @@ export class SpotifySearchService implements OnModuleInit {
   constructor(private http: HttpService) {}
 
   async onModuleInit() {
+    // we disable this in CI because we don't have the keys
+    // requests should be mocked in tests
+    if (process.env.CI) return;
     try {
       await this.loadToken();
     } catch (error) {
