@@ -22,7 +22,7 @@ jobs:
         run: npx nx build api-interfaces
       - name: Run E2E tests
         run: npx nx run musira:e2e
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
