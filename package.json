@@ -87,7 +87,7 @@
     "@nx/js": "18.0.2",
     "@nx/nest": "18.0.1",
     "@nx/node": "18.0.1",
-    "@nx/vite": "18.0.1",
+    "@nx/vite": "18.0.2",
     "@nx/workspace": "18.0.1",
     "@schematics/angular": "17.1.2",
     "@swc-node/register": "~1.8.0",
