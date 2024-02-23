@@ -50,7 +50,7 @@
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
-    "@angular-devkit/architect": "0.1702.0",
+    "@angular-devkit/architect": "0.1702.1",
     "@angular-devkit/build-angular": "17.2.1",
     "@angular-devkit/core": "17.2.1",
     "@angular-devkit/schematics": "17.2.1",
