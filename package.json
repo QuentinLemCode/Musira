@@ -77,7 +77,7 @@
     "@nx/devkit": "18.0.1",
     "@nx/playwright": "18.0.1",
     "@playwright/test": "^1.40.1",
-    "@nestjs/cli": "^10.3.0",
+    "@nestjs/cli": "^10.3.2",
     "@nestjs/schematics": "10.1.0",
     "@nestjs/testing": "10.3.1",
     "@nx/angular": "18.0.1",
