@@ -135,7 +135,7 @@
     "unplugin-swc": "^1.4.4",
     "vite": "^5.0.12",
     "vitest": "~1.2.2",
-    "zone.js": "0.14.3"
+    "zone.js": "0.14.4"
   },
   "engines": {
     "node": "v21.6.1"
