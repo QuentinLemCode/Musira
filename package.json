@@ -40,7 +40,7 @@
     "@nestjs/serve-static": "^4.0.2",
     "@nestjs/typeorm": "^10.0.2",
     "axios": "1.6.8",
-    "cache-manager": "^5.5.0",
+    "cache-manager": "^5.5.1",
     "cookie-parser": "^1.4.6",
     "fastify": "^4.26.2",
     "mysql2": "^3.9.3",
