@@ -72,7 +72,7 @@
     "@fortawesome/fontawesome-common-types": "^6.5.1",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
-    "@fortawesome/free-regular-svg-icons": "^6.5.1",
+    "@fortawesome/free-regular-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@nx/devkit": "18.2.4",
     "@nx/playwright": "18.2.4",
