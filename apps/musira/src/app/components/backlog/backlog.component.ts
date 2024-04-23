@@ -36,7 +36,7 @@ export class BacklogComponent {
       },
     };
     this.queue.getFullBacklog().subscribe(subsribeParam);
-    interval(20000)
+    interval(4000)
       .pipe(
         takeUntilDestroyed(),
         mergeMap(() => this.queue.getFullBacklog()),

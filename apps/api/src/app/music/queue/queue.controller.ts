@@ -41,7 +41,7 @@ export class QueueController {
   async getQueue(
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<QueueResponse> {
-    const queue = await this.queue.get(musicSession);
+    const queue = await this.queue.getPending(musicSession);
     const backlog = await this.backlog.getNominatedBacklog(musicSession);
     return {
       queue,

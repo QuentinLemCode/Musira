@@ -9,21 +9,21 @@ import {
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { Cache } from 'cache-manager';
 import { env } from 'process';
 import { catchError, firstValueFrom, map, of, pipe, retry, tap } from 'rxjs';
 import { Repository } from 'typeorm';
+import type { MusicSession } from '../../../music-session/entities/music-session.entity';
+import { MusicSessionService } from '../../../music-session/music-session.service';
 import { querystring } from '../../../utils/querystring';
 import { SpotifyAccount } from '../spotify-account.entity';
 import type { SpotifyRefreshToken, SpotifyToken } from '../token';
-import type { Cache } from 'cache-manager';
 import type {
   CurrentPlaybackResponse,
   SinglePlaylistResponse,
   SpotifyTrackCategory,
   SpotifyURI,
 } from '../types/spotify-interfaces';
-import type { MusicSession } from '../../../music-session/entities/music-session.entity';
-import { MusicSessionService } from '../../../music-session/music-session.service';
 
 export type PlaybackState =
   | {
@@ -345,11 +345,13 @@ export class SpotifyApiService implements OnModuleInit {
     const message = [err?.message, err?.response?.data?.error?.message]
       .filter((a) => !!a)
       .join(' - ');
-    this.logger.error(message, err);
+    this.logger.error(`${message}
+    ${JSON.stringify(err)}
+    ${JSON.stringify(err.response)}`);
   }
 
   private async renewToken(account: SpotifyAccount) {
-    const musicSession = await account.music_session;
+    const musicSession = account.music_session;
     this.logger.log(`Renewing token for session ${musicSession.id} ...`);
     const form = {
       refresh_token: account.refresh_token,
