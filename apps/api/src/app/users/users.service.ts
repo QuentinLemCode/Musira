@@ -113,6 +113,7 @@ export class UsersService {
           lastName,
           photoUrl,
           email,
+          name: `${firstName} ${lastName}`,
         },
       );
       return await this.oAuthUsers.findOneByOrFail({ id: existingUser.id });
@@ -127,6 +128,7 @@ export class UsersService {
     user.photoUrl = photoUrl;
     user.provider = provider;
     user.externalId = externalId;
+    user.name = `${firstName} ${lastName}`;
     return this.users.save(user);
   }
 

@@ -4,5 +4,8 @@
 
 <musira-spotify-status *ngIf="isCreator"></musira-spotify-status>
 
-<musira-search *ngIf="isLoggedIn"></musira-search>
+<musira-search *ngIf="isLoggedIn; else loginBox"></musira-search>
+<ng-template #loginBox>
+  <a [routerLink]="['/user/login']">Connecte-toi pour ajouter des musiques</a>
+</ng-template>
 <musira-queue></musira-queue>

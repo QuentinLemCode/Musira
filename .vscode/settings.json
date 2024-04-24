@@ -3,5 +3,12 @@
   "typescript.preferences.importModuleSpecifier": "project-relative",
   "vsicons.presets.angular": true,
   "editor.indentSize": 2,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always",
+    "source.organizeImports": "always"
+  },
   "vitest.commandLine": "npx vitest --globals"
 }

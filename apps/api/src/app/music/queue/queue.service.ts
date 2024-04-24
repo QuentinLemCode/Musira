@@ -62,6 +62,10 @@ export class QueueService {
     return this.getQueueForStatus(musicSession, Status.PENDING, Status.PLAYING);
   }
 
+  getPending(musicSession: MusicSession) {
+    return this.getQueueForStatus(musicSession, Status.PENDING);
+  }
+
   // features
 
   async delete(queueOrId: Queue | string | number) {
