@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { mockJwtGuard, mockMusicSessionPipe } from '../../../test-utils/mock';
+import { JwtGuard } from '../../auth/jwt.guard';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { UsersService } from '../../users/users.service';
+import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
 import { BacklogService } from '../backlog/backlog.service';
 import { QueueEngineService } from './queue-engine/queue-engine.service';
 import { QueueController } from './queue.controller';
-import { QueueService } from './queue.service';
-import { mockJwtGuard, mockMusicSessionPipe } from '../../../test-utils/mock';
 import { Queue } from './queue.entity';
-import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
-import { JwtGuard } from '../../auth/jwt.guard';
+import { QueueService } from './queue.service';
 
 // Mocking Services
 const mockQueueService = {
@@ -16,6 +16,7 @@ const mockQueueService = {
   push: vi.fn(),
   delete: vi.fn(),
   countQueuedItemForUser: vi.fn(),
+  getPending: vi.fn(),
 };
 
 const mockUsersService = {
@@ -63,7 +64,7 @@ describe('QueueController', () => {
       const musicSession = new MusicSession();
       const queue: Queue[] = [];
       const backlog = null;
-      mockQueueService.get.mockResolvedValue(queue);
+      mockQueueService.getPending.mockResolvedValue(queue);
       mockBacklogService.getNominatedBacklog.mockResolvedValue(backlog);
 
       const result = await controller.getQueue(musicSession);
