@@ -19,6 +19,7 @@ const LocalStorageKeys = {
 interface BaseUserState {
   username: string;
   userId: string;
+  id: number;
   admin: boolean;
 }
 
@@ -98,6 +99,7 @@ export class AuthenticationService {
       username: user.context.user.name,
       userId: user.context.user.email,
       admin: user.context.user.admin,
+      id: user.context.user.id,
     };
   }
 

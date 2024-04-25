@@ -1,11 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs/operators';
+import { AuthenticationService } from '../../authentication/authentication.service';
 import type { Backlog, Music, Queue } from '../../services/music-api.interface';
 import { Status } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
-import { AuthenticationService } from '../../authentication/authentication.service';
 import type {
   IconUpdateStatus,
   MusicComponentConfiguration,
@@ -34,8 +34,7 @@ export class QueueComponent {
 
   getMusicConfig(queue: Queue) {
     const user = this.user.loggedUser();
-    const isQueuedByUser =
-      user.isLoggedIn && queue.user.id === +(user.userId ?? 0);
+    const isQueuedByUser = user.isLoggedIn && queue.user.id === +(user.id ?? 0);
     return {
       votable: this.isEngineStarted && user.isLoggedIn,
       deletable: isQueuedByUser || (user.isLoggedIn && user.admin),
