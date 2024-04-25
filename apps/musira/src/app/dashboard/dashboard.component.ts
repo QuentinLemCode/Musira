@@ -1,17 +1,17 @@
 import { DOCUMENT } from '@angular/common';
-import type { AfterViewInit, ElementRef, OnDestroy } from '@angular/core';
+import type { AfterViewChecked, ElementRef, OnDestroy } from '@angular/core';
 import { Component, Inject, ViewChild } from '@angular/core';
 import { toCanvas } from 'qrcode';
+import { DashboardService } from '../services/dashboard.service';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
 import { codeToString } from '../utils/format-code';
-import { DashboardService } from '../services/dashboard.service';
 
 @Component({
   selector: 'musira-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements AfterViewInit, OnDestroy {
+export class DashboardComponent implements AfterViewChecked, OnDestroy {
   @ViewChild('qrcode')
   qrcode!: ElementRef<HTMLCanvasElement>;
 
@@ -39,13 +39,10 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     return codeToString(this.currentSession?.code || 0);
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewChecked(): void {
     toCanvas(
       this.qrcode.nativeElement,
-      'https://' +
-        this.serverUrl +
-        '/' +
-        this.sessions.currentSession()?.code ?? '',
+      'https://' + this.serverUrl + '/' + this.currentSession?.code ?? '',
       {
         errorCorrectionLevel: 'H',
         scale: 12,
