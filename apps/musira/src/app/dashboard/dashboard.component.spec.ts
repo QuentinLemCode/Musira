@@ -1,10 +1,10 @@
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import * as qrcode from 'qrcode';
-import { MusicSessionsService } from '../sessions/music-sessions.service';
-import { DashboardComponent } from './dashboard.component';
 import { QueueStubComponent } from '../../tests/components-stubs';
 import { DashboardService } from '../services/dashboard.service';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
+import { DashboardComponent } from './dashboard.component';
 
 jest.mock('qrcode', () => ({
   toCanvas: jest.fn(),
@@ -56,7 +56,7 @@ describe('DashboardComponent', () => {
     mockMusicSessionsService.currentSession.mockReturnValue(mockCurrentSession);
     component.qrcode = new ElementRef(mockCanvasElement);
 
-    component.ngAfterViewInit();
+    component.ngAfterViewChecked();
 
     expect(qrcode.toCanvas).toHaveBeenCalledWith(
       mockCanvasElement,
