@@ -15,7 +15,10 @@
   class="search-icon cursor-pointer"
   *ngIf="results !== null && !resultsHidden"
 >
-  <fa-icon [icon]="iconClose" (click)="hideResults()"></fa-icon>
+  <fa-icon
+    [icon]="iconClose"
+    (click)="hideResults({ clearInput: true })"
+  ></fa-icon>
 </span>
 
 <p *ngIf="error">{{ error }}</p>

@@ -27,7 +27,6 @@ import type { Music } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
-import { AuthenticationService } from '../../authentication/authentication.service';
 import type {
   IconUpdateStatus,
   MusicComponentConfiguration,
@@ -70,7 +69,6 @@ export class SearchComponent implements OnInit {
   constructor(
     @Inject(MusicApiService) private readonly music: MusicApiService,
     @Inject(QueueService) private readonly queue: QueueService,
-    @Inject(AuthenticationService) private readonly user: AuthenticationService,
     @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
   ) {
@@ -117,7 +115,10 @@ export class SearchComponent implements OnInit {
     }
   }
 
-  hideResults() {
+  hideResults({ clearInput }: { clearInput?: boolean } = {}) {
+    if (clearInput) {
+      this.search.reset();
+    }
     this.resultsHidden = true;
   }
 
