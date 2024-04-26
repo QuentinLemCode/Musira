@@ -5,10 +5,10 @@ import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testi
 import { faAdd, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Subject, throwError } from 'rxjs';
 import { currentMusicFixture, musicFixture } from '../../../tests/fixtures';
+import { AuthenticationService } from '../../authentication/authentication.service';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
-import { AuthenticationService } from '../../authentication/authentication.service';
 import type { IconUpdateStatus } from '../music/music.component';
 import { SearchComponent } from './search.component';
 
@@ -142,5 +142,13 @@ describe('SearchComponent', () => {
     jest.advanceTimersByTime(5000);
     expect(component.error).toBe('');
     expect(mockIconUpdate.updateIcon).toHaveBeenCalledWith(faAdd);
+  });
+
+  it('should clear search input when clicking on cross icon', () => {
+    component.search.setValue('test');
+    component.hideResults({ clearInput: true });
+
+    expect(component.search.value).toBe(null);
+    expect(component.resultsHidden).toBe(true);
   });
 });
