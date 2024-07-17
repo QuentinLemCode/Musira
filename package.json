@@ -130,7 +130,7 @@
     "tailwindcss": "^3.4.3",
     "ts-jest": "29.1.2",
     "ts-node": "10.9.2",
-    "tslib": "^2.6.2",
+    "tslib": "^2.6.3",
     "typescript": "5.3.3",
     "unplugin-swc": "^1.4.5",
     "vite": "^5.2.8",
