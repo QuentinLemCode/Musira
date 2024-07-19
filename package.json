@@ -42,7 +42,7 @@
     "axios": "1.7.2",
     "cache-manager": "^5.7.3",
     "cookie-parser": "^1.4.6",
-    "fastify": "^4.26.2",
+    "fastify": "^4.28.1",
     "mysql2": "^3.10.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
