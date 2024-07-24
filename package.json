@@ -74,7 +74,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-regular-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
-    "@nx/devkit": "19.5.1",
+    "@nx/devkit": "19.5.2",
     "@nx/playwright": "19.5.1",
     "@playwright/test": "^1.45.2",
     "@nestjs/cli": "^10.4.2",
