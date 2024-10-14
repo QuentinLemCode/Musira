@@ -8,15 +8,15 @@ import { PublicCodeGeneratorService } from './public-code-generator/public-code-
 
 // Mocking Repositories and Services
 const mockRepository = {
-  create: vi.fn(),
-  findOneOrFail: vi.fn(),
-  find: vi.fn(),
-  save: vi.fn(),
-  delete: vi.fn(),
+  create: jest.fn(),
+  findOneOrFail: jest.fn(),
+  find: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
 };
 
 const mockPublicCodeGeneratorService = {
-  generatePublicCode: vi.fn(),
+  generatePublicCode: jest.fn(),
 };
 
 describe('MusicSessionService', () => {

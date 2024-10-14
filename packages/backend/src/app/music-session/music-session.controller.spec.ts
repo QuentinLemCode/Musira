@@ -8,20 +8,20 @@ import { MusicSessionService } from './music-session.service';
 
 // Mocking MusicSessionService
 const mockSessionService = {
-  create: vi.fn(),
-  findAll: vi.fn(),
-  findOne: vi.fn(),
-  update: vi.fn(),
-  remove: vi.fn(),
+  create: jest.fn(),
+  findAll: jest.fn(),
+  findOne: jest.fn(),
+  update: jest.fn(),
+  remove: jest.fn(),
 };
 
 // Mocking UsersService
 const mockUsersService = {
-  findByEmail: vi.fn(),
+  findByEmail: jest.fn(),
 };
 
 const mockJwt = {
-  validateToken: vi.fn(),
+  validateToken: jest.fn(),
 };
 
 describe('MusicSessionController', () => {
@@ -67,7 +67,7 @@ describe('MusicSessionController', () => {
       const musicSessions: MusicSession[] = []; // Provide mock music sessions
       mockSessionService.findAll.mockResolvedValue(musicSessions);
 
-      const result = await controller.findAll();
+      const result = await controller.findAll({ user: { id: 1 } as JwtUser });
 
       expect(result).toEqual(expect.any(Array));
       expect(result.length).toBe(musicSessions.length);

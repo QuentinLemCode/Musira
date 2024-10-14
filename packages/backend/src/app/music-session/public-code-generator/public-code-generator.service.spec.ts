@@ -1,11 +1,11 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
-import { PublicCodeGeneratorService } from './public-code-generator.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MusicSession } from '../entities/music-session.entity';
+import { PublicCodeGeneratorService } from './public-code-generator.service';
 
 const mockRepository = {
-  findOneBy: vi.fn(),
+  findOneBy: jest.fn(),
 };
 
 describe('PublicCodeGeneratorService', () => {
@@ -28,11 +28,11 @@ describe('PublicCodeGeneratorService', () => {
   });
 
   beforeEach(() => {
-    vi.spyOn(global.Math, 'random').mockReturnValue(0.123456789);
+    jest.spyOn(global.Math, 'random').mockReturnValue(0.123456789);
   });
 
   afterEach(() => {
-    vi.spyOn(global.Math, 'random').mockRestore();
+    jest.spyOn(global.Math, 'random').mockRestore();
   });
 
   it('should be defined', () => {

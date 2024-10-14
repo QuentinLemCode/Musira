@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SessionCreatorGuard } from '../../users/session-creator.guard';
-import { MusicSession } from '../entities/music-session.entity';
-import { SettingsController, SettingsQuery } from './settings.controller';
-import { SettingsService } from './settings.service';
-import { Settings } from './settings.entity';
-import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
 import { mockMusicSessionPipe } from '../../../test-utils/mock';
 import { JwtGuard } from '../../auth/jwt.guard';
+import { SessionCreatorGuard } from '../../users/session-creator.guard';
+import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
+import { MusicSession } from '../entities/music-session.entity';
+import { SettingsController, SettingsQuery } from './settings.controller';
+import { Settings } from './settings.entity';
+import { SettingsService } from './settings.service';
 
 // Mocking Service
 const mockSettingsService = {
-  setMaxVotes: vi.fn(),
-  setMaxQueuableSongPerUser: vi.fn(),
+  setMaxVotes: jest.fn(),
+  setMaxQueuableSongPerUser: jest.fn(),
 };
 
 describe('SettingsController', () => {

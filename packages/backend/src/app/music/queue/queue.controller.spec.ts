@@ -12,25 +12,25 @@ import { QueueService } from './queue.service';
 
 // Mocking Services
 const mockQueueService = {
-  get: vi.fn(),
-  push: vi.fn(),
-  delete: vi.fn(),
-  countQueuedItemForUser: vi.fn(),
-  getPending: vi.fn(),
+  get: jest.fn(),
+  push: jest.fn(),
+  delete: jest.fn(),
+  countQueuedItemForUser: jest.fn(),
+  getPending: jest.fn(),
 };
 
 const mockUsersService = {
-  getQueuedMusicForUser: vi.fn(),
-  findById: vi.fn(),
-  findByEmail: vi.fn(),
+  getQueuedMusicForUser: jest.fn(),
+  findById: jest.fn(),
+  findByEmail: jest.fn(),
 };
 
 const mockQueueEngineService = {
-  forward: vi.fn(),
+  forward: jest.fn(),
 };
 
 const mockBacklogService = {
-  getNominatedBacklog: vi.fn(),
+  getNominatedBacklog: jest.fn(),
 };
 
 describe('QueueController', () => {

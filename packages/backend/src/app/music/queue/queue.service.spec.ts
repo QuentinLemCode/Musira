@@ -50,13 +50,13 @@ describe('QueueService', () => {
         {
           provide: MusicSessionService,
           useValue: {
-            isAccountRegistered: vi.fn(() => Promise.resolve(true)),
-            addToQueue: vi.fn(async (): Promise<APIResult> => {
+            isAccountRegistered: jest.fn(() => Promise.resolve(true)),
+            addToQueue: jest.fn(async (): Promise<APIResult> => {
               return {
                 status: 'success',
               };
             }),
-            getPlaybackState: vi.fn(() => {
+            getPlaybackState: jest.fn(() => {
               return Promise.resolve({
                 status: 'success',
                 data: {
@@ -98,7 +98,7 @@ describe('QueueService', () => {
   });
 
   afterEach(() => {
-    vi.clearAllTimers();
+    jest.clearAllTimers();
   });
 
   // the music has been paused
