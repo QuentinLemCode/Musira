@@ -15,7 +15,7 @@ describe('OAuthService', () => {
         {
           provide: UsersService,
           useValue: {
-            OAuthLogin: vi.fn(),
+            OAuthLogin: jest.fn(),
           },
         },
       ],
@@ -71,17 +71,17 @@ describe('OAuthService', () => {
       };
       const mockUserResponse = {
         ok: true,
-        json: vi.fn().mockResolvedValueOnce(mockUser),
+        json: jest.fn().mockResolvedValueOnce(mockUser),
       };
 
       const mockUserPermissions = {
         ok: true,
-        json: vi.fn().mockResolvedValueOnce(mockPermissions),
+        json: jest.fn().mockResolvedValueOnce(mockPermissions),
       };
 
       const mockCode = {
         ok: true,
-        json: vi.fn().mockResolvedValueOnce({ access_token: 'token' }),
+        json: jest.fn().mockResolvedValueOnce({ access_token: 'token' }),
       };
 
       const urls: Record<string, any> = {
@@ -90,17 +90,17 @@ describe('OAuthService', () => {
         'https://graph.facebook.com/v18.0/me': mockUserResponse,
       };
 
-      vi.spyOn(global, 'fetch').mockImplementation(
-        (url: string | URL | Request) => {
+      jest
+        .spyOn(global, 'fetch')
+        .mockImplementation((url: string | URL | Request) => {
           url = typeof url === 'string' ? url : url.toString();
           url = url.split('?')[0] || '';
           return urls[url];
-        },
-      );
+        });
       const user = {
         email: 'test@email.fr',
       } as OAuthUser;
-      vi.spyOn(usersService, 'OAuthLogin').mockResolvedValueOnce(user);
+      jest.spyOn(usersService, 'OAuthLogin').mockResolvedValueOnce(user);
 
       await service.login(OAuthProvider.FACEBOOK, code);
 

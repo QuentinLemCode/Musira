@@ -1,18 +1,18 @@
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from '../../../users/users.service';
-import { LogoutController } from './logout.controller';
-import { AuthService } from '../../auth.service';
 import type { FastifyReply } from 'fastify';
+import { UsersService } from '../../../users/users.service';
+import { AuthService } from '../../auth.service';
+import { LogoutController } from './logout.controller';
 
 // Mocking Service
 const mockUserService = {
-  removeRefreshUUID: vi.fn(),
+  removeRefreshUUID: jest.fn(),
 };
 
 describe('LogoutController', () => {
   let controller: LogoutController;
-  const authService = { logout: vi.fn() };
+  const authService = { logout: jest.fn() };
   let mockFastifyReply: FastifyReply;
 
   beforeEach(async () => {
@@ -26,8 +26,8 @@ describe('LogoutController', () => {
 
     controller = module.get<LogoutController>(LogoutController);
     mockFastifyReply = {
-      clearCookie: vi.fn(),
-      setCookie: vi.fn(),
+      clearCookie: jest.fn(),
+      setCookie: jest.fn(),
     } as unknown as FastifyReply;
   });
 

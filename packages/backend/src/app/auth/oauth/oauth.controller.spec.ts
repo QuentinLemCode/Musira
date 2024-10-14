@@ -18,13 +18,13 @@ describe('OauthController', () => {
         {
           provide: OAuthService,
           useValue: {
-            login: vi.fn(),
+            login: jest.fn(),
           },
         },
         {
           provide: AuthService,
           useValue: {
-            login: vi.fn(),
+            login: jest.fn(),
           },
         },
       ],
@@ -46,8 +46,10 @@ describe('OauthController', () => {
       const mockUser = {};
       const mockRes = {} as FastifyReply;
 
-      vi.spyOn(oauthService, 'login').mockResolvedValue(mockUser as OAuthUser);
-      vi.spyOn(authService, 'login');
+      jest
+        .spyOn(oauthService, 'login')
+        .mockResolvedValue(mockUser as OAuthUser);
+      jest.spyOn(authService, 'login');
 
       await controller.login(provider, code, mockRes);
 

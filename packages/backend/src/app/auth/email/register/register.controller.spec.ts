@@ -7,8 +7,8 @@ import { AuthService } from '../../auth.service';
 import { RegisterController } from './register.controller';
 describe('RegisterController', () => {
   let registerController: RegisterController;
-  const usersService = { emailRegister: vi.fn() };
-  const authService = { login: vi.fn() };
+  const usersService = { emailRegister: jest.fn() };
+  const authService = { login: jest.fn() };
   let mockFastifyReply: FastifyReply;
 
   beforeEach(async () => {
@@ -21,8 +21,8 @@ describe('RegisterController', () => {
     }).compile();
 
     mockFastifyReply = {
-      clearCookie: vi.fn(),
-      setCookie: vi.fn(),
+      clearCookie: jest.fn(),
+      setCookie: jest.fn(),
     } as unknown as FastifyReply;
 
     registerController = module.get<RegisterController>(RegisterController);

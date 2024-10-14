@@ -1,16 +1,16 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
-import { UnlockController } from './unlock.controller';
-import { UsersService } from '../../../users/users.service';
 import { mockJwtGuard } from '../../../../test-utils/mock';
-import { RolesGuard } from '../../roles.guard';
+import { UsersService } from '../../../users/users.service';
 import { JwtGuard } from '../../jwt.guard';
+import { RolesGuard } from '../../roles.guard';
+import { UnlockController } from './unlock.controller';
 
 describe('UnlockController', () => {
   let controller: UnlockController;
   const mockUser = {
-    unlock: vi.fn(),
-    getAll: vi.fn(),
+    unlock: jest.fn(),
+    getAll: jest.fn(),
   };
 
   beforeEach(async () => {

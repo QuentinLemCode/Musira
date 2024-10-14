@@ -1,31 +1,31 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { mockMusicSessionPipe } from '../../../test-utils/mock';
+import { JwtGuard } from '../../auth/jwt.guard';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
+import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
 import { Music } from '../music.entity';
 import { BacklogController } from './backlog.controller';
 import { BacklogService } from './backlog.service';
-import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
-import { mockMusicSessionPipe } from '../../../test-utils/mock';
-import { JwtGuard } from '../../auth/jwt.guard';
 
 // Mocking Services and Guards
 const mockBacklogService = {
-  push: vi.fn(),
-  delete: vi.fn(),
-  get: vi.fn(),
+  push: jest.fn(),
+  delete: jest.fn(),
+  get: jest.fn(),
 };
 
 const mockJwtGuard = {
-  canActivate: vi.fn().mockReturnValue(true),
+  canActivate: jest.fn().mockReturnValue(true),
 };
 
 const mockSessionCreatorGuard = {
-  canActivate: vi.fn().mockReturnValue(true),
+  canActivate: jest.fn().mockReturnValue(true),
 };
 
-const mockMusicSessionParam = vi.fn().mockReturnValue(new MusicSession());
+const mockMusicSessionParam = jest.fn().mockReturnValue(new MusicSession());
 
 describe('BacklogController', () => {
   let controller: BacklogController;

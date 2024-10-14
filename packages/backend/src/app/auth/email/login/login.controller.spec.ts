@@ -6,7 +6,7 @@ import { LoginController } from './login.controller';
 
 describe('LoginController', () => {
   let controller: LoginController;
-  const authService = { login: vi.fn() };
+  const authService = { login: jest.fn() };
   let mockFastifyReply: FastifyReply;
 
   beforeEach(async () => {
@@ -16,8 +16,8 @@ describe('LoginController', () => {
     }).compile();
 
     mockFastifyReply = {
-      clearCookie: vi.fn(),
-      setCookie: vi.fn(),
+      clearCookie: jest.fn(),
+      setCookie: jest.fn(),
     } as unknown as FastifyReply;
 
     controller = module.get<LoginController>(LoginController);

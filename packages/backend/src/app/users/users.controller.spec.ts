@@ -9,8 +9,8 @@ import { UsersService } from './users.service';
 
 // Mocking UsersService
 const mockUsersService = {
-  getAll: vi.fn(),
-  delete: vi.fn(),
+  getAll: jest.fn(),
+  delete: jest.fn(),
 };
 
 describe('UsersController', () => {

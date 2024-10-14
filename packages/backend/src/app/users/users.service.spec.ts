@@ -7,14 +7,14 @@ import { UsersService } from './users.service';
 
 // Mocking Repositories
 const mockRepository = {
-  findOne: vi.fn(),
-  findOneOrFail: vi.fn(),
-  findOneBy: vi.fn(),
-  find: vi.fn(),
-  save: vi.fn(),
-  delete: vi.fn(),
-  create: vi.fn(),
-  update: vi.fn(),
+  findOne: jest.fn(),
+  findOneOrFail: jest.fn(),
+  findOneBy: jest.fn(),
+  find: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
 };
 
 describe('UsersService', () => {
