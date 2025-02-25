@@ -10,5 +10,6 @@
     "source.fixAll": "always",
     "source.organizeImports": "always"
   },
-  "vitest.commandLine": "npx vitest --globals"
+  "vitest.commandLine": "npx vitest --globals",
+  "angular.enable-strict-mode-prompt": false
 }
