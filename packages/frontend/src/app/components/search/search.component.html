@@ -1,0 +1,38 @@
+<input
+  type="text"
+  (focus)="showResults()"
+  [formControl]="search"
+  placeholder="Rechercher une musique"
+/>
+<span class="search-icon" *ngIf="results === null || resultsHidden"
+  ><fa-icon
+    [icon]="iconSearch"
+    [ngClass]="loading ? 'fa-beat-fade' : ''"
+  ></fa-icon
+></span>
+
+<span
+  class="search-icon cursor-pointer"
+  *ngIf="results !== null && !resultsHidden"
+>
+  <fa-icon
+    [icon]="iconClose"
+    (click)="hideResults({ clearInput: true })"
+  ></fa-icon>
+</span>
+
+<p *ngIf="error">{{ error }}</p>
+
+<div
+  *ngIf="!resultsHidden"
+  id="search-results"
+  [ngClass]="resultsHidden || results === null ? 'hide' : 'show'"
+>
+  <musira-music
+    *ngFor="let music of results"
+    [music]="music"
+    [config]="musicConfig"
+    (addToQueue)="addToQueue(music, $event)"
+    (addToBacklog)="addToBacklog(music, $event)"
+  ></musira-music>
+</div>

@@ -1,0 +1,117 @@
+h1 {
+  text-align: center;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  & > * {
+    width: 300px;
+  }
+}
+
+.login-box {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  & > * {
+    width: 300px;
+    margin-top: 16px;
+  }
+
+  & > a {
+    text-align: center;
+  }
+}
+
+button {
+  margin: auto;
+  min-width: 15rem;
+  text-align: center;
+}
+
+div.register-form {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-content: center;
+  & > * {
+    margin-top: 16px;
+    width: 300px;
+  }
+}
+
+.error {
+  color: red;
+}
+
+$primary-color: #4285f4;
+$hover-color: #357ae8;
+$font-color: #fff;
+
+.google-login {
+  border: none;
+  outline: none;
+  background-color: $primary-color;
+  color: $font-color;
+  padding: 14px 24px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  i {
+    margin-right: 10px;
+  }
+
+  &:hover {
+    background-color: $hover-color;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@mixin microsoft-btn-styles($background-color, $hover-color) {
+  background-color: $background-color;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: $hover-color;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  i {
+    margin-right: 10px;
+  }
+}
+
+.microsoft-login-btn {
+  @include microsoft-btn-styles(#0078d4, #005f8e);
+
+  i {
+    animation: spin 2s infinite linear;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

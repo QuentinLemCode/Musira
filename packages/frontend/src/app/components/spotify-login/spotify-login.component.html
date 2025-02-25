@@ -1,0 +1,4 @@
+<button *ngIf="format === 'Button'" [disabled]="disabled" (click)="login()">
+  {{ text }}
+</button>
+<a *ngIf="format === 'Link'" (click)="login()">{{ text }}</a>

@@ -1,0 +1,26 @@
+<div class="grid">
+  <div class="edito">
+    <h1>Viens passer tes meilleurs sons ! 🎉</h1>
+    <p>
+      Envie de nous faire découvrir la dernière pépite que tu as entendu ?<br />
+      Ou alors la musique qui passe ne te plaît pas ?
+    </p>
+    <p>
+      Viens proposer ta musique ! Et si les autres votent pour elles, alors elle
+      est lancé direct !
+    </p>
+    <p>
+      Pour cela, connecte-toi sur <strong>{{ serverUrl }}</strong> ou scanne le
+      QR Code ci-dessous
+    </p>
+    <h1 class="italic text-center">#{{ formattedSessionCode }}</h1>
+    <div class="flex justify-center">
+      <canvas #qrcode></canvas>
+    </div>
+  </div>
+  <div>
+    <h1>🎉 {{ currentSession?.name }}</h1>
+    <h3 class="text-lg">Oranisé par {{ currentSession?.creator }}</h3>
+    <musira-queue></musira-queue>
+  </div>
+</div>

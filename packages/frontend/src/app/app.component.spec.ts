@@ -1,29 +1,46 @@
-import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { of } from 'rxjs';
 import { AppComponent } from './app.component';
+import { NavigationModule } from './navigation/navigation.module';
+import { DashboardService } from './services/dashboard.service';
+import { AuthenticationService } from './authentication/authentication.service';
 
 describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
+  const mockUserService = {
+    refreshTokenIfExpired: jest.fn(),
+    loggedUser: signal({ isLoggedIn: true }),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
+      declarations: [AppComponent],
+      imports: [
+        HttpClientTestingModule,
+        FontAwesomeModule,
+        NavigationModule,
+        RouterTestingModule,
+      ],
+      providers: [
+        { provide: AuthenticationService, useValue: mockUserService },
+        { provide: DashboardService, useValue: { dashboard$: of(false) } },
+      ],
     }).compileComponents();
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it(`should have the 'frontend' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('frontend');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, frontend');
+  });
+
+  it('should create the app', () => {
+    expect(component).toBeTruthy();
   });
 });
