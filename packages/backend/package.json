@@ -24,6 +24,7 @@
     "@fastify/cors": "^10.0.1",
     "@fastify/formbody": "^8.0.1",
     "@fastify/static": "^7.0.4",
+    "@musira/api": "^1.0.0",
     "@nestjs/axios": "^3.0.3",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.0",
