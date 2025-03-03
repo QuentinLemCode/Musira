@@ -1,14 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import {
-  OAuthProvider,
-  type JwtPayload,
-  type JwtToken,
-  type OAuthProviderType,
-} from '@musira/api';
+import { OAuthProvider, type OAuthProviderType } from '@musira/api';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { StorageService } from '../services/storage.service';
 
 const LocalStorageKeys = {
   TOKEN: 'token',
@@ -33,10 +27,24 @@ export type UserState =
   providedIn: 'root',
 })
 export class AuthenticationService {
-  public loggedUser = signal<UserState>(this.getSession());
+  public loggedUser = signal<UserState>({ isLoggedIn: false });
   private readonly authEndpoint = environment.serverUrl + 'auth';
   private readonly http = inject(HttpClient);
-  private readonly storage = inject(StorageService);
+
+  constructor() {
+    this.checkAuthStatus();
+  }
+
+  private checkAuthStatus() {
+    this.http.get<BaseUserState>(this.authEndpoint + '/me').subscribe({
+      next: (user) => {
+        this.loggedUser.set({ ...user, isLoggedIn: true });
+      },
+      error: () => {
+        this.loggedUser.set({ isLoggedIn: false });
+      },
+    });
+  }
 
   deleteAccount() {
     return this.http.delete(this.authEndpoint + '/account');
@@ -44,85 +52,35 @@ export class AuthenticationService {
 
   oAuthLogin(provider: OAuthProviderType, code: string, state: string) {
     this.checkState(state);
-    return this.http
-      .post<JwtToken>(this.authEndpoint + '/oauth/login', {
-        code,
-        state,
-        provider,
-      })
-      .pipe(
-        tap((data) => {
-          this.saveToken(data.accessToken);
-        }),
-      );
+    return this.http.post(this.authEndpoint + '/oauth/login', {
+      code,
+      state,
+      provider,
+    });
   }
 
   emailLogin(email: string, password: string) {
     return this.http
-      .post<JwtToken>(this.authEndpoint + '/email/login', {
+      .post(this.authEndpoint + '/email/login', {
         email,
         password,
       })
-      .pipe(
-        tap((data) => {
-          this.saveToken(data.accessToken);
-        }),
-      );
+      .pipe(tap(() => this.checkAuthStatus()));
   }
 
   emailRegister(email: string, username: string, password: string) {
     return this.http
-      .post<JwtToken>(this.authEndpoint + '/email/register', {
+      .post(this.authEndpoint + '/email/register', {
         email,
         username,
         password,
       })
-      .pipe(
-        tap((data) => {
-          this.saveToken(data.accessToken);
-        }),
-      );
-  }
-
-  private getSession(): UserState {
-    const user = this.tokenPayload;
-    if (!user) {
-      return {
-        isLoggedIn: false,
-      };
-    }
-    return {
-      isLoggedIn: true,
-      username: user.context.user.name,
-      userId: user.context.user.email,
-      admin: user.context.user.admin,
-      id: user.context.user.id,
-    };
-  }
-
-  private saveToken(token: string) {
-    this.storage.setLocalItem(LocalStorageKeys.TOKEN, token);
-    this.loggedUser.set(this.getSession());
-  }
-
-  private get tokenPayload(): JwtPayload | null {
-    if (!this.storage) return null;
-    const token = this.storage.getLocalItem<string>(LocalStorageKeys.TOKEN);
-    const parsedToken = atob(token?.split('.')?.[1] ?? '');
-    try {
-      return JSON.parse(parsedToken) as JwtPayload;
-    } catch (e) {
-      this.storage.removeLocalItem(LocalStorageKeys.TOKEN);
-    }
-    return null;
+      .pipe(tap(() => this.checkAuthStatus()));
   }
 
   async logout() {
-    this.storage.clearLocal();
-    this.storage.clearSession();
-    this.loggedUser.set({
-      isLoggedIn: false,
-    });
+    await this.http.post(this.authEndpoint + '/logout', {}).toPromise();
+    this.loggedUser.set({ isLoggedIn: false });
   }
 
   loginUrl(provider: OAuthProviderType): string {
@@ -194,17 +152,13 @@ export class AuthenticationService {
   }
 
   private generateState() {
-    const uuid = crypto.randomUUID();
-    this.storage.setLocalItem(LocalStorageKeys.STATE, uuid);
-    return uuid;
+    return 'state';
   }
 
   private checkState(state: string) {
-    this.storage.getLocalItem(LocalStorageKeys.STATE);
-    if (state !== this.storage.getLocalItem(LocalStorageKeys.STATE)) {
+    if (state !== 'state') {
       throw new Error('Invalid state');
     }
-    this.storage.removeLocalItem(LocalStorageKeys.STATE);
     return;
   }
 

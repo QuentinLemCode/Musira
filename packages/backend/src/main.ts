@@ -1,8 +1,10 @@
 import fastifyCookie from '@fastify/cookie';
 import type { LoggerService, LogLevel } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import type { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { FastifyAdapter } from '@nestjs/platform-fastify';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { env } from 'process';
 import { AppModule } from './app/app.module';
 

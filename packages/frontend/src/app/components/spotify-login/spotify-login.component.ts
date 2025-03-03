@@ -1,7 +1,5 @@
 import { Component, Inject, Input } from '@angular/core';
-import { CONSTANTS } from '../../constants';
 import { MusicApiService } from '../../services/music-api.service';
-import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'musira-spotify-login',
@@ -17,16 +15,15 @@ export class SpotifyLoginComponent {
 
   constructor(
     @Inject(MusicApiService) private readonly music: MusicApiService,
-    @Inject(StorageService) private readonly storage: StorageService,
   ) {}
 
   async login() {
     if (this.disabled) return;
     await this.beforeLoginHandler();
-    this.storage.setSessionItem(
-      CONSTANTS.SPOTIFY_LOGIN_REDIRECT_SESSION_KEY,
-      this.redirect_to,
-    );
+    // this.storage.setSessionItem(
+    //   CONSTANTS.SPOTIFY_LOGIN_REDIRECT_SESSION_KEY,
+    //   this.redirect_to,
+    // );
     this.music.getUrlLogin().subscribe({
       next: (url) => {
         window.location.href = url;

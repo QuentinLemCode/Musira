@@ -10,8 +10,6 @@ import type {
 } from '@musira/api';
 import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { CONSTANTS } from '../constants';
-import { StorageService } from '../services/storage.service';
 
 interface SessionHistory {
   musicSession: MusicSessionDto;
@@ -35,7 +33,6 @@ export class MusicSessionsService {
   constructor(
     @Inject(HttpClient) private readonly http: HttpClient,
     @Inject(Router) private readonly router: Router,
-    @Inject(StorageService) private readonly storage: StorageService,
   ) {
     this.router.events.subscribe({
       next: (event) => {
@@ -95,55 +92,16 @@ export class MusicSessionsService {
     this.currentSession.set(null);
   }
 
-  public getSessionHistory() {
-    return (
-      this.storage
-        .getLocalItem<SessionHistory[]>(CONSTANTS.SESSION_HISTORY_KEY)
-        ?.reverse()
-        ?.map((session) => ({
-          ...session,
-          access_date: new Date(session.access_date),
-        })) || []
-    );
+  public getSessionHistory(): SessionHistory[] {
+    return [];
   }
 
-  public deleteSessionInHistory(code: number) {
-    const sessionHistory =
-      this.storage.getLocalItem<SessionHistory[]>(
-        CONSTANTS.SESSION_HISTORY_KEY,
-      ) || [];
-    const existingSessionHistory = sessionHistory.find(
-      (entry) => entry.musicSession.code === code,
-    );
-    if (existingSessionHistory) {
-      sessionHistory.splice(sessionHistory.indexOf(existingSessionHistory), 1);
-    }
-
-    this.storage.setLocalItem(CONSTANTS.SESSION_HISTORY_KEY, sessionHistory);
-  }
+  public deleteSessionInHistory(code: number) {}
 
   private tapCurrentSession = tap<MusicSessionDto>((musicSession) => {
     this.currentSession.set(musicSession);
     this.saveSessionInHistory(musicSession);
   });
 
-  private saveSessionInHistory(musicSession: MusicSessionDto) {
-    const sessionHistory =
-      this.storage.getLocalItem<SessionHistory[]>(
-        CONSTANTS.SESSION_HISTORY_KEY,
-      ) || [];
-    const existingSessionHistory = sessionHistory.find(
-      (entry) => entry.musicSession.code === musicSession.code,
-    );
-    if (existingSessionHistory) {
-      existingSessionHistory.access_date = new Date();
-    } else {
-      sessionHistory.push({
-        musicSession,
-        access_date: new Date(),
-      });
-    }
-
-    this.storage.setLocalItem(CONSTANTS.SESSION_HISTORY_KEY, sessionHistory);
-  }
+  private saveSessionInHistory(musicSession: MusicSessionDto) {}
 }

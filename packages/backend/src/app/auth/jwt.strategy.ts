@@ -1,8 +1,8 @@
 import type { JwtPayload } from '@musira/api';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import type { FastifyRequest } from 'fastify';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { AuthService } from './auth.service';
 import { jwtSecret } from './secret';
 
@@ -15,7 +15,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   @Inject(AuthService) private readonly auth: AuthService;
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: (req: FastifyRequest) =>
+        req.cookies['access_token'] ?? null,
       ignoreExpiration: false,
       secretOrKey: jwtSecret,
       algorithms: ['HS256'],
@@ -24,14 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(request: FastifyRequest, payload: JwtPayloadWithJti) {
-    const signature = request.cookies.signature;
-    if (!signature) {
-      throw new UnauthorizedException();
-    }
-    const validSignature = this.auth.verifySignature(payload.jti, signature);
-    if (!validSignature) {
-      throw new UnauthorizedException();
-    }
     return { ...payload.context.user };
   }
 }

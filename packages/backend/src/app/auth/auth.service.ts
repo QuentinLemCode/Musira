@@ -1,18 +1,14 @@
 import type { JwtPayload } from '@musira/api/src/index';
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { randomUUID } from 'crypto';
 import type { FastifyReply } from 'fastify';
 import { EmailUser } from '../users/user.email.entity';
 import { UserRole } from '../users/user.entity';
 import type { OAuthUser } from '../users/user.oauth.entity';
 import { UsersService } from '../users/users.service';
-import { hashPassword } from '../utils/hash';
 
 @Injectable()
 export class AuthService {
-  private signatureSecret =
-    process.env.JWT_SIGNATURE_SECRET || 'notreallysecret';
   constructor(
     private readonly users: UsersService,
     private readonly jwtService: JwtService,
@@ -39,31 +35,28 @@ export class AuthService {
         },
       },
     };
-    const jwtid = randomUUID();
-    const signature = this.generateSignature(jwtid);
-    res.setCookie('signature', signature, {
-      httpOnly: true,
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30, // valid 30 days
-      secure: true,
-      sameSite: 'strict',
-    });
+
     const token = this.jwtService.sign(payload, {
-      jwtid,
       subject: user.id.toString(),
     });
-    return { accessToken: token };
+
+    res.setCookie('access_token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+
+    return { success: true };
   }
 
   logout(res: FastifyReply) {
-    res.clearCookie('signature');
-  }
-
-  verifySignature(jwtId: string, signature: string) {
-    return hashPassword(jwtId, this.signatureSecret) === signature;
-  }
-
-  private generateSignature(jwtId: string) {
-    return hashPassword(jwtId, this.signatureSecret);
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      path: '/',
+    });
   }
 }
