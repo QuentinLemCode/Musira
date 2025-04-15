@@ -14,6 +14,7 @@ import { OAuthService } from './oauth/oauth.service';
 import { jwtSecret } from './secret';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './jwt.guard';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { JwtGuard } from './jwt.guard';
     LogoutController,
     RegisterController,
     UnlockController,
+    AuthController,
   ],
 })
 export class AuthModule {}

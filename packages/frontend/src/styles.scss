@@ -1,9 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import './colors.scss';
-// @import 'tailwindcss/base';
-// @import 'tailwindcss/components';
-// @import 'tailwindcss/utilities';
+@import 'tailwindcss';
 
 * {
   box-sizing: border-box;
@@ -73,12 +71,6 @@ input {
     line-height: 21px;
     font-family: Poppins;
   }
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 5px;
 }
 
 button {
