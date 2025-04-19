@@ -1,9 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import type { JwtUser } from '@musira/api';
+import { Controller, Get, Request } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
   @Get('me')
-  getMe() {
-    return { message: 'Hello from AuthController' };
+  getMe(@Request() req: { user: JwtUser }) {
+    return req.user;
   }
 }
