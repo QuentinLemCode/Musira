@@ -36,14 +36,18 @@ export class AuthenticationService {
   }
 
   private checkAuthStatus() {
-    this.http.get<BaseUserState>(this.authEndpoint + '/me').subscribe({
-      next: (user) => {
-        this.loggedUser.set({ ...user, isLoggedIn: true });
-      },
-      error: () => {
-        this.loggedUser.set({ isLoggedIn: false });
-      },
-    });
+    this.http
+      .get<BaseUserState>(this.authEndpoint + '/me', {
+        withCredentials: true,
+      })
+      .subscribe({
+        next: (user) => {
+          this.loggedUser.set({ ...user, isLoggedIn: true });
+        },
+        error: (err) => {
+          this.loggedUser.set({ isLoggedIn: false });
+        },
+      });
   }
 
   deleteAccount() {

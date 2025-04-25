@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach",
+      "name": "Attach to Frontend",
       "port": 9229,
       "request": "attach",
       "skipFiles": ["<node_internals>/**"],
@@ -15,8 +15,8 @@
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",
-      "url": "https://localhost:4200",
-      "webRoot": "${workspaceFolder}"
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/packages/musira"
     }
   ]
 }
