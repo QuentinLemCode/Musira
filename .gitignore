@@ -50,3 +50,6 @@ apps/musira-e2e/cypress/downloads
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# SSL certificates
+/certs

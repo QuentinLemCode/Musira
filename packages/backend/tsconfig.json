@@ -1,5 +1,4 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
@@ -22,5 +21,6 @@
     "strictPropertyInitialization": false,
     "types": ["jest"]
   },
-  "references": [{ "path": "../api" }]
+  "references": [{ "path": "../api" }],
+  "include": ["src/**/*"]
 }
