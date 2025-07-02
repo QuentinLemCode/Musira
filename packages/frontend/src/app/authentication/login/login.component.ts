@@ -1,6 +1,13 @@
-import { Component, Inject, effect } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component, Inject } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { OAuthProvider } from '@musira/api';
@@ -10,22 +17,21 @@ import { AuthenticationService } from '../authentication.service';
   selector: 'musira-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, RouterModule],
 })
 export class LoginComponent {
   constructor(
     @Inject(AuthenticationService) private readonly auth: AuthenticationService,
     @Inject(Router) private readonly router: Router,
-  ) {
-    effect(() => {
-      if (this.auth.loggedUser().isLoggedIn) this.router.navigate(['/']);
-    });
-  }
+  ) {}
 
   faCircle = faCircleNotch;
   faGoogle = faGoogle;
   faMicrosoft = faMicrosoft;
   emailLogin = false;
   loading = false;
+  submitting = false; // Nouvel état pour éviter les conflits
   form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [
@@ -36,24 +42,53 @@ export class LoginComponent {
   });
   error = '';
 
+  get isSubmitDisabled() {
+    return this.form.invalid || this.submitting;
+  }
+
   submit() {
     if (
-      this.form.invalid ||
+      this.isSubmitDisabled ||
       !this.form.value.email ||
       !this.form.value.password
     ) {
       return;
     }
+
+    this.submitting = true;
     this.loading = true;
+    this.error = ''; // Réinitialiser l'erreur
+
     this.auth
       .emailLogin(this.form.value.email, this.form.value.password)
       .subscribe({
         next: () => {
-          this.loading = false;
+          console.log(
+            'Email login successful, updating auth state and redirecting',
+          );
+          // Mettre à jour l'état d'authentification manuellement
+          this.auth.loggedUser.set({
+            isLoggedIn: true,
+            // Valeurs temporaires, seront mises à jour si checkAuthStatus() fonctionne plus tard
+            id: 0,
+            username: 'User',
+            userId: '0',
+            admin: false,
+          });
+
+          // Redirection après un délai pour éviter les conflits
+          setTimeout(() => {
+            console.log('Redirecting to home page');
+            this.router.navigate(['/'], { replaceUrl: true });
+          }, 200);
         },
         error: (err) => {
-          this.loading = false;
-          this.error = err.error.message;
+          // Différer les mises à jour d'état au prochain cycle
+          setTimeout(() => {
+            this.submitting = false;
+            this.loading = false;
+            this.error = err.error.message;
+          }, 0);
         },
       });
   }

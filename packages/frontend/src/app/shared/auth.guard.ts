@@ -1,18 +1,20 @@
-import { Inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthenticationService } from '../authentication/authentication.service';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthGuard {
-  constructor(
-    // @Inject(AuthenticationService) private user: AuthenticationService,
-    @Inject(Router) private router: Router,
-  ) {}
-  canActivate() {
-    // if (this.user.loggedUser().isLoggedIn !== true) {
-    if (true) {
-      return this.router.navigate(['user', 'login']);
-    }
+export const authGuard: CanActivateFn = () => {
+  const router = inject(Router);
+  const authService = inject(AuthenticationService);
+
+  const userState = authService.loggedUser();
+
+  console.log('authGuard called with userState:', userState);
+
+  if (userState.isLoggedIn === true) {
+    console.log('User is logged in, allowing access');
+    return true;
+  } else {
+    console.log('User not logged in, redirecting to login');
+    return router.createUrlTree(['/user/login']);
   }
-}
+};

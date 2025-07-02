@@ -1,12 +1,15 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { UsersService } from '../../services/users.service';
 import { AuthenticationService } from '../authentication.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'musira-delete-account',
   templateUrl: './delete-account.component.html',
   styleUrl: './delete-account.component.scss',
+  standalone: true,
+  imports: [CommonModule],
 })
 export class DeleteAccountComponent {
   constructor(

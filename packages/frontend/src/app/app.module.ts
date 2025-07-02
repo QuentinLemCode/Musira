@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AdminComponent } from './admin/admin.component';
-import { AuthenticationModule } from './authentication/authentication.module';
+
 import { ComponentsModule } from './components/components.module';
 import { NavigationModule } from './navigation/navigation.module';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
@@ -28,7 +28,6 @@ import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    AuthenticationModule,
     ComponentsModule,
     SessionsModule,
     NavigationModule,

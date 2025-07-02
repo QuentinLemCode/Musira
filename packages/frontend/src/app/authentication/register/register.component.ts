@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
 import type {
@@ -5,8 +6,14 @@ import type {
   ValidationErrors,
   ValidatorFn,
 } from '@angular/forms';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { AuthenticationService } from '../authentication.service';
 
@@ -14,6 +21,8 @@ import { AuthenticationService } from '../authentication.service';
   selector: 'musira-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
 })
 export class RegisterComponent implements OnInit {
   constructor(

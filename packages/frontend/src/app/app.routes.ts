@@ -11,9 +11,9 @@ import { JoinSessionComponent } from './sessions/join-session/join-session.compo
 import { MusicSessionComponent } from './sessions/music-session/music-session.component';
 import { SessionSettingsComponent } from './sessions/session-settings/session-settings.component';
 import { AdminGuard } from './shared/admin.guard';
-import { AuthGuard } from './shared/auth.guard';
+import { authGuard } from './shared/auth.guard';
 import { musicSessionGuard } from './shared/music-session.guard';
-import { NotAuthGuard } from './shared/not-auth.guard';
+import { notAuthGuard } from './shared/not-auth.guard';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
 
@@ -21,7 +21,7 @@ export const routes: Routes = [
   {
     path: ':sessionId/session-settings',
     component: SessionSettingsComponent,
-    canActivate: [musicSessionGuard, AuthGuard],
+    canActivate: [musicSessionGuard, authGuard],
   },
   {
     path: 'oauth/callback/:provider',
@@ -30,7 +30,7 @@ export const routes: Routes = [
   {
     path: 'create-session',
     component: CreateSessionComponent,
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'spotify-auth',
@@ -39,7 +39,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminComponent,
-    canActivate: [AuthGuard, AdminGuard],
+    canActivate: [authGuard, AdminGuard],
   },
   {
     path: 'privacy-policy',
@@ -48,17 +48,17 @@ export const routes: Routes = [
   {
     path: 'user/login',
     component: LoginComponent,
-    canActivate: [NotAuthGuard],
+    canActivate: [notAuthGuard],
   },
   {
     path: 'user/register',
     component: RegisterComponent,
-    canActivate: [NotAuthGuard],
+    canActivate: [notAuthGuard],
   },
   {
     path: 'user/delete-account',
     component: DeleteAccountComponent,
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: ':sessionId/dashboard',
@@ -69,6 +69,6 @@ export const routes: Routes = [
     component: MusicSessionComponent,
     canActivate: [musicSessionGuard],
   },
-  { path: '', component: JoinSessionComponent, canActivate: [AuthGuard] },
+  { path: '', component: JoinSessionComponent, canActivate: [authGuard] },
   { path: '**', component: NotFoundComponent },
 ];

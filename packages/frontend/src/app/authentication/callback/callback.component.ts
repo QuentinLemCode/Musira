@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject, type OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { isOAuthProvider } from '@musira/api';
@@ -7,6 +8,8 @@ import { AuthenticationService } from '../authentication.service';
   selector: 'musira-callback',
   templateUrl: './callback.component.html',
   styleUrl: './callback.component.scss',
+  standalone: true,
+  imports: [CommonModule],
 })
 export class CallbackComponent implements OnInit {
   constructor(

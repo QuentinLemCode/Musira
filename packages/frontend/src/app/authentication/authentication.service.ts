@@ -32,20 +32,38 @@ export class AuthenticationService {
   private readonly http = inject(HttpClient);
 
   constructor() {
-    this.checkAuthStatus();
+    // Ne pas vérifier automatiquement au démarrage à cause des problèmes SSL
+    // La vérification se fera lors des actions utilisateur (login, etc.)
   }
 
   private checkAuthStatus() {
+    console.log(
+      'checkAuthStatus() called, current loggedUser state:',
+      this.loggedUser(),
+    );
     this.http
       .get<BaseUserState>(this.authEndpoint + '/me', {
         withCredentials: true,
       })
       .subscribe({
         next: (user) => {
+          console.log(
+            'checkAuthStatus success, setting user to logged in:',
+            user,
+          );
           this.loggedUser.set({ ...user, isLoggedIn: true });
         },
         error: (err) => {
-          this.loggedUser.set({ isLoggedIn: false });
+          console.log('checkAuthStatus failed. Error:', err.message);
+          // Ne réinitialiser à false que si c'est une vraie erreur d'authentification
+          // Pas en cas d'erreur SSL ou réseau
+          if (err.status === 401 || err.status === 403) {
+            console.log('Auth error (401/403), setting user to logged out');
+            this.loggedUser.set({ isLoggedIn: false });
+          } else {
+            console.log('Network/SSL error, keeping current auth state');
+            // Garder l'état actuel en cas d'erreur réseau/SSL
+          }
         },
       });
   }
@@ -64,12 +82,10 @@ export class AuthenticationService {
   }
 
   emailLogin(email: string, password: string) {
-    return this.http
-      .post(this.authEndpoint + '/email/login', {
-        email,
-        password,
-      })
-      .pipe(tap(() => this.checkAuthStatus()));
+    return this.http.post(this.authEndpoint + '/email/login', {
+      email,
+      password,
+    });
   }
 
   emailRegister(email: string, username: string, password: string) {
