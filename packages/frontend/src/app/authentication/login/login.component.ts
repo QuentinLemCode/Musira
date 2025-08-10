@@ -63,24 +63,16 @@ export class LoginComponent {
       .emailLogin(this.form.value.email, this.form.value.password)
       .subscribe({
         next: () => {
-          console.log(
-            'Email login successful, updating auth state and redirecting',
-          );
-          // Mettre à jour l'état d'authentification manuellement
+          console.log('Email login successful, redirecting');
+          // Optimistic set to allow guards to pass while auth state refreshes
           this.auth.loggedUser.set({
             isLoggedIn: true,
-            // Valeurs temporaires, seront mises à jour si checkAuthStatus() fonctionne plus tard
             id: 0,
-            username: 'User',
             userId: '0',
+            username: 'User',
             admin: false,
           });
-
-          // Redirection après un délai pour éviter les conflits
-          setTimeout(() => {
-            console.log('Redirecting to home page');
-            this.router.navigate(['/'], { replaceUrl: true });
-          }, 200);
+          this.router.navigate(['/'], { replaceUrl: true });
         },
         error: (err) => {
           // Différer les mises à jour d'état au prochain cycle

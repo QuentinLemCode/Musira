@@ -48,4 +48,4 @@ services:
     depends_on:
       - db
     ports:
-      - 9000:8080
+      - 8181:8080

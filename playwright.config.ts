@@ -23,11 +23,10 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://127.0.0.1:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    baseURL: 'https://localhost:4200',
+    ignoreHTTPSErrors: true,
     trace: 'on-first-retry',
+    viewport: { width: 1280, height: 800 },
   },
 
   /* Configure projects for major browsers */
@@ -46,7 +45,6 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
@@ -69,6 +67,7 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
+  // Start servers manually in scripts to avoid HTTPS readiness issues
   // webServer: {
   //   command: 'npm run start',
   //   url: 'http://127.0.0.1:3000',

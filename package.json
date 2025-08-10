@@ -9,7 +9,8 @@
     "start:backend": "cd packages/backend && npm start",
     "start:backend:debug": "cd packages/backend && npm run start:debug",
     "start:frontend": "cd packages/frontend && npm start",
-    "start": "concurrently \"npm:start:backend\" \"npm:start:frontend\""
+    "start": "concurrently -k -s first -n backend,frontend -c \"yellow,blue\" \"npm run start:backend\" \"npm run start:frontend\"",
+    "e2e": "playwright test"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "packages/frontend"
   ],
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "@playwright/test": "^1.47.2"
   }
 }

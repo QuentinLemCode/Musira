@@ -84,6 +84,14 @@ export class RegisterComponent implements OnInit {
       .emailRegister(this.email, this.username, this.password)
       .subscribe({
         next: () => {
+          // Optimistic set to prevent guard redirect while auth status refreshes
+          this.user.loggedUser.set({
+            isLoggedIn: true,
+            id: 0,
+            userId: '0',
+            username: this.username!,
+            admin: false,
+          });
           this.router.navigate(['/'], { replaceUrl: true });
         },
         error: (error) => {

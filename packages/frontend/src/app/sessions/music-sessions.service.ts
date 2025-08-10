@@ -93,15 +93,49 @@ export class MusicSessionsService {
   }
 
   public getSessionHistory(): SessionHistory[] {
-    return [];
+    try {
+      const raw = localStorage.getItem('session_history');
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as SessionHistory[];
+      return parsed.map((h) => ({
+        musicSession: h.musicSession,
+        access_date: new Date(h.access_date),
+      }));
+    } catch {
+      return [];
+    }
   }
 
-  public deleteSessionInHistory(code: number) {}
+  public deleteSessionInHistory(code: number) {
+    try {
+      const history = this.getSessionHistory().filter(
+        (h) => h.musicSession.code !== code,
+      );
+      localStorage.setItem('session_history', JSON.stringify(history));
+    } catch {
+      // noop
+    }
+  }
 
   private tapCurrentSession = tap<MusicSessionDto>((musicSession) => {
     this.currentSession.set(musicSession);
     this.saveSessionInHistory(musicSession);
   });
 
-  private saveSessionInHistory(musicSession: MusicSessionDto) {}
+  private saveSessionInHistory(musicSession: MusicSessionDto) {
+    try {
+      const history = this.getSessionHistory();
+      const withoutDup = history.filter(
+        (h) => h.musicSession.code !== musicSession.code,
+      );
+      const newEntry: SessionHistory = {
+        musicSession,
+        access_date: new Date(),
+      };
+      const updated = [newEntry, ...withoutDup].slice(0, 10);
+      localStorage.setItem('session_history', JSON.stringify(updated));
+    } catch {
+      // noop
+    }
+  }
 }

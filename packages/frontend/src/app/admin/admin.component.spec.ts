@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
-import { QueueService } from '../../services/queue.service';
-import { UsersService } from '../../services/users.service';
-import { MusicSessionsService } from '../../sessions/music-sessions.service';
+import { QueueService } from '../services/queue.service';
+import { UsersService } from '../services/users.service';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
 import { AdminComponent } from './admin.component';
 
 describe('AdminComponent', () => {

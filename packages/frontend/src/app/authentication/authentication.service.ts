@@ -1,7 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
-import { OAuthProvider, type OAuthProviderType } from '@musira/api';
-import { tap } from 'rxjs';
+import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import {
+  OAuthProvider,
+  type JwtUser,
+  type OAuthProviderType,
+} from '@musira/api';
+import { firstValueFrom, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 const LocalStorageKeys = {
@@ -31,18 +35,17 @@ export class AuthenticationService {
   private readonly authEndpoint = environment.serverUrl + 'auth';
   private readonly http = inject(HttpClient);
 
-  constructor() {
-    // Ne pas vérifier automatiquement au démarrage à cause des problèmes SSL
-    // La vérification se fera lors des actions utilisateur (login, etc.)
-  }
+  private readonly platformId = inject(PLATFORM_ID);
 
-  private checkAuthStatus() {
+  constructor() {}
+
+  public refreshAuthStatus() {
     console.log(
       'checkAuthStatus() called, current loggedUser state:',
       this.loggedUser(),
     );
     this.http
-      .get<BaseUserState>(this.authEndpoint + '/me', {
+      .get<JwtUser>(this.authEndpoint + '/me', {
         withCredentials: true,
       })
       .subscribe({
@@ -51,7 +54,14 @@ export class AuthenticationService {
             'checkAuthStatus success, setting user to logged in:',
             user,
           );
-          this.loggedUser.set({ ...user, isLoggedIn: true });
+          const mapped: UserState = {
+            isLoggedIn: true,
+            id: user.id,
+            admin: user.admin,
+            userId: String(user.id),
+            username: user.name,
+          };
+          this.loggedUser.set(mapped);
         },
         error: (err) => {
           console.log('checkAuthStatus failed. Error:', err.message);
@@ -68,6 +78,33 @@ export class AuthenticationService {
       });
   }
 
+  /**
+   * Runs once during application bootstrap to prefetch authentication state
+   * from the `/auth/me` endpoint if a cookie exists. Always resolves.
+   */
+  public async initializeAuth(): Promise<void> {
+    try {
+      const user = await firstValueFrom(
+        this.http.get<JwtUser>(this.authEndpoint + '/me', {
+          withCredentials: true,
+        }),
+      );
+      const mapped: UserState = {
+        isLoggedIn: true,
+        id: user.id,
+        admin: user.admin,
+        userId: String(user.id),
+        username: user.name,
+      };
+      this.loggedUser.set(mapped);
+    } catch (err: any) {
+      if (err?.status === 401 || err?.status === 403) {
+        this.loggedUser.set({ isLoggedIn: false });
+      }
+      // Ignore network/SSL errors and keep current state
+    }
+  }
+
   deleteAccount() {
     return this.http.delete(this.authEndpoint + '/account');
   }
@@ -82,10 +119,12 @@ export class AuthenticationService {
   }
 
   emailLogin(email: string, password: string) {
-    return this.http.post(this.authEndpoint + '/email/login', {
-      email,
-      password,
-    });
+    return this.http
+      .post(this.authEndpoint + '/email/login', {
+        email,
+        password,
+      })
+      .pipe(tap(() => this.refreshAuthStatus()));
   }
 
   emailRegister(email: string, username: string, password: string) {
@@ -95,7 +134,7 @@ export class AuthenticationService {
         username,
         password,
       })
-      .pipe(tap(() => this.checkAuthStatus()));
+      .pipe(tap(() => this.refreshAuthStatus()));
   }
 
   async logout() {
