@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /packages/*/dist
+tsconfig.tsbuildinfo
 
 # dependencies
 node_modules

@@ -14,7 +14,8 @@
     "e2e": "playwright test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "ci:lint": "eslint ."
+    "ci:lint": "eslint .",
+    "build:api": "cd packages/api && npm run compile"
   },
   "repository": {
     "type": "git",
