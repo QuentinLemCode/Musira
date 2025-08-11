@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EmailUser } from '../users/user.email.entity';
 import { UserRole } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
-import { hashPassword } from '../utils/hash';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
@@ -59,7 +58,7 @@ describe('AuthService', () => {
 
       const result = service.login(mockUser, mockFastifyReply);
       expect(mockFastifyReply.setCookie).toHaveBeenCalledWith(
-        'signature',
+        'access_token',
         expect.any(String),
         {
           httpOnly: true,
@@ -69,14 +68,22 @@ describe('AuthService', () => {
           sameSite: 'strict',
         },
       );
-      expect(result).toEqual({ accessToken: mockAccessToken });
+      expect(result).toEqual({ success: true });
     });
   });
 
   describe('logout', () => {
     it('should clear cookie', () => {
       service.logout(mockFastifyReply);
-      expect(mockFastifyReply.clearCookie).toHaveBeenCalledWith('signature');
+      expect(mockFastifyReply.clearCookie).toHaveBeenCalledWith(
+        'access_token',
+        {
+          httpOnly: true,
+          path: '/',
+          secure: true,
+          sameSite: 'strict',
+        },
+      );
     });
   });
 
@@ -92,26 +99,8 @@ describe('AuthService', () => {
         role: UserRole.USER,
       } as EmailUser;
       jest.spyOn(usersService, 'emailLogin').mockResolvedValue(mockUser);
-      jest.spyOn;
-
       const result = await service.validateUser(email, password);
       expect(result).toEqual(mockUser);
-    });
-  });
-
-  describe('verifySignature', () => {
-    it('should verify the signature', () => {
-      const jwtId = 'some_jwt_id';
-      const signature = hashPassword(jwtId, service['signatureSecret']);
-      const result = service.verifySignature(jwtId, signature);
-      expect(result).toBeTruthy();
-    });
-
-    it('should not verify incorrect signature', () => {
-      const jwtId = 'some_jwt_id';
-      const signature = 'incorrect_signature';
-      const result = service.verifySignature(jwtId, signature);
-      expect(result).toBeFalsy();
     });
   });
 });
