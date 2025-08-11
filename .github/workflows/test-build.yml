@@ -60,7 +60,7 @@ jobs:
           npm run start:frontend &
           echo "Waiting for backend..."
           for i in {1..120}; do
-            if curl -sSf http://localhost:3030/api/health > /dev/null; then
+            if curl -sSf http://localhost:3020/api/health > /dev/null; then
               echo "Backend is up"; break; fi; sleep 1; done
           echo "Waiting for frontend (HTTPS)..."
           for i in {1..120}; do
