@@ -11,7 +11,10 @@
     "start:backend:debug": "cd packages/backend && npm run start:debug",
     "start:frontend": "cd packages/frontend && npm start",
     "start": "concurrently -k -s first -n backend,frontend -c \"yellow,blue\" \"npm run start:backend\" \"npm run start:frontend\"",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "ci:lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -29,7 +32,20 @@
     "packages/frontend"
   ],
   "devDependencies": {
+    "@angular-eslint/eslint-plugin": "^20.1.1",
+    "@angular-eslint/eslint-plugin-template": "^20.1.1",
+    "@angular-eslint/template-parser": "^20.1.1",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.33.0",
+    "@playwright/test": "^1.47.2",
+    "@stylistic/eslint-plugin": "^2.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
     "concurrently": "^9.1.2",
-    "@playwright/test": "^1.47.2"
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^15.15.0",
+    "prettier": "^3.6.2",
+    "typescript-eslint": "^8.39.0"
   }
 }

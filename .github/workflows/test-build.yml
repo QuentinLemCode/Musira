@@ -33,10 +33,9 @@ jobs:
           cache: 'npm'
           node-version-file: '.nvmrc'
       - run: npm i
-      - run: npm run format:check
-      - run: npx nx affected -t lint --parallel=3
-      - run: npx nx run api:check-circular-dependencies
-      - run: npx nx affected -t test --parallel=3 --configuration=ci
+      - run: npm run ci:format
+      - run: npm run ci:lint
+      - run: npm run test
       - name: Launch database
         run: docker-compose -f docker-compose.test.yml up -d
       - name: Build interfaces
