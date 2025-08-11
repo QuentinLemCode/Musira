@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import type { UserResponseDTO } from '@musira/api';
 import { of } from 'rxjs';
 import { QueueService } from '../services/queue.service';
 import { UsersService } from '../services/users.service';
@@ -9,15 +10,33 @@ import { AdminComponent } from './admin.component';
 describe('AdminComponent', () => {
   let component: AdminComponent;
   let fixture: ComponentFixture<AdminComponent>;
-  const usersList = [
-    { id: 1, name: 'User 1' },
-    { id: 2, name: 'User 2' },
+  const usersList: UserResponseDTO[] = [
+    {
+      id: 1,
+      name: 'User 1',
+      created_at: '',
+      updated_at: '',
+      sessionCreatedIds: [],
+      role: 0,
+      provider: 'x',
+      type: 'SOCIAL',
+    },
+    {
+      id: 2,
+      name: 'User 2',
+      created_at: '',
+      updated_at: '',
+      sessionCreatedIds: [],
+      role: 0,
+      provider: 'x',
+      type: 'SOCIAL',
+    },
   ];
 
   const mockUserService = {
-    getAllUsers: jest.fn(),
-    delete: jest.fn(),
-    unlock: jest.fn(),
+    getAllUsers: jasmine.createSpy('getAllUsers'),
+    delete: jasmine.createSpy('delete'),
+    unlock: jasmine.createSpy('unlock'),
   };
 
   beforeEach(async () => {
@@ -29,7 +48,7 @@ describe('AdminComponent', () => {
         {
           provide: MusicSessionsService,
           useValue: {
-            getAll: jest.fn().mockReturnValue(of([])),
+            getAll: jasmine.createSpy('getAll').and.returnValue(of([])),
           },
         },
         {
@@ -38,7 +57,7 @@ describe('AdminComponent', () => {
         },
       ],
     }).compileComponents();
-    mockUserService.getAllUsers.mockReturnValue(of(usersList));
+    mockUserService.getAllUsers.and.returnValue(of(usersList));
   });
 
   beforeEach(() => {
@@ -59,7 +78,7 @@ describe('AdminComponent', () => {
 
   it('should delete user and refresh users list', () => {
     const idToDelete = 1;
-    mockUserService.delete.mockReturnValue(of());
+    mockUserService.delete.and.returnValue(of());
     component.deleteUser(idToDelete);
     expect(mockUserService.delete).toHaveBeenCalledWith(idToDelete);
     expect(mockUserService.getAllUsers).toHaveBeenCalled();
@@ -68,7 +87,7 @@ describe('AdminComponent', () => {
 
   it('should unlock user and refresh users list', () => {
     const idToUnlock = 2;
-    mockUserService.unlock.mockReturnValue(of());
+    mockUserService.unlock.and.returnValue(of());
     component.unlockUser(idToUnlock);
     expect(mockUserService.unlock).toHaveBeenCalledWith(idToUnlock);
     expect(mockUserService.getAllUsers).toHaveBeenCalled();

@@ -1,7 +1,6 @@
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import { MusicApiService } from '../../services/music-api.service';
-import { StorageService } from '../../services/storage.service';
 import { SpotifyLoginComponent } from './spotify-login.component';
 
 describe('SpotifyLoginComponent', () => {
@@ -11,16 +10,7 @@ describe('SpotifyLoginComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SpotifyLoginComponent],
-      providers: [
-        {
-          provide: MusicApiService,
-          useValue: {},
-        },
-        {
-          provide: StorageService,
-          useValue: {},
-        },
-      ],
+      providers: [{ provide: MusicApiService, useValue: {} }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SpotifyLoginComponent);

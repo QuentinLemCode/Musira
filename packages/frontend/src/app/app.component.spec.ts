@@ -5,23 +5,23 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { of } from 'rxjs';
 import { AppComponent } from './app.component';
+import { AuthenticationService } from './authentication/authentication.service';
 import { NavigationModule } from './navigation/navigation.module';
 import { DashboardService } from './services/dashboard.service';
-import { AuthenticationService } from './authentication/authentication.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
   const mockUserService = {
-    refreshTokenIfExpired: jest.fn(),
+    refreshTokenIfExpired: jasmine.createSpy('refreshTokenIfExpired'),
     loggedUser: signal({ isLoggedIn: true }),
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent],
       imports: [
+        AppComponent,
         HttpClientTestingModule,
         FontAwesomeModule,
         NavigationModule,

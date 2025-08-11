@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs';
 
-export const mockObservable = <T = unknown>(fun: jest.Mock) => {
+export const mockObservable = <T = unknown>(fun: jasmine.Spy) => {
   const subject = new Subject<T>();
-  fun.mockReturnValue(subject.asObservable());
+  fun.and.returnValue(subject.asObservable());
   return subject;
 };

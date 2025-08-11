@@ -19,7 +19,9 @@ describe('authGuard', () => {
 
   beforeEach(() => {
     routerMock = {
-      createUrlTree: jest.fn().mockReturnValue({} as UrlTree),
+      createUrlTree: jasmine
+        .createSpy('createUrlTree')
+        .and.returnValue({} as UrlTree),
     };
 
     mockRoute = {} as ActivatedRouteSnapshot;

@@ -1,21 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Subject } from 'rxjs';
 import { ComponentsModule } from '../../components/components.module';
 import { MusicSessionsService } from '../music-sessions.service';
 import { JoinSessionComponent } from './join-session.component';
-import { By } from '@angular/platform-browser';
 
 describe('JoinSessionComponent', () => {
   let component: JoinSessionComponent;
   let fixture: ComponentFixture<JoinSessionComponent>;
 
   const mockMusicSessionsService = {
-    joinSession: jest.fn(),
-    getSessionHistory: jest.fn().mockReturnValue([]),
-    deleteSessionInHistory: jest.fn(),
+    joinSession: jasmine.createSpy('joinSession'),
+    getSessionHistory: jasmine
+      .createSpy('getSessionHistory')
+      .and.returnValue([]),
+    deleteSessionInHistory: jasmine.createSpy('deleteSessionInHistory'),
   };
 
   let router: Router;
@@ -38,8 +40,8 @@ describe('JoinSessionComponent', () => {
   });
 
   afterEach(() => {
-    mockMusicSessionsService.getSessionHistory.mockClear();
-    mockMusicSessionsService.joinSession.mockClear();
+    mockMusicSessionsService.getSessionHistory.calls.reset();
+    mockMusicSessionsService.joinSession.calls.reset();
   });
 
   it('should create', () => {
@@ -48,12 +50,11 @@ describe('JoinSessionComponent', () => {
 
   it('should join session with valid code', () => {
     const code = '123-456-789';
-    jest.spyOn(router, 'navigate');
+    spyOn(router, 'navigate');
     const sub = new Subject();
-    const joinSessionSpy =
-      mockMusicSessionsService.joinSession.mockReturnValueOnce(
-        sub.asObservable(),
-      );
+    const joinSessionSpy = mockMusicSessionsService.joinSession.and.returnValue(
+      sub.asObservable(),
+    );
     component.form.controls.code.setValue(code);
     expect(component.form.valid).toBeTruthy();
     component.joinSession();
@@ -76,7 +77,7 @@ describe('JoinSessionComponent', () => {
 
   it('should show an error when code is invalid', () => {
     const sub = new Subject();
-    const joinSessionSpy = mockMusicSessionsService.joinSession.mockReturnValue(
+    const joinSessionSpy = mockMusicSessionsService.joinSession.and.returnValue(
       sub.asObservable(),
     );
     component.form.controls.code.setValue('123-456-789');

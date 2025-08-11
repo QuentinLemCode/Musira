@@ -72,15 +72,14 @@ export class LoginComponent {
             username: 'User',
             admin: false,
           });
+          this.submitting = false;
+          this.loading = false;
           this.router.navigate(['/'], { replaceUrl: true });
         },
         error: (err) => {
-          // Différer les mises à jour d'état au prochain cycle
-          setTimeout(() => {
-            this.submitting = false;
-            this.loading = false;
-            this.error = err.error.message;
-          }, 0);
+          this.submitting = false;
+          this.loading = false;
+          this.error = err.error.message;
         },
       });
   }

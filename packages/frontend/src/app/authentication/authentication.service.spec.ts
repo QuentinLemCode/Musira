@@ -45,5 +45,9 @@ describe('AuthenticationService', () => {
     );
     expect(req.request.method).toBe('POST');
     req.flush(mockResponse);
+
+    // refreshAuthStatus triggers a GET /auth/me; flush it to avoid open requests
+    const me = httpMock.expectOne(`${userService['authEndpoint']}/me`);
+    me.flush({ id: 1, admin: false, email: '', name: 'John Doe', role: 0 });
   });
 });

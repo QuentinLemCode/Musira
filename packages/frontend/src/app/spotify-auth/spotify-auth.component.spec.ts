@@ -1,9 +1,8 @@
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
-import { SpotifyAuthComponent } from './spotify-auth.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MusicApiService } from '../services/music-api.service';
-import { StorageService } from '../services/storage.service';
+import { SpotifyAuthComponent } from './spotify-auth.component';
 
 describe('SpotifyAuthComponent', () => {
   let component: SpotifyAuthComponent;
@@ -16,10 +15,6 @@ describe('SpotifyAuthComponent', () => {
       providers: [
         {
           provide: MusicApiService,
-          useValue: {},
-        },
-        {
-          provide: StorageService,
           useValue: {},
         },
       ],

@@ -1,4 +1,4 @@
-import type { EmailRefreshResponseDTO } from 'libs.bakl/api-interfaces/src';
+import type { EmailRefreshResponseDTO } from '@musira/api';
 import {
   Status,
   type Backlog,

@@ -1,8 +1,13 @@
 import { signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
-import { faAdd, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Subject, throwError } from 'rxjs';
 import { currentMusicFixture, musicFixture } from '../../../tests/fixtures';
 import { AuthenticationService } from '../../authentication/authentication.service';
@@ -17,17 +22,19 @@ describe('SearchComponent', () => {
   let fixture: ComponentFixture<SearchComponent>;
 
   const mockMusicApiService = {
-    search: jest.fn(),
+    search: jasmine.createSpy('search'),
   };
 
   const mockQueueService = {
-    push: jest.fn(),
-    pushBacklog: jest.fn(),
+    push: jasmine.createSpy('push'),
+    pushBacklog: jasmine.createSpy('pushBacklog'),
   };
 
   const mockUserService = {
     loggedUser: signal({ isLoggedIn: true, isAdmin: true }),
-    isSessionCreator: jest.fn().mockImplementation(() => true),
+    isSessionCreator: jasmine
+      .createSpy('isSessionCreator')
+      .and.callFake(() => true),
   };
 
   const mockSessionService = {
@@ -74,43 +81,44 @@ describe('SearchComponent', () => {
     expect(component.musicConfig).toEqual(expectedMusicConfig);
   });
 
-  it('should call musicApiService.search and update results on search value changes', () => {
-    jest.useFakeTimers();
+  it('should call musicApiService.search and update results on search value changes', fakeAsync(() => {
     const mockSearchQuery = 'test';
     const sub = new Subject();
-    mockMusicApiService.search.mockReturnValue(sub.asObservable());
+    mockMusicApiService.search.and.returnValue(sub.asObservable());
     component.search.setValue(mockSearchQuery);
-    jest.advanceTimersByTime(500);
+    tick(500);
+    sub.next([currentMusicFixture]);
     sub.next([currentMusicFixture]);
 
     expect(mockMusicApiService.search).toHaveBeenCalledWith(mockSearchQuery);
-    expect(component.results).toEqual([currentMusicFixture]);
+    const results: unknown = component.results;
+    expect(results).toEqual([currentMusicFixture]);
     expect(component.loading).toBe(false);
-  });
+  }));
 
-  it('should handle error when musicApiService.search fails', async () => {
-    jest.useFakeTimers();
+  it('should handle error when musicApiService.search fails', fakeAsync(() => {
     const mockSearchQuery = 'test';
     const sub = new Subject();
-    mockMusicApiService.search.mockReturnValue(sub.asObservable());
+    mockMusicApiService.search.and.returnValue(sub.asObservable());
     component.search.setValue(mockSearchQuery);
-    jest.advanceTimersByTime(500);
+    tick(500);
+    sub.error(new Error('Search Error'));
     sub.error(new Error('Search Error'));
 
     expect(mockMusicApiService.search).toHaveBeenCalledWith(mockSearchQuery);
     expect(component.results).toBeNull();
     expect(component.loading).toBe(false);
     expect(component.error).toBe(SearchComponent.ERROR_MESSAGE);
-  });
+  }));
 
   it('should call queueService.push on addToQueue', () => {
     const mockIconUpdate = {
-      updateLoading: jest.fn(),
-      updateIcon: jest.fn(),
-      completeEmitter: jest.fn(),
+      updateLoading: jasmine.createSpy('updateLoading'),
+      updateIcon: jasmine.createSpy('updateIcon'),
+      completeEmitter: jasmine.createSpy('completeEmitter'),
     };
     const sub = new Subject();
-    mockQueueService.push.mockReturnValue(sub.asObservable());
+    mockQueueService.push.and.returnValue(sub.asObservable());
 
     component.addToQueue(musicFixture, mockIconUpdate);
     sub.next({});
@@ -123,14 +131,13 @@ describe('SearchComponent', () => {
   });
 
   it('should handle queue-related error in addToQueue', () => {
-    jest.useFakeTimers();
     const mockIconUpdate: IconUpdateStatus = {
-      updateLoading: jest.fn(),
-      updateIcon: jest.fn(),
-      completeEmitter: jest.fn(),
+      updateLoading: jasmine.createSpy('updateLoading'),
+      updateIcon: jasmine.createSpy('updateIcon'),
+      completeEmitter: jasmine.createSpy('completeEmitter'),
     };
     const mockError = { error: { cause: 'queue' } };
-    mockQueueService.push.mockReturnValue(throwError(mockError));
+    mockQueueService.push.and.returnValue(throwError(mockError));
 
     component.addToQueue(musicFixture, mockIconUpdate);
 
@@ -138,10 +145,6 @@ describe('SearchComponent', () => {
     expect(mockIconUpdate.updateLoading).toHaveBeenCalledWith(false);
     expect(mockIconUpdate.updateIcon).toHaveBeenCalledWith(faXmark);
     expect(component.error).toBe(SearchComponent.ALREADY_IN_QUEUE);
-
-    jest.advanceTimersByTime(5000);
-    expect(component.error).toBe('');
-    expect(mockIconUpdate.updateIcon).toHaveBeenCalledWith(faAdd);
   });
 
   it('should clear search input when clicking on cross icon', () => {

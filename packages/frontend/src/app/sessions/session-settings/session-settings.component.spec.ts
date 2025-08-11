@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
 import { of } from 'rxjs';
 import {
@@ -17,26 +18,25 @@ import {
 } from '../../services/settings.service';
 import { MusicSessionsService } from '../music-sessions.service';
 import { SessionSettingsComponent } from './session-settings.component';
-import { RouterTestingModule } from '@angular/router/testing';
 
 describe('SessionSettingsComponent', () => {
   let component: SessionSettingsComponent;
   let fixture: ComponentFixture<SessionSettingsComponent>;
 
   const settingsServiceMock = {
-    get: jest.fn(),
-    setMaxVote: jest.fn(),
-    setMaxQueuableSongPerUser: jest.fn(),
+    get: jasmine.createSpy('get'),
+    setMaxVote: jasmine.createSpy('setMaxVote'),
+    setMaxQueuableSongPerUser: jasmine.createSpy('setMaxQueuableSongPerUser'),
   };
 
   const subGet = mockObservable<SettingsQuery>(settingsServiceMock.get);
 
   const musicSessionsServiceMock = {
-    deleteSession: jest.fn(),
+    deleteSession: jasmine.createSpy('deleteSession'),
   };
 
   const musicApiMock = {
-    getStatus: jest.fn(),
+    getStatus: jasmine.createSpy('getStatus'),
   };
   const subStatus = mockObservable<CurrentMusic>(musicApiMock.getStatus);
 
@@ -64,7 +64,7 @@ describe('SessionSettingsComponent', () => {
       ],
     });
     const settings = { maxVotes: 5, maxQueuableSongPerUser: 3 };
-    settingsServiceMock.get.mockReturnValue(of(settings));
+    settingsServiceMock.get.and.returnValue(of(settings));
     fixture = TestBed.createComponent(SessionSettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -90,7 +90,7 @@ describe('SessionSettingsComponent', () => {
 
   it('should set max votes', () => {
     const newMaxVotes = 10;
-    settingsServiceMock.setMaxVote.mockReturnValue(
+    settingsServiceMock.setMaxVote.and.returnValue(
       of({ maxVotes: newMaxVotes }),
     );
     component.maxVote = newMaxVotes;
@@ -103,7 +103,7 @@ describe('SessionSettingsComponent', () => {
 
   it('should set max queuable songs', () => {
     const newMaxQueuableSongs = 5;
-    settingsServiceMock.setMaxQueuableSongPerUser.mockReturnValue(
+    settingsServiceMock.setMaxQueuableSongPerUser.and.returnValue(
       of({ maxQueuableSongPerUser: newMaxQueuableSongs }),
     );
     component.maxQueuableSongs = newMaxQueuableSongs;
@@ -117,10 +117,8 @@ describe('SessionSettingsComponent', () => {
   });
 
   it('should delete session and navigate to home', () => {
-    musicSessionsServiceMock.deleteSession.mockReturnValue(of(null));
-    jest
-      .spyOn(router, 'navigate')
-      .mockImplementation(() => Promise.resolve(true));
+    musicSessionsServiceMock.deleteSession.and.returnValue(of(null));
+    spyOn(router, 'navigate').and.callFake(() => Promise.resolve(true));
 
     component.deleteSession();
 

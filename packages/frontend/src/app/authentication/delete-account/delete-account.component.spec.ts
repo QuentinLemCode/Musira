@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DeleteAccountComponent } from './delete-account.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthenticationService } from '../authentication.service';
 import { UsersService } from '../../services/users.service';
+import { AuthenticationService } from '../authentication.service';
+import { DeleteAccountComponent } from './delete-account.component';
 
 describe('DeleteAccountComponent', () => {
   let component: DeleteAccountComponent;
@@ -10,8 +10,7 @@ describe('DeleteAccountComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DeleteAccountComponent],
-      imports: [RouterTestingModule],
+      imports: [DeleteAccountComponent, RouterTestingModule],
       providers: [
         {
           provide: AuthenticationService,

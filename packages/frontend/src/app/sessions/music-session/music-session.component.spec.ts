@@ -21,7 +21,7 @@ describe('MusicSessionComponent', () => {
     };
 
     musicSessionsServiceMock = {
-      exitSession: jest.fn(),
+      exitSession: jasmine.createSpy('exitSession'),
       currentSession: signal(null),
     };
 

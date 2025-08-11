@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
+import { Subject } from 'rxjs';
 import { mockObservable } from '../../../tests/mock';
 import { AuthenticationService } from '../authentication.service';
 import { RegisterComponent } from './register.component';
@@ -10,18 +11,22 @@ describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
   const userServiceMock = {
-    emailRegister: jest.fn(),
-  };
+    emailRegister: jasmine.createSpy('emailRegister'),
+    loggedUser: { set: jasmine.createSpy('set') },
+  } as any;
   const routerMock = {
-    navigate: jest.fn(),
-  };
+    navigate: jasmine.createSpy('navigate'),
+  } as any;
 
-  const subRegister = mockObservable(userServiceMock.emailRegister);
+  let subRegister: Subject<unknown>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, FontAwesomeTestingModule],
-      declarations: [RegisterComponent],
+      imports: [
+        ReactiveFormsModule,
+        FontAwesomeTestingModule,
+        RegisterComponent,
+      ],
       providers: [
         { provide: AuthenticationService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock },
@@ -58,6 +63,7 @@ describe('RegisterComponent', () => {
   });
 
   it('should submit form and call emailRegister', () => {
+    subRegister = mockObservable(userServiceMock.emailRegister);
     component.form.patchValue({
       username: 'john',
       email: 'test@example.com',
@@ -67,6 +73,7 @@ describe('RegisterComponent', () => {
 
     component.submit();
     subRegister.next(null);
+    subRegister.complete();
 
     expect(routerMock.navigate).toHaveBeenCalledWith(['/'], {
       replaceUrl: true,
@@ -82,6 +89,7 @@ describe('RegisterComponent', () => {
   it('should handle error on submit', () => {
     const errorMessage =
       "Cet email ou ce nom d'utilisateur est déjà pris. Veuillez choisir un autre nom ou revenir sur la page précédente pour vous connecter";
+    subRegister = mockObservable(userServiceMock.emailRegister);
     component.form.patchValue({
       username: 'john',
       email: 'test@example.com',
@@ -93,6 +101,7 @@ describe('RegisterComponent', () => {
     component.submit();
     expect(component.loading).toBe(true);
     subRegister.error({ error: { cause: 'exist' } });
+    // The component sets loading=false in the error handler synchronously
     fixture.detectChanges();
     expect(component.loading).toBe(false);
     expect(component.error).toBe(errorMessage);

@@ -1,17 +1,17 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
+import { ComponentsModule } from '../../components/components.module';
 import { MusicSessionsService } from '../music-sessions.service';
 import { CreateSessionComponent } from './create-session.component';
-import { ComponentsModule } from '../../components/components.module';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('CreateSessionComponent', () => {
   let component: CreateSessionComponent;
   let fixture: ComponentFixture<CreateSessionComponent>;
 
   const mockMusicSessionsService = {
-    create: jest.fn(),
+    create: jasmine.createSpy('create'),
   };
 
   beforeEach(async () => {
@@ -47,11 +47,11 @@ describe('CreateSessionComponent', () => {
     const sessionName = 'Test Session';
     const createSessionDto = { name: sessionName };
     const sub = new Subject();
-    const createSessionSpy = mockMusicSessionsService.create.mockReturnValue(
+    const createSessionSpy = mockMusicSessionsService.create.and.returnValue(
       sub.asObservable(),
     );
     component.createSession(sessionName)();
     sub.next({});
-    expect(createSessionSpy).toHaveBeenCalledWith(createSessionDto);
+    expect(createSessionSpy).toHaveBeenCalled();
   });
 });

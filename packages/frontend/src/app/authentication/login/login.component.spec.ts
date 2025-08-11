@@ -10,11 +10,13 @@ import { LoginComponent } from './login.component';
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  const userServiceMock = {
+  const userServiceMock: any = {
     loggedUser: signal({ isLoggedIn: false }),
-    emailLogin: jest.fn(),
-    socialLogin: jest.fn(),
+    emailLogin: jasmine.createSpy('emailLogin'),
+    socialLogin: jasmine.createSpy('socialLogin'),
   };
+  // Provide a setter signature compatible with component usage
+  userServiceMock.loggedUser.set = jasmine.createSpy('set');
 
   const subEmailLogin = mockObservable(userServiceMock.emailLogin);
 
@@ -24,8 +26,8 @@ describe('LoginComponent', () => {
         RouterTestingModule,
         ReactiveFormsModule,
         FontAwesomeTestingModule,
+        LoginComponent,
       ],
-      declarations: [LoginComponent],
       providers: [
         { provide: AuthenticationService, useValue: userServiceMock },
       ],

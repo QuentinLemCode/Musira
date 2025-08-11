@@ -1,8 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
-import { QueueService } from './queue.service';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
+import { QueueService } from './queue.service';
 
 describe('QueueService', () => {
   let service: QueueService;
@@ -13,7 +14,7 @@ describe('QueueService', () => {
       providers: [
         {
           provide: MusicSessionsService,
-          useValue: {},
+          useValue: { currentSession$: of({ linkedToSpotify: false }) },
         },
       ],
     });

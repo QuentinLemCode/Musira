@@ -12,26 +12,36 @@ describe('SpotifyStatusComponent', () => {
   let fixture: ComponentFixture<SpotifyStatusComponent>;
 
   const mockMusicApiService = {
-    getStatus: jest.fn(),
-    startEngine: jest.fn(),
-    stopEngine: jest.fn(),
+    getStatus: jasmine.createSpy('getStatus'),
+    startEngine: jasmine.createSpy('startEngine'),
+    stopEngine: jasmine.createSpy('stopEngine'),
   };
 
   const mockQueueService = {
-    get: jest.fn(),
-    getFullBacklog: jest.fn(),
+    get: jasmine.createSpy('get'),
+    getFullBacklog: jasmine.createSpy('getFullBacklog'),
   };
 
-  const subQueue = mockObservable(mockQueueService.get);
-  const subFullbacklog = mockObservable(mockQueueService.getFullBacklog);
+  const subQueue = mockObservable(
+    mockQueueService.get as unknown as jasmine.Spy,
+  );
+  const subFullbacklog = mockObservable(
+    mockQueueService.getFullBacklog as unknown as jasmine.Spy,
+  );
 
   const sessionMock = {
     currentSession: signal(null),
   };
 
-  const subStatus = mockObservable(mockMusicApiService.getStatus);
-  const subStart = mockObservable(mockMusicApiService.startEngine);
-  const subStop = mockObservable(mockMusicApiService.stopEngine);
+  const subStatus = mockObservable(
+    mockMusicApiService.getStatus as unknown as jasmine.Spy,
+  );
+  const subStart = mockObservable(
+    mockMusicApiService.startEngine as unknown as jasmine.Spy,
+  );
+  const subStop = mockObservable(
+    mockMusicApiService.stopEngine as unknown as jasmine.Spy,
+  );
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

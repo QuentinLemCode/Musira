@@ -5,6 +5,7 @@ import {
   currentMusicFixture,
   queueFixture,
 } from '../../../tests/fixtures';
+import { AuthenticationService } from '../../authentication/authentication.service';
 import type {
   Backlog,
   CurrentMusic,
@@ -12,7 +13,6 @@ import type {
 } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
-import { AuthenticationService } from '../../authentication/authentication.service';
 import type { IconUpdateStatus } from '../music/music.component';
 import { QueueComponent } from './queue.component';
 
@@ -25,20 +25,20 @@ describe('QueueComponent', () => {
   let subCurrentMusic: Subject<CurrentMusic>;
 
   const mockQueueService = {
-    get: jest.fn(),
-    getBacklog: jest.fn(),
-    delete: jest.fn(),
-    forward: jest.fn(),
+    get: jasmine.createSpy('get'),
+    getBacklog: jasmine.createSpy('getBacklog'),
+    delete: jasmine.createSpy('delete'),
+    forward: jasmine.createSpy('forward'),
   };
 
   const mockUserService = {
-    isAdmin: jest.fn(),
+    isAdmin: jasmine.createSpy('isAdmin'),
     isLoggedIn: true,
     userId: '1',
   };
 
   const mockMusicApiService = {
-    getStatus: jest.fn(),
+    getStatus: jasmine.createSpy('getStatus'),
   };
 
   beforeEach(async () => {
@@ -56,9 +56,9 @@ describe('QueueComponent', () => {
     subGetQueue = new Subject();
     subGetBacklog = new Subject();
     subCurrentMusic = new Subject();
-    mockQueueService.get.mockReturnValue(subGetQueue.asObservable());
-    mockQueueService.getBacklog.mockReturnValue(subGetBacklog.asObservable());
-    mockMusicApiService.getStatus.mockReturnValue(
+    mockQueueService.get.and.returnValue(subGetQueue.asObservable());
+    mockQueueService.getBacklog.and.returnValue(subGetBacklog.asObservable());
+    mockMusicApiService.getStatus.and.returnValue(
       subCurrentMusic.asObservable(),
     );
     fixture = TestBed.createComponent(QueueComponent);
@@ -84,7 +84,11 @@ describe('QueueComponent', () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      mockQueueService.get.calls?.reset?.();
+      mockQueueService.getBacklog.calls?.reset?.();
+      mockQueueService.delete.calls?.reset?.();
+      mockQueueService.forward.calls?.reset?.();
+      mockMusicApiService.getStatus.calls?.reset?.();
     });
 
     it('should load queue and backlog on initialization', () => {
@@ -93,7 +97,8 @@ describe('QueueComponent', () => {
       expect(mockMusicApiService.getStatus).toHaveBeenCalled();
 
       expect(component.queues).toEqual([]);
-      expect(component.playing).toEqual(currentMusicFixture.currentPlay);
+      const playing: unknown = component.playing;
+      expect(playing).toEqual(currentMusicFixture.currentPlay);
       expect(component.backlog).toEqual(backlogFixture);
       expect(component.isEngineStarted).toEqual(true);
       expect(component.loading).toBe(false);
@@ -101,13 +106,13 @@ describe('QueueComponent', () => {
 
     it('should call queue service to delete', () => {
       const mockIconUpdate: IconUpdateStatus = {
-        updateLoading: jest.fn(),
-        completeEmitter: jest.fn(),
-        updateIcon: jest.fn(),
+        updateLoading: jasmine.createSpy('updateLoading'),
+        completeEmitter: jasmine.createSpy('completeEmitter'),
+        updateIcon: jasmine.createSpy('updateIcon'),
       };
       const idToDelete = 1;
       const sub = new Subject();
-      mockQueueService.delete.mockReturnValue(sub.asObservable());
+      mockQueueService.delete.and.returnValue(sub.asObservable());
 
       component.delete(idToDelete, mockIconUpdate);
       sub.next({});
@@ -119,13 +124,13 @@ describe('QueueComponent', () => {
 
     it('should call queue service to forward (vote)', () => {
       const mockIconUpdate: IconUpdateStatus = {
-        updateLoading: jest.fn(),
-        completeEmitter: jest.fn(),
-        updateIcon: jest.fn(),
+        updateLoading: jasmine.createSpy('updateLoading'),
+        completeEmitter: jasmine.createSpy('completeEmitter'),
+        updateIcon: jasmine.createSpy('updateIcon'),
       };
       const idToVote = 1;
       const sub = new Subject();
-      mockQueueService.forward.mockReturnValue(sub.asObservable());
+      mockQueueService.forward.and.returnValue(sub.asObservable());
 
       component.vote(idToVote, mockIconUpdate);
       sub.next({});
@@ -137,15 +142,15 @@ describe('QueueComponent', () => {
     });
 
     it('should handle already-voted error when voting', () => {
-      jest.useFakeTimers();
+      jasmine.clock().install();
       const mockIconUpdate: IconUpdateStatus = {
-        updateLoading: jest.fn(),
-        completeEmitter: jest.fn(),
-        updateIcon: jest.fn(),
+        updateLoading: jasmine.createSpy('updateLoading'),
+        completeEmitter: jasmine.createSpy('completeEmitter'),
+        updateIcon: jasmine.createSpy('updateIcon'),
       };
       const idToVote = 3;
       const mockError = { error: { cause: 'already-voted' } };
-      mockQueueService.forward.mockReturnValue(throwError(() => mockError));
+      mockQueueService.forward.and.returnValue(throwError(() => mockError));
 
       component.vote(idToVote, mockIconUpdate);
 
@@ -155,7 +160,8 @@ describe('QueueComponent', () => {
       expect(component.error).toBe('Vous avez déjà voté pour cette musique');
 
       // Error should be cleared after a timeout
-      jest.advanceTimersByTime(5000);
+      jasmine.clock().tick(5000);
+      jasmine.clock().uninstall();
       expect(component.error).toBe('');
     });
   });

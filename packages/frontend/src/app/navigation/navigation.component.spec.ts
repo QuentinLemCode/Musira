@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { MusicSessionsService } from '../sessions/music-sessions.service';
-import { AuthenticationService } from '../authentication/authentication.service';
-import { NavigationComponent } from './navigation.component';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RouterTestingModule } from '@angular/router/testing';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { AuthenticationService } from '../authentication/authentication.service';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
+import { NavigationComponent } from './navigation.component';
 
 describe('NavigationComponent', () => {
   let component: NavigationComponent;
@@ -12,14 +12,14 @@ describe('NavigationComponent', () => {
   let router: Router;
 
   const mockUserService = {
-    loggedUser: jest.fn(),
-    isSessionCreator: jest.fn(),
-    logout: jest.fn(),
+    loggedUser: jasmine.createSpy('loggedUser'),
+    isSessionCreator: jasmine.createSpy('isSessionCreator'),
+    logout: jasmine.createSpy('logout'),
   };
 
   const mockMusicSessionsService = {
-    currentSession: jest.fn(),
-    exitSession: jest.fn(),
+    currentSession: jasmine.createSpy('currentSession'),
+    exitSession: jasmine.createSpy('exitSession'),
   };
 
   beforeEach(async () => {
@@ -32,7 +32,7 @@ describe('NavigationComponent', () => {
       ],
     }).compileComponents();
 
-    mockUserService.loggedUser.mockReturnValue({
+    mockUserService.loggedUser.and.returnValue({
       isLoggedIn: true,
       username: 'testUser',
     });
@@ -89,9 +89,9 @@ describe('NavigationComponent', () => {
 
   it('should call user.logout and navigate to login or session page on logout', async () => {
     const mockCurrentSession = { code: '123' };
-    mockUserService.loggedUser.mockReturnValue({ isLoggedIn: true });
-    mockMusicSessionsService.currentSession.mockReturnValue(mockCurrentSession);
-    jest.spyOn(router, 'navigate').mockReturnValue(Promise.resolve(true));
+    mockUserService.loggedUser.and.returnValue({ isLoggedIn: true });
+    mockMusicSessionsService.currentSession.and.returnValue(mockCurrentSession);
+    spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     await component.logout();
 
@@ -102,10 +102,10 @@ describe('NavigationComponent', () => {
     });
 
     // Reset mocks
-    mockUserService.logout.mockClear();
+    mockUserService.logout.calls.reset();
 
     // If there's no current session
-    mockMusicSessionsService.currentSession.mockReturnValue(null);
+    mockMusicSessionsService.currentSession.and.returnValue(null);
 
     await component.logout();
 
