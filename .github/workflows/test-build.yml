@@ -27,21 +27,46 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: nrwl/nx-set-shas@v4
       - uses: actions/setup-node@v4
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
       - run: npm i
-      - run: npm run ci:format
+      - run: npm run format:check
       - run: npm run ci:lint
-      - run: npm run test
+      # Run backend unit tests (Jest)
+      - name: Run unit tests (backend)
+        run: npm --workspace @musira/backend run test
+
+      # Install Playwright browsers and system dependencies
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      # Launch MySQL for the app
       - name: Launch database
         run: docker-compose -f docker-compose.test.yml up -d
-      - name: Build interfaces
-        run: npx nx build api-interfaces
+
+      # Generate local SSL certs for Angular HTTPS dev server
+      - name: Generate SSL certificates
+        run: npm run generate-ssl
+
+      # Start backend and frontend and wait for readiness
+      - name: Start application (backend + frontend)
+        run: |
+          npm run start:backend &
+          npm run start:frontend &
+          echo "Waiting for backend..."
+          for i in {1..120}; do
+            if curl -sSf http://localhost:3030/api/health > /dev/null; then
+              echo "Backend is up"; break; fi; sleep 1; done
+          echo "Waiting for frontend (HTTPS)..."
+          for i in {1..120}; do
+            if curl -k -sSf https://localhost:4200 > /dev/null; then
+              echo "Frontend is up"; break; fi; sleep 1; done
+
+      # Run Playwright E2E tests against https://localhost:4200
       - name: Run E2E tests
-        run: npx nx run musira:e2e
+        run: npm run e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
