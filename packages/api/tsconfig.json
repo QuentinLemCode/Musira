@@ -10,7 +10,7 @@
     "noImplicitAny": true,
     "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "es2022",
+    "module": "commonjs",
     "target": "es2023"
   }
 }

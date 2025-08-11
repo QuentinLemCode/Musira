@@ -13,9 +13,7 @@ describe('AdminGuard', () => {
 
   beforeEach(() => {
     routerMock = {
-      createUrlTree: jasmine
-        .createSpy('createUrlTree')
-        .and.returnValue({} as any),
+      navigate: jasmine.createSpy('navigate').and.returnValue(true),
     };
 
     TestBed.configureTestingModule({
