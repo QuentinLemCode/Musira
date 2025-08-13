@@ -11,7 +11,7 @@ describe('BacklogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [BacklogComponent],
+      imports: [BacklogComponent],
       providers: [
         {
           provide: QueueService,

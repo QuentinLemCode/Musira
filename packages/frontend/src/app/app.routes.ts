@@ -1,74 +1,105 @@
 import { Routes } from '@angular/router';
-import { AdminComponent } from './admin/admin.component';
-import { CallbackComponent } from './authentication/callback/callback.component';
-import { DeleteAccountComponent } from './authentication/delete-account/delete-account.component';
-import { LoginComponent } from './authentication/login/login.component';
-import { RegisterComponent } from './authentication/register/register.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
-import { CreateSessionComponent } from './sessions/create-session/create-session.component';
-import { JoinSessionComponent } from './sessions/join-session/join-session.component';
-import { MusicSessionComponent } from './sessions/music-session/music-session.component';
-import { SessionSettingsComponent } from './sessions/session-settings/session-settings.component';
 import { AdminGuard } from './shared/admin.guard';
 import { authGuard } from './shared/auth.guard';
 import { musicSessionGuard } from './shared/music-session.guard';
 import { notAuthGuard } from './shared/not-auth.guard';
-import { NotFoundComponent } from './shared/not-found/not-found.component';
-import { SpotifyAuthComponent } from './spotify-auth/spotify-auth.component';
 
 export const routes: Routes = [
   {
     path: ':sessionId/session-settings',
-    component: SessionSettingsComponent,
+    loadComponent: () =>
+      import('./sessions/session-settings/session-settings.component').then(
+        (m) => m.SessionSettingsComponent,
+      ),
     canActivate: [musicSessionGuard, authGuard],
   },
   {
     path: 'oauth/callback/:provider',
-    component: CallbackComponent,
+    loadComponent: () =>
+      import('./authentication/callback/callback.component').then(
+        (m) => m.CallbackComponent,
+      ),
   },
   {
     path: 'create-session',
-    component: CreateSessionComponent,
+    loadComponent: () =>
+      import('./sessions/create-session/create-session.component').then(
+        (m) => m.CreateSessionComponent,
+      ),
     canActivate: [authGuard],
   },
   {
     path: 'spotify-auth',
-    component: SpotifyAuthComponent,
+    loadComponent: () =>
+      import('./spotify-auth/spotify-auth.component').then(
+        (m) => m.SpotifyAuthComponent,
+      ),
   },
   {
     path: 'admin',
-    component: AdminComponent,
+    loadComponent: () =>
+      import('./admin/admin.component').then((m) => m.AdminComponent),
     canActivate: [authGuard, AdminGuard],
   },
   {
     path: 'privacy-policy',
-    component: PrivacyPolicyComponent,
+    loadComponent: () =>
+      import('./privacy-policy/privacy-policy.component').then(
+        (m) => m.PrivacyPolicyComponent,
+      ),
   },
   {
     path: 'user/login',
-    component: LoginComponent,
+    loadComponent: () =>
+      import('./authentication/login/login.component').then(
+        (m) => m.LoginComponent,
+      ),
     canActivate: [notAuthGuard],
   },
   {
     path: 'user/register',
-    component: RegisterComponent,
+    loadComponent: () =>
+      import('./authentication/register/register.component').then(
+        (m) => m.RegisterComponent,
+      ),
     canActivate: [notAuthGuard],
   },
   {
     path: 'user/delete-account',
-    component: DeleteAccountComponent,
+    loadComponent: () =>
+      import('./authentication/delete-account/delete-account.component').then(
+        (m) => m.DeleteAccountComponent,
+      ),
     canActivate: [authGuard],
   },
   {
     path: ':sessionId/dashboard',
-    component: DashboardComponent,
+    loadComponent: () =>
+      import('./dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent,
+      ),
   },
   {
     path: ':sessionId',
-    component: MusicSessionComponent,
+    loadComponent: () =>
+      import('./sessions/music-session/music-session.component').then(
+        (m) => m.MusicSessionComponent,
+      ),
     canActivate: [musicSessionGuard],
   },
-  { path: '', component: JoinSessionComponent, canActivate: [authGuard] },
-  { path: '**', component: NotFoundComponent },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./sessions/join-session/join-session.component').then(
+        (m) => m.JoinSessionComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./shared/not-found/not-found.component').then(
+        (m) => m.NotFoundComponent,
+      ),
+  },
 ];

@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
@@ -26,14 +27,11 @@ describe('MusicSessionComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [
-        MusicSessionComponent,
-        QueueStubComponent,
-        SearchStubComponent,
-      ],
+      imports: [MusicSessionComponent, QueueStubComponent, SearchStubComponent],
       providers: [
         { provide: AuthenticationService, useValue: userServiceMock },
         { provide: MusicSessionsService, useValue: musicSessionsServiceMock },
+        provideHttpClient(),
       ],
     }).compileComponents();
 

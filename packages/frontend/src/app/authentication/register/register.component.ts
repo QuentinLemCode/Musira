@@ -19,8 +19,28 @@ import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'musira-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
+  template: `
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <input placeholder="Ton prénom" formControlName="username" />
+      <input placeholder="Ton email" formControlName="email" />
+      <input
+        type="password"
+        name="password"
+        placeholder="Ton mot de passe"
+        formControlName="password"
+      />
+      <input
+        type="password"
+        placeholder="Confirme ton mot de passe"
+        formControlName="passwordConfirmation"
+      />
+      <button type="submit" [disabled]="form.invalid || loading">
+        Créer un compte
+      </button>
+    </form>
+    <p class="error" *ngIf="error">{{ error }}</p>
+  `,
+  styles: [``],
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
 })

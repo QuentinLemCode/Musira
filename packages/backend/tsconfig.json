@@ -22,6 +22,5 @@
     "strictPropertyInitialization": false,
     "types": ["jest"]
   },
-  "references": [{ "path": "../api" }],
   "include": ["src/**/*"]
 }

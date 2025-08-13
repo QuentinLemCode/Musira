@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { ComponentsModule } from '../../components/components.module';
 import { MusicSessionsService } from '../music-sessions.service';
 import { CreateSessionComponent } from './create-session.component';
 
@@ -16,8 +15,11 @@ describe('CreateSessionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CreateSessionComponent],
-      imports: [ReactiveFormsModule, ComponentsModule, HttpClientTestingModule],
+      imports: [
+        CreateSessionComponent,
+        ReactiveFormsModule,
+        HttpClientTestingModule,
+      ],
       providers: [
         { provide: MusicSessionsService, useValue: mockMusicSessionsService },
       ],

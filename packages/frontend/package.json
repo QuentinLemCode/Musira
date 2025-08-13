@@ -1,54 +1,63 @@
 {
-  "name": "@musira/frontend",
-  "version": "1.0.0",
+  "name": "frontend",
+  "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "npm run build && wrangler dev",
+    "start:dev": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:ci": "ng test --watch=false --browsers=ChromeHeadlessCI",
-    "serve:ssr:frontend": "node dist/server/server.mjs"
+    "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
+  },
+  "prettier": {
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^18.1.0",
-    "@angular/common": "^18.1.0",
-    "@angular/compiler": "^18.1.0",
-    "@angular/core": "^18.1.0",
-    "@angular/forms": "^18.1.0",
-    "@angular/platform-browser": "^18.1.0",
-    "@angular/platform-browser-dynamic": "^18.1.0",
-    "@angular/platform-server": "^18.1.0",
-    "@angular/router": "^18.1.0",
-    "@fortawesome/angular-fontawesome": "^0.15.0",
+    "@angular/common": "^20.1.0",
+    "@angular/compiler": "^20.1.0",
+    "@angular/core": "^20.1.0",
+    "@angular/forms": "^20.1.0",
+    "@angular/platform-browser": "^20.1.0",
+    "@angular/platform-server": "^20.1.0",
+    "@angular/router": "^20.1.0",
+    "@angular/ssr": "^20.1.4",
+    "@fortawesome/angular-fontawesome": "^3.0.0",
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@musira/api": "^1.0.0",
-    "@tailwindcss/postcss": "^4.1.4",
     "date-fns": "^4.1.0",
-    "postcss": "^8.4.41",
-    "qrcode": "^1.5.4",
+    "qrcode-generator": "^2.0.4",
     "rxjs": "~7.8.0",
-    "tailwindcss": "^3.4.17",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.1.4",
-    "@angular/cli": "^18.1.4",
-    "@angular/compiler-cli": "^18.1.0",
-    "@cloudflare/workers-types": "^4.20240903.0",
+    "@angular/build": "^20.1.4",
+    "@angular/cli": "^20.1.4",
+    "@angular/compiler-cli": "^20.1.0",
     "@types/jasmine": "~5.1.0",
-    "@types/node": "^18.18.0",
+    "@types/node": "^20.17.19",
     "@types/qrcode": "^1.5.5",
-    "jasmine-core": "~5.1.0",
+    "jasmine-core": "~5.8.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.5.2",
-    "wrangler": "^3.74.0"
+    "typescript": "~5.8.2",
+    "wrangler": "^4.28.1",
+    "xhr2": "^0.2.1",
+    "zone.js": "^0.14.10"
   }
 }

@@ -45,7 +45,7 @@ describe('SpotifyStatusComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SpotifyStatusComponent],
+      imports: [SpotifyStatusComponent],
       providers: [
         { provide: MusicApiService, useValue: mockMusicApiService },
         { provide: QueueService, useValue: mockQueueService },

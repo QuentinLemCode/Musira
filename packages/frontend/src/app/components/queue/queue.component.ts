@@ -1,5 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { tap } from 'rxjs/operators';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import type { Backlog, Music, Queue } from '../../services/music-api.interface';
@@ -10,11 +14,53 @@ import type {
   IconUpdateStatus,
   MusicComponentConfiguration,
 } from '../music/music.component';
+import { MusicComponent } from '../music/music.component';
 
 @Component({
   selector: 'musira-queue',
-  templateUrl: './queue.component.html',
-  styleUrls: ['./queue.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    MusicComponent,
+  ],
+  template: `
+    <p *ngIf="loading">Chargement ...</p>
+    <p *ngIf="error">{{ error }}</p>
+
+    <ng-container *ngIf="queues !== null">
+      <ng-container *ngIf="playing">
+        <h3>En cours de lecture</h3>
+        <musira-music [music]="playing" [username]="playingUser"></musira-music>
+        <hr />
+      </ng-container>
+      <h3>File d'attente</h3>
+      <musira-music
+        *ngFor="let queue of queues"
+        [music]="queue.music"
+        [username]="queue.user.name"
+        [config]="getMusicConfig(queue)"
+        (delete)="delete(queue.id, $event)"
+        (vote)="vote(queue.id, $event)"
+        [voteCount]="queue.forward_votes"
+      ></musira-music>
+      <musira-music
+        *ngIf="backlog"
+        [music]="backlog.music"
+        [backlog]="true"
+      ></musira-music>
+    </ng-container>
+  `,
+  styles: [
+    `
+      app-music {
+        margin-bottom: 10px;
+      }
+    `,
+  ],
 })
 export class QueueComponent {
   queues: Queue[] | null = null;

@@ -6,8 +6,8 @@ import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'musira-delete-account',
-  templateUrl: './delete-account.component.html',
-  styleUrl: './delete-account.component.scss',
+  template: ` <button (click)="deleteAccount()">Supprimer mon compte</button> `,
+  styles: [``],
   standalone: true,
   imports: [CommonModule],
 })

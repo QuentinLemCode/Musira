@@ -43,7 +43,7 @@ describe('QueueComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [QueueComponent],
+      imports: [QueueComponent],
       providers: [
         { provide: QueueService, useValue: mockQueueService },
         { provide: AuthenticationService, useValue: mockUserService },

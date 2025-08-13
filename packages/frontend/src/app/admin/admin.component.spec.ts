@@ -41,8 +41,7 @@ describe('AdminComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AdminComponent],
-      imports: [FormsModule, ReactiveFormsModule],
+      imports: [AdminComponent, FormsModule, ReactiveFormsModule],
       providers: [
         { provide: UsersService, useValue: mockUserService },
         {

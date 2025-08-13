@@ -1,17 +1,23 @@
-import { DOCUMENT } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import type { AfterViewChecked, ElementRef, OnDestroy } from '@angular/core';
 import { Component, Inject, viewChild } from '@angular/core';
-import { toCanvas } from 'qrcode';
-import { ComponentsModule } from '../components/components.module';
+import QRCode from 'qrcode-generator';
+import { QueueComponent } from '../components/queue/queue.component';
 import { DashboardService } from '../services/dashboard.service';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
 import { codeToString } from '../utils/format-code';
 
 @Component({
   selector: 'musira-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
-  imports: [ComponentsModule],
+  template: `
+    <h1>🎉 {{ currentSession?.name }}</h1>
+    <h3 class="text-lg">Oranisé par {{ currentSession?.creator }}</h3>
+    <h4 class="italic text-right">#{{ formattedSessionCode }}</h4>
+    <div #qrcode></div>
+    <musira-queue></musira-queue>
+  `,
+  styles: [``],
+  imports: [CommonModule, QueueComponent],
   standalone: true,
 })
 export class DashboardComponent implements AfterViewChecked, OnDestroy {
@@ -42,13 +48,13 @@ export class DashboardComponent implements AfterViewChecked, OnDestroy {
   }
 
   ngAfterViewChecked(): void {
-    toCanvas(
-      this.qrcode()?.nativeElement,
-      'https://' + this.serverUrl + '/' + this.currentSession?.code,
-      {
-        errorCorrectionLevel: 'H',
-        scale: 12,
-      },
-    );
+    const qr = QRCode(0, 'H');
+    qr.addData('https://' + this.serverUrl + '/' + this.currentSession?.code);
+    qr.make();
+    const qrcode = this.qrcode();
+    if (!qrcode) {
+      throw new Error('QR code element not found');
+    }
+    qrcode.nativeElement.innerHTML = qr.createImgTag();
   }
 }

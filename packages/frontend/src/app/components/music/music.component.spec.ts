@@ -12,8 +12,7 @@ describe('MusicComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MusicComponent],
-      imports: [FontAwesomeModule],
+      imports: [MusicComponent, FontAwesomeModule],
       providers: [
         {
           provide: QueueService,

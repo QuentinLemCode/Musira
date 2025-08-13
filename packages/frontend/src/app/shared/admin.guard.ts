@@ -21,6 +21,6 @@ export class AdminGuard {
     if (loggedUser.isLoggedIn && loggedUser.admin) {
       return true;
     }
-    return this.router.navigate(['/']);
+    return this.router.createUrlTree(['/']);
   }
 }

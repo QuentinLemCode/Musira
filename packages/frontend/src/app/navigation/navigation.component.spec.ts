@@ -24,8 +24,11 @@ describe('NavigationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FontAwesomeModule, RouterTestingModule.withRoutes([])],
-      declarations: [NavigationComponent],
+      imports: [
+        FontAwesomeModule,
+        RouterTestingModule.withRoutes([]),
+        NavigationComponent,
+      ],
       providers: [
         { provide: AuthenticationService, useValue: mockUserService },
         { provide: MusicSessionsService, useValue: mockMusicSessionsService },

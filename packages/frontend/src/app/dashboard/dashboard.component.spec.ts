@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import * as qrcode from 'qrcode';
 import { of } from 'rxjs';
 import { DashboardService } from '../services/dashboard.service';
 import { MusicApiService } from '../services/music-api.service';
@@ -20,10 +19,7 @@ describe('DashboardComponent', () => {
     currentSession: jasmine.createSpy('currentSession'),
   };
 
-  beforeEach(() => {
-    // Avoid calling real qrcode implementation in tests
-    (qrcode as any).toCanvas = () => Promise.resolve();
-  });
+  // No qrcode stubbing required; real toCanvas just draws to canvas
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -49,9 +45,8 @@ describe('DashboardComponent', () => {
         {
           provide: DashboardService,
           useValue: {
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
             enable: () => {},
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
+
             disable: () => {},
           },
         },

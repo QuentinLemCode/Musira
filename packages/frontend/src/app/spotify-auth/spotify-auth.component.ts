@@ -1,12 +1,23 @@
+import { CommonModule } from '@angular/common';
 import type { OnInit } from '@angular/core';
 import { Component, Inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MusicApiService } from '../services/music-api.service';
 
 @Component({
   selector: 'musira-spotify-auth',
-  templateUrl: './spotify-auth.component.html',
-  styleUrls: ['./spotify-auth.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+  ],
+  template: ` <p>{{ error }}</p> `,
+  styles: [``],
 })
 export class SpotifyAuthComponent implements OnInit {
   error = '';

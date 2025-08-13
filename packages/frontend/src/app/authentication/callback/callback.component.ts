@@ -6,8 +6,8 @@ import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'musira-callback',
-  templateUrl: './callback.component.html',
-  styleUrl: './callback.component.scss',
+  template: ` <p *ngIf="error">{{ error }}</p> `,
+  styles: [``],
   standalone: true,
   imports: [CommonModule],
 })

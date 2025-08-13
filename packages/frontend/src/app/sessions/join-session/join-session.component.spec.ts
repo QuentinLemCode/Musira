@@ -4,7 +4,6 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Subject } from 'rxjs';
-import { ComponentsModule } from '../../components/components.module';
 import { MusicSessionsService } from '../music-sessions.service';
 import { JoinSessionComponent } from './join-session.component';
 
@@ -24,8 +23,7 @@ describe('JoinSessionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [JoinSessionComponent],
-      imports: [ReactiveFormsModule, ComponentsModule, RouterTestingModule],
+      imports: [JoinSessionComponent, ReactiveFormsModule, RouterTestingModule],
       providers: [
         { provide: MusicSessionsService, useValue: mockMusicSessionsService },
       ],

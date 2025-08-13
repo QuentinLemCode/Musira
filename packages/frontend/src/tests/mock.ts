@@ -1,6 +1,8 @@
 import { Subject } from 'rxjs';
 
-export const mockObservable = <T = unknown>(fun: jasmine.Spy) => {
+export type SpyLike = { and: { returnValue: (v: unknown) => void } };
+
+export const mockObservable = <T = unknown>(fun: SpyLike) => {
   const subject = new Subject<T>();
   fun.and.returnValue(subject.asObservable());
   return subject;

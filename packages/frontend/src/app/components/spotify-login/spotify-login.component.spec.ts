@@ -9,7 +9,7 @@ describe('SpotifyLoginComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SpotifyLoginComponent],
+      imports: [SpotifyLoginComponent],
       providers: [{ provide: MusicApiService, useValue: {} }],
     }).compileComponents();
 

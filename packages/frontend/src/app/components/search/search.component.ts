@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   HostListener,
@@ -6,7 +7,9 @@ import {
   type OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faAdd,
   faCheck,
@@ -27,15 +30,110 @@ import type { Music } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
-import type {
-  IconUpdateStatus,
-  MusicComponentConfiguration,
+import {
+  MusicComponent,
+  type IconUpdateStatus,
+  type MusicComponentConfiguration,
 } from '../music/music.component';
 
 @Component({
   selector: 'musira-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    MusicComponent,
+  ],
+  template: `
+    <input
+      type="text"
+      (focus)="showResults()"
+      [formControl]="search"
+      placeholder="Rechercher une musique"
+    />
+    <span class="search-icon" *ngIf="results === null || resultsHidden"
+      ><fa-icon
+        [icon]="iconSearch"
+        [ngClass]="loading ? 'fa-beat-fade' : ''"
+      ></fa-icon
+    ></span>
+
+    <span
+      class="search-icon cursor-pointer"
+      *ngIf="results !== null && !resultsHidden"
+    >
+      <fa-icon
+        [icon]="iconClose"
+        (click)="hideResults({ clearInput: true })"
+      ></fa-icon>
+    </span>
+
+    <p *ngIf="error">{{ error }}</p>
+
+    <div
+      *ngIf="!resultsHidden"
+      id="search-results"
+      [ngClass]="resultsHidden || results === null ? 'hide' : 'show'"
+    >
+      <musira-music
+        *ngFor="let music of results"
+        [music]="music"
+        [config]="musicConfig"
+        (addToQueue)="addToQueue(music, $event)"
+        (addToBacklog)="addToBacklog(music, $event)"
+      ></musira-music>
+    </div>
+  `,
+  styles: [
+    `
+      @use '../../../colors.scss' as *;
+
+      :host {
+        border-radius: 33px;
+        background: var(--bg-secondary);
+        margin: 20px 0;
+        padding: 14px;
+        display: block;
+      }
+
+      app-music {
+        background: var(--bg-secondary);
+      }
+
+      input {
+        width: 100%;
+        background: var(--bg-primary);
+        color: var(--font-secondary);
+        &::placeholder {
+          color: var(--font-secondary);
+        }
+      }
+
+      fa-icon {
+        margin-right: 20px;
+        float: right;
+        font-size: 28px;
+        margin-top: -56px;
+        position: relative;
+      }
+
+      #search-results {
+        overflow: hidden;
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform 0.5s ease;
+
+        &.show {
+          margin-top: 12px;
+          transform: scaleY(1);
+          transform-origin: top;
+        }
+      }
+    `,
+  ],
 })
 export class SearchComponent implements OnInit {
   static readonly ERROR_MESSAGE = "Une erreur s'est produite, désolé 😫";
@@ -65,7 +163,7 @@ export class SearchComponent implements OnInit {
   iconSearch = faSearch;
   iconClose = faClose;
 
-  @HostListener('window:popstate', ['$event'])
+  @HostListener('window:popstate')
   onPopState() {
     this.resultsHidden = true;
   }

@@ -9,7 +9,7 @@
     "generate-ssl": "./scripts/generate-ssl-certs.sh",
     "start:backend": "cd packages/backend && npm start",
     "start:backend:debug": "cd packages/backend && npm run start:debug",
-    "start:frontend": "cd packages/frontend && npm start",
+    "start:frontend": "cd packages/frontend && npm run start:dev",
     "start": "concurrently -k -s first -n backend,frontend -c \"yellow,blue\" \"npm run start:backend\" \"npm run start:frontend\"",
     "e2e": "playwright test",
     "lint": "eslint .",
@@ -33,6 +33,7 @@
     "packages/frontend"
   ],
   "devDependencies": {
+    "typescript": "~5.8.2",
     "@angular-eslint/eslint-plugin": "^20.1.1",
     "@angular-eslint/eslint-plugin-template": "^20.1.1",
     "@angular-eslint/template-parser": "^20.1.1",

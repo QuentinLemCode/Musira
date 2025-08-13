@@ -15,8 +15,34 @@ import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'musira-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  template: `
+    <div class="login">
+      <button (click)="fbLogin()">
+        <fa-icon [icon]="faGoogle"></fa-icon> Se connecter avec Google
+      </button>
+      <button (click)="microsoftLogin()">
+        <fa-icon [icon]="faMicrosoft"></fa-icon> Login with Microsoft
+      </button>
+      <div class="mt-4">
+        <a (click)="emailLogin = !emailLogin">Se connecter avec un email</a>
+      </div>
+
+      <form *ngIf="emailLogin" [formGroup]="form" (ngSubmit)="submit()">
+        <input placeholder="Ton email" formControlName="email" />
+        <input
+          placeholder="Ton mot de passe"
+          name="password"
+          type="password"
+          formControlName="password"
+        />
+        <button [disabled]="isSubmitDisabled" type="submit">
+          Se connecter
+        </button>
+      </form>
+      <p class="error" *ngIf="error">{{ error }}</p>
+    </div>
+  `,
+  styles: [``],
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, RouterModule],
 })

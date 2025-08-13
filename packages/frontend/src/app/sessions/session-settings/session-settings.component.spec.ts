@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,6 +13,7 @@ import {
 import { mockObservable } from '../../../tests/mock';
 import type { CurrentMusic } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
+import { QueueService } from '../../services/queue.service';
 import {
   SettingsService,
   type SettingsQuery,
@@ -33,6 +35,7 @@ describe('SessionSettingsComponent', () => {
 
   const musicSessionsServiceMock = {
     deleteSession: jasmine.createSpy('deleteSession'),
+    currentSession: () => null,
   };
 
   const musicApiMock = {
@@ -51,8 +54,6 @@ describe('SessionSettingsComponent', () => {
         RouterTestingModule.withRoutes([
           { path: '', component: HomeStubComponent },
         ]),
-      ],
-      declarations: [
         SessionSettingsComponent,
         SpotifyDeviceStubComponent,
         SpotifyStatusStubComponent,
@@ -61,6 +62,11 @@ describe('SessionSettingsComponent', () => {
         { provide: SettingsService, useValue: settingsServiceMock },
         { provide: MusicSessionsService, useValue: musicSessionsServiceMock },
         { provide: MusicApiService, useValue: musicApiMock },
+        {
+          provide: QueueService,
+          useValue: { get: () => of([]), getFullBacklog: () => of([]) },
+        },
+        provideHttpClient(),
       ],
     });
     const settings = { maxVotes: 5, maxQueuableSongPerUser: 3 };

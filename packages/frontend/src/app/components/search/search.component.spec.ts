@@ -43,8 +43,7 @@ describe('SearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SearchComponent],
-      imports: [ReactiveFormsModule, FontAwesomeTestingModule],
+      imports: [SearchComponent, ReactiveFormsModule, FontAwesomeTestingModule],
       providers: [
         { provide: MusicApiService, useValue: mockMusicApiService },
         { provide: QueueService, useValue: mockQueueService },

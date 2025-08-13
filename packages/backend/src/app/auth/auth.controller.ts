@@ -1,5 +1,5 @@
-import type { JwtUser } from '@musira/api';
 import { Controller, Get, Request } from '@nestjs/common';
+import type { JwtUser } from '../../api-types/jwt/jwt.context';
 
 @Controller('auth')
 export class AuthController {

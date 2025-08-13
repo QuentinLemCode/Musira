@@ -10,8 +10,7 @@ describe('SpotifyAuthComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SpotifyAuthComponent],
-      imports: [RouterTestingModule],
+      imports: [SpotifyAuthComponent, RouterTestingModule],
       providers: [
         {
           provide: MusicApiService,

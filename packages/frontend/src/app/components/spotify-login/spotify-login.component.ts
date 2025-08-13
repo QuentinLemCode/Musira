@@ -1,10 +1,22 @@
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { Component, Inject, Input } from '@angular/core';
 import { MusicApiService } from '../../services/music-api.service';
 
 @Component({
   selector: 'musira-spotify-login',
-  templateUrl: './spotify-login.component.html',
-  styleUrls: ['./spotify-login.component.scss'],
+  standalone: true,
+  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule, FontAwesomeModule],
+  template: `
+<button *ngIf="format === 'Button'" [disabled]="disabled" (click)="login()">
+  {{ text }}
+</button>
+<a *ngIf="format === 'Link'" (click)="login()">{{ text }}</a>
+
+`,
+  styles: [``],
 })
 export class SpotifyLoginComponent {
   @Input() disabled = false;
