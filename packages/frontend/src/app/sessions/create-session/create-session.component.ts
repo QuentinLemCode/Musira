@@ -9,10 +9,12 @@ import {
 } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { CreateMusicSessionDto } from '@musira/api';
 import { firstValueFrom } from 'rxjs';
 import { SpotifyLoginComponent } from '../../components/spotify-login/spotify-login.component';
 import { MusicSessionsService } from '../music-sessions.service';
+class CreateMusicSessionDto {
+  constructor(public name: string) {}
+}
 
 @Component({
   selector: 'musira-create-session',

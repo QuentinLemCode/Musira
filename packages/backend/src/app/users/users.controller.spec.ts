@@ -1,8 +1,8 @@
-import { JwtUser } from '@musira/api';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockJwtGuard } from '../../test-utils/mock';
 import { JwtGuard } from '../auth/jwt.guard';
+import type { JwtUser } from '../auth/types';
 import { User } from './user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';

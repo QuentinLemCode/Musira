@@ -6,6 +6,8 @@ import {
 import { provideRouter } from '@angular/router';
 
 import { provideClientHydration } from '@angular/platform-browser';
+import { environment } from '../environments/environment';
+import { provideApi } from '../generated/provide-api';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -14,6 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(),
+    provideApi({ basePath: environment.serverUrl, withCredentials: true }),
     // {
     //   provide: APP_INITIALIZER,
     //   multi: true,

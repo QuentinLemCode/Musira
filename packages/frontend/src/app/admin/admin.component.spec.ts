@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import type { UserResponseDTO } from '@musira/api';
 import { of } from 'rxjs';
 import { QueueService } from '../services/queue.service';
 import { UsersService } from '../services/users.service';
@@ -10,7 +9,7 @@ import { AdminComponent } from './admin.component';
 describe('AdminComponent', () => {
   let component: AdminComponent;
   let fixture: ComponentFixture<AdminComponent>;
-  const usersList: UserResponseDTO[] = [
+  const usersList: any = [
     {
       id: 1,
       name: 'User 1',

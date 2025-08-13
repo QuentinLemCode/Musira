@@ -1,7 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import type { UserResponseDTO } from '@musira/api';
+import {
+  UnlockService as ApiUnlockService,
+  UsersService as ApiUsersService,
+} from '@musira/client';
 import { environment } from '../../environments/environment';
+type UserResponseDTO = any;
 
 @Injectable({
   providedIn: 'root',
@@ -9,22 +13,32 @@ import { environment } from '../../environments/environment';
 export class UsersService {
   private readonly userEndpoint = environment.serverUrl + 'users';
 
-  constructor(@Inject(HttpClient) private readonly http: HttpClient) {}
+  constructor(
+    @Inject(HttpClient) private readonly http: HttpClient,
+    @Inject(ApiUsersService) private readonly apiUsers: ApiUsersService,
+    @Inject(ApiUnlockService) private readonly apiUnlock: ApiUnlockService,
+  ) {}
 
   getAllUsers() {
-    return this.http.get<UserResponseDTO[]>(this.userEndpoint);
+    return this.apiUsers.usersControllerGetAll() as unknown as ReturnType<
+      typeof this.apiUsers.usersControllerGetAll
+    >;
   }
 
   delete(id?: number) {
-    return this.http.delete<UserResponseDTO[]>(
-      this.userEndpoint + '/' + (id ?? ''),
-    );
+    if (id == null) {
+      return this.apiUsers.usersControllerDeleteSelf() as unknown as ReturnType<
+        typeof this.apiUsers.usersControllerDeleteSelf
+      >;
+    }
+    return this.apiUsers.usersControllerDeleteById(
+      String(id),
+    ) as unknown as ReturnType<typeof this.apiUsers.usersControllerDeleteById>;
   }
 
   unlock(id: number) {
-    return this.http.post<UserResponseDTO[]>(
-      this.userEndpoint + '/email/unlock/' + id,
-      {},
-    );
+    return this.apiUnlock.unlockControllerUnlock(
+      String(id),
+    ) as unknown as ReturnType<typeof this.apiUnlock.unlockControllerUnlock>;
   }
 }

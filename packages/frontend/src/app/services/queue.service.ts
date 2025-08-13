@@ -1,5 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, computed } from '@angular/core';
+import {
+  BacklogService as ApiBacklogService,
+  QueueService as ApiQueueService,
+} from '@musira/client';
 import type { Subscription } from 'rxjs';
 import { ReplaySubject, combineLatest, of, timer } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
@@ -35,6 +39,8 @@ export class QueueService {
     @Inject(VisibilityService) readonly visibility: VisibilityService,
     @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
+    @Inject(ApiQueueService) private readonly apiQueue: ApiQueueService,
+    @Inject(ApiBacklogService) private readonly apiBacklog: ApiBacklogService,
   ) {
     this.queueEndpoint = computed(
       () =>
@@ -70,11 +76,15 @@ export class QueueService {
   }
 
   push(music: Music) {
-    return this.http.post(this.queueEndpoint(), music).pipe(
-      tap(() => {
-        this.loadQueue();
-      }),
-    );
+    const publicCode = this.session.currentSession()?.code;
+    if (!publicCode) return of(null);
+    return this.apiQueue
+      .queueControllerPushToQueue(publicCode, music as unknown as object)
+      .pipe(
+        tap(() => {
+          this.loadQueue();
+        }),
+      );
   }
 
   get() {
@@ -86,15 +96,17 @@ export class QueueService {
   }
 
   getFullBacklog() {
+    const publicCode = this.session.currentSession()?.code;
+    if (!publicCode) return of([]);
     if (
       !this.cacheFullBacklog ||
       this.cacheFullBacklog.timestamp > Date.now() - 10000
     ) {
-      return this.http.get<FullBacklog[]>(this.backlogEndpoint()).pipe(
-        tap((backlog) => {
+      return this.apiBacklog.backlogControllerGetBackLog(publicCode).pipe(
+        tap((backlog: any) => {
           this.cacheFullBacklog = {
             timestamp: Date.now(),
-            backlog,
+            backlog: backlog as FullBacklog[],
           };
         }),
       );
@@ -103,21 +115,23 @@ export class QueueService {
   }
 
   public importPlaylist(code: number, spotifyPlaylistId: string) {
-    return this.http.post(
-      environment.serverUrl + 'session/' + code + '/backlog/import',
-      {
-        spotifyPlaylistId,
-      },
-    );
+    return this.apiBacklog.backlogControllerImport(code);
   }
 
   pushBacklog(music: Music) {
-    return this.http.post<FullBacklog[]>(this.backlogEndpoint(), music);
+    const publicCode = this.session.currentSession()?.code;
+    if (!publicCode) return of([]);
+    return this.apiBacklog.backlogControllerPushToBacklog(
+      publicCode,
+      music as unknown as object,
+    ) as unknown as any;
   }
 
   forward(id: string | number) {
-    return this.http
-      .post(this.queueEndpoint() + '/' + id + '/forward', {})
+    const publicCode = this.session.currentSession()?.code;
+    if (!publicCode) return of(null);
+    return this.apiQueue
+      .queueControllerForwardQueue(String(id), publicCode)
       .pipe(
         tap(() => {
           this.loadQueue();
@@ -126,22 +140,31 @@ export class QueueService {
   }
 
   delete(id: string | number) {
-    return this.http.delete(this.queueEndpoint() + '/' + id).pipe(
-      tap(() => {
-        this.$queue.pipe(first()).subscribe({
-          next: (queue) => {
-            const index = queue.findIndex((q) => q.id === id);
-            if (index !== -1) {
-              queue.splice(index, 1);
-            }
-          },
-        });
-      }),
-    );
+    const publicCode = this.session.currentSession()?.code;
+    if (!publicCode) return of(null);
+    return this.apiQueue
+      .queueControllerDeleteFromQueue(String(id), publicCode)
+      .pipe(
+        tap(() => {
+          this.$queue.pipe(first()).subscribe({
+            next: (queue) => {
+              const index = queue.findIndex((q) => q.id === id);
+              if (index !== -1) {
+                queue.splice(index, 1);
+              }
+            },
+          });
+        }),
+      );
   }
 
   deleteBacklog(id: string | number) {
-    return this.http.delete(this.backlogEndpoint() + '/' + id);
+    const publicCode = this.session.currentSession()?.code;
+    if (!publicCode) return of(null);
+    return this.apiBacklog.backlogControllerDeleteBacklog(
+      String(id),
+      publicCode,
+    );
   }
 
   private launchPolling() {
@@ -156,10 +179,13 @@ export class QueueService {
   }
 
   private loadQueue() {
-    this.http.get<QueueResponse>(this.queueEndpoint()).subscribe({
+    const publicCode = this.session.currentSession()?.code;
+    if (!publicCode) return;
+    this.apiQueue.queueControllerGetQueue(publicCode).subscribe({
       next: (response) => {
-        this.$queue.next(response.queue);
-        this.$backlog.next(response.backlog);
+        const data = response as unknown as QueueResponse;
+        this.$queue.next(data.queue);
+        this.$backlog.next(data.backlog);
       },
       error: (err) => {
         this.$queue.error(err);

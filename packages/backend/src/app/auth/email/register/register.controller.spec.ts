@@ -1,4 +1,3 @@
-import { EmailRegisterInterface } from '@musira/api';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { FastifyReply } from 'fastify';
@@ -31,7 +30,7 @@ describe('RegisterController', () => {
   describe('create', () => {
     it('should create a new user and return an EmailUserResponseDTO with token', async () => {
       const date = new Date();
-      const emailRegisterData: EmailRegisterInterface = {
+      const emailRegisterData = {
         username: 'test',
         email: 'test@example.com',
         password: 'testPassword',
@@ -70,7 +69,7 @@ describe('RegisterController', () => {
     });
 
     it('should throw BadRequestException when user already exists', async () => {
-      const emailRegisterData: EmailRegisterInterface = {
+      const emailRegisterData = {
         username: 'ExistingUser',
         email: 'existing@example.com',
         password: 'existingPassword',

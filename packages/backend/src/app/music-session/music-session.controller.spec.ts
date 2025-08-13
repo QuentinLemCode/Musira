@@ -1,6 +1,6 @@
-import { CreateMusicSessionDto, JwtUser } from '@musira/api';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import type { CreateMusicSessionDto, JwtUser } from '../auth/types';
 import { UsersService } from '../users/users.service';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionController } from './music-session.controller';

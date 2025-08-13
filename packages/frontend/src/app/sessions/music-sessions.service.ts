@@ -2,14 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, computed, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import type {
-  CreateMusicSessionDto,
-  DeletedMusicSessionDto,
-  MusicSessionDto,
-  UpdateMusicSessionDto,
-} from '@musira/api';
+import { MusicSessionsService as ApiSessionsService } from '@musira/client';
 import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+type CreateMusicSessionDto = { name: string };
+type DeletedMusicSessionDto = { publicCode: number };
+type MusicSessionDto = {
+  id: number;
+  name: string;
+  code: number;
+  creator: string;
+  linkedToSpotify: boolean;
+  isCreator: boolean;
+};
+type UpdateMusicSessionDto = { name?: string };
 
 interface SessionHistory {
   musicSession: MusicSessionDto;
@@ -33,6 +39,7 @@ export class MusicSessionsService {
   constructor(
     @Inject(HttpClient) private readonly http: HttpClient,
     @Inject(Router) private readonly router: Router,
+    @Inject(ApiSessionsService) private readonly api: ApiSessionsService,
   ) {
     this.router.events.subscribe({
       next: (event) => {

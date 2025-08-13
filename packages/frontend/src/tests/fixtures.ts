@@ -1,4 +1,4 @@
-import type { EmailRefreshResponseDTO } from '@musira/api';
+type EmailRefreshResponseDTO = unknown;
 import {
   Status,
   type Backlog,

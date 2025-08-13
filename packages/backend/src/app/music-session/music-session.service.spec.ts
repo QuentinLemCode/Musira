@@ -1,6 +1,6 @@
-import { CreateMusicSessionDto } from '@musira/api';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import type { CreateMusicSessionDto } from '../auth/types';
 import { User } from '../users/user.entity';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionService } from './music-session.service';

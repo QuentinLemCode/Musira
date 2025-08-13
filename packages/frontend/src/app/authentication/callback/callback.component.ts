@@ -1,8 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, type OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { isOAuthProvider } from '@musira/api';
 import { AuthenticationService } from '../authentication.service';
+function isOAuthProvider(value: unknown): value is string {
+  return (
+    typeof value === 'string' &&
+    ['google', 'facebook', 'spotify', 'microsoft'].includes(value)
+  );
+}
 
 @Component({
   selector: 'musira-callback',
@@ -29,7 +34,7 @@ export class CallbackComponent implements OnInit {
     }
     if (state && code) {
       try {
-        this.auth.oAuthLogin(provider, code, state).subscribe({
+        this.auth.oAuthLogin(provider as any, code, state).subscribe({
           next: () => {
             this.router.navigate(['/']);
           },

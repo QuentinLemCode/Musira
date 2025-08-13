@@ -1,4 +1,3 @@
-import { OAuthProvider } from '@musira/api';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyReply } from 'fastify';
 import { OAuthUser } from '../../users/user.oauth.entity';
@@ -41,7 +40,7 @@ describe('OauthController', () => {
 
   describe('login', () => {
     it('should call OAuthService.login and AuthService.login', async () => {
-      const provider = OAuthProvider.FACEBOOK;
+      const provider = 'facebook';
       const code = 'valid_oauth_code';
       const mockUser = {};
       const mockRes = {} as FastifyReply;

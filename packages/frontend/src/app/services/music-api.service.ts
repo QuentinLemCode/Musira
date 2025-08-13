@@ -1,19 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, computed } from '@angular/core';
+import { MusicService, SpotifyService } from '@musira/client';
 import type { Observable, Subscription } from 'rxjs';
 import { ReplaySubject, combineLatest, timer } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { MusicSessionsService } from '../sessions/music-sessions.service';
 import type { CurrentMusic, Music } from './music-api.interface';
 import { VisibilityService } from './visibility.service';
-import { MusicSessionsService } from '../sessions/music-sessions.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MusicApiService {
-  private readonly endpoint;
-  private readonly spotifyEndpoint = environment.serverUrl + 'spotify/';
+  private readonly currentPublicCode = computed(
+    () => this.session.currentSession()?.code,
+  );
 
   private readonly $status = new ReplaySubject<CurrentMusic>(1);
 
@@ -24,14 +26,9 @@ export class MusicApiService {
     @Inject(VisibilityService) readonly visibility: VisibilityService,
     @Inject(MusicSessionsService)
     private readonly session: MusicSessionsService,
+    @Inject(MusicService) private readonly musicApi: MusicService,
+    @Inject(SpotifyService) private readonly spotifyApi: SpotifyService,
   ) {
-    this.endpoint = computed(
-      () =>
-        environment.serverUrl +
-        'session/' +
-        this.session.currentSession()?.code +
-        '/music',
-    );
     const pollingObservable = combineLatest([
       this.visibility.change,
       this.session.currentSession$,
@@ -48,50 +45,38 @@ export class MusicApiService {
   }
 
   search(query: string): Observable<Music[]> {
-    return this.http.get<Music[]>(this.endpoint() + '/search', {
-      params: { query },
-    });
+    const publicCode = this.currentPublicCode();
+    if (!publicCode) return new ReplaySubject<Music[]>(1);
+    return this.musicApi.musicControllerSearch(query, publicCode);
   }
 
   getUrlLogin(): Observable<string> {
-    return this.http
-      .get(
-        this.spotifyEndpoint +
-          this.session.currentSession()?.code +
-          '/spotify-login',
-        {
-          responseType: 'text',
-        },
-      )
+    const publicCode = this.currentPublicCode();
+    if (!publicCode) return new ReplaySubject<string>(1);
+    return this.spotifyApi
+      .spotifyLoginControllerSpotifyLogin(publicCode)
       .pipe(shareReplay(1));
   }
 
   authenticatePlayer(code: string, state: string) {
+    // OpenAPI spec does not include request body for this endpoint, so we fallback to HttpClient directly.
     return this.http.post<{ connected?: boolean; publicCode: string }>(
-      this.spotifyEndpoint + 'register-player',
-      {
-        code,
-        state,
-      },
+      environment.serverUrl + 'spotify/register-player',
+      { code, state },
     );
   }
 
   logoutPlayer() {
-    return this.http
-      .post(
-        this.spotifyEndpoint +
-          this.session.currentSession()?.code +
-          '/logout-player',
-        {},
-      )
-      .pipe(
-        tap(() => {
-          this.$status.next({
-            engineStarted: false,
-            isSpotifyAccountRegistered: false,
-          });
-        }),
-      );
+    const publicCode = this.currentPublicCode();
+    if (!publicCode) return this.$status.asObservable();
+    return this.spotifyApi.spotifyLoginControllerSpotifyLogout(publicCode).pipe(
+      tap(() => {
+        this.$status.next({
+          engineStarted: false,
+          isSpotifyAccountRegistered: false,
+        });
+      }),
+    );
   }
 
   getStatus() {
@@ -99,15 +84,19 @@ export class MusicApiService {
   }
 
   startEngine() {
-    return this.http
-      .get<CurrentMusic>(this.endpoint() + '/start')
-      .pipe(tap((status) => this.$status.next(status)));
+    const publicCode = this.currentPublicCode();
+    if (!publicCode) return this.$status.asObservable();
+    return this.musicApi
+      .musicControllerStart(publicCode)
+      .pipe(tap((status: any) => this.$status.next(status as CurrentMusic)));
   }
 
   stopEngine() {
-    return this.http
-      .get<CurrentMusic>(this.endpoint() + '/stop')
-      .pipe(tap((status) => this.$status.next(status)));
+    const publicCode = this.currentPublicCode();
+    if (!publicCode) return this.$status.asObservable();
+    return this.musicApi
+      .musicControllerStop(publicCode)
+      .pipe(tap((status: any) => this.$status.next(status as CurrentMusic)));
   }
 
   private launchPolling() {
@@ -122,13 +111,11 @@ export class MusicApiService {
   }
 
   private loadStatus() {
-    this.http.get<CurrentMusic>(this.endpoint()).subscribe({
-      next: (status) => {
-        this.$status.next(status);
-      },
-      error: (err) => {
-        this.$status.error(err);
-      },
+    const publicCode = this.currentPublicCode();
+    if (!publicCode) return;
+    this.musicApi.musicControllerCurrentState(publicCode).subscribe({
+      next: (status: any) => this.$status.next(status as CurrentMusic),
+      error: (err) => this.$status.error(err),
     });
   }
 }

@@ -1,12 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
-import {
-  OAuthProvider,
-  type JwtUser,
-  type OAuthProviderType,
-} from '@musira/api';
 import { firstValueFrom, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+type JwtUser = { id: number; admin: boolean; name: string };
+type OAuthProviderType = 'google' | 'facebook' | 'spotify' | 'microsoft';
+const OAuthProvider = {
+  GOOGLE: 'google',
+  FACEBOOK: 'facebook',
+  SPOTIFY: 'spotify',
+  MICROSOFT: 'microsoft',
+} as const;
 
 const LocalStorageKeys = {
   TOKEN: 'token',

@@ -21,19 +21,27 @@ test.describe('Login shows previous joined sessions', () => {
     await page.getByPlaceholder('Ton prénom').fill(username);
     await page.getByPlaceholder('Ton email').fill(email);
     await page.locator('input[name="password"]').fill(password);
-    await page.locator('input[name="passwordConfirmation"]').fill(password);
-    await page.getByRole('button', { name: "S'inscrire" }).click();
+    // The UI uses a placeholder for confirmation, no name attribute
+    await page.getByPlaceholder('Confirme ton mot de passe').fill(password);
+    await page.getByRole('button', { name: 'Créer un compte' }).click();
 
-    // Login explicitly (some flows auto-login, but this keeps it explicit)
+    // Login explicitly if not already redirected/logged in
     await page.goto(`${frontendBase}/user/login`);
-    await page.getByText('Se connecter avec un email').click();
-    await page.getByPlaceholder('Ton email').fill(email);
-    await page.getByPlaceholder('Ton mot de passe').fill(password);
-    await page
-      .locator('form')
-      .getByRole('button', { name: 'Se connecter', exact: true })
-      .click();
-    await page.waitForURL(`${frontendBase}/`);
+    try {
+      await page
+        .getByText('Se connecter avec un email')
+        .click({ timeout: 2000 });
+      await page.getByPlaceholder('Ton email').fill(email);
+      await page.getByPlaceholder('Ton mot de passe').fill(password);
+      await page
+        .locator('form')
+        .getByRole('button', { name: 'Se connecter', exact: true })
+        .click();
+      await page.waitForURL(`${frontendBase}/`);
+    } catch {
+      // If we are redirected to home because already logged in, continue
+      await page.waitForURL(new RegExp(`${frontendBase}/$`));
+    }
 
     // Create a fake session as this user via same-origin call
     const code = await page.evaluate(async () => {

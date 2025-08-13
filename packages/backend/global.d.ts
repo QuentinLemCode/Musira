@@ -1,4 +1,4 @@
-import type { JwtPayload } from '@musira/api';
+import type { JwtPayload } from './src/app/auth/types';
 
 declare namespace NodeJS {
   export interface ProcessEnv {

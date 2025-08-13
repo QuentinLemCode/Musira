@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { type JwtToken, OAuthProvider } from '@musira/api';
 import { of, throwError } from 'rxjs';
 import { AuthenticationService } from '../authentication.service';
 import { CallbackComponent } from './callback.component';
@@ -10,7 +9,7 @@ describe('CallbackComponent', () => {
   let mockRouter: Router;
   let mockRoute: ActivatedRoute;
   let mockAuthService: AuthenticationService;
-  const mockToken: JwtToken = {
+  const mockToken = {
     accessToken: '123',
   };
 
@@ -42,7 +41,7 @@ describe('CallbackComponent', () => {
     mockRoute = TestBed.inject(ActivatedRoute);
     mockAuthService = TestBed.inject(AuthenticationService);
     (mockRoute.snapshot.paramMap.get as jasmine.Spy).and.callFake(
-      (param: string) => (param === 'provider' ? OAuthProvider.FACEBOOK : null),
+      (param: string) => (param === 'provider' ? 'facebook' : null),
     );
   });
 
@@ -61,11 +60,7 @@ describe('CallbackComponent', () => {
       mockAuthService.oAuthLogin as jasmine.Spy
     ).and.returnValue(of(mockToken));
     component.ngOnInit();
-    expect(authServiceSpy).toHaveBeenCalledWith(
-      OAuthProvider.FACEBOOK,
-      code,
-      state,
-    );
+    expect(authServiceSpy).toHaveBeenCalledWith('facebook', code, state);
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
   });
 

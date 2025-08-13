@@ -10,7 +10,8 @@
     "test": "ng test",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
     "deploy": "npm run build && wrangler deploy",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "api:postgen": "node ./scripts/postgen.mjs"
   },
   "prettier": {
     "overrides": [
@@ -36,7 +37,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
-    "@musira/api": "^1.0.0",
+    "@musira/client": "file:src/generated",
     "date-fns": "^4.1.0",
     "qrcode-generator": "^2.0.4",
     "rxjs": "~7.8.0",

@@ -144,15 +144,12 @@ export class SessionSettingsComponent {
         error: this.handleError,
       });
 
-    this.settings
-      .get()
-      .pipe(takeUntilDestroyed())
-      .subscribe({
-        next: (setting) => {
-          this.maxVote = setting.maxVotes;
-          this.maxQueuableSongs = setting.maxQueuableSongPerUser;
-        },
-      });
+    (this.settings.get() as any).subscribe({
+      next: (setting: any) => {
+        this.maxVote = setting.maxVotes;
+        this.maxQueuableSongs = setting.maxQueuableSongPerUser;
+      },
+    });
   }
 
   handleError = (err: HttpErrorResponse) => {
@@ -165,12 +162,12 @@ export class SessionSettingsComponent {
 
   setMaxVotes() {
     if (!this.maxVote) return;
-    this.settings.setMaxVote(this.maxVote).subscribe({
-      next: (vote) => {
+    (this.settings.setMaxVote(this.maxVote) as any).subscribe({
+      next: (vote: any) => {
         this.maxVote = vote.maxVotes;
         this.setMaxVotesSaveStatus('Sauvegardé avec succès !');
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
         this.setMaxVotesSaveStatus('Erreur lors de la sauvegarde');
       },
@@ -179,12 +176,14 @@ export class SessionSettingsComponent {
 
   setMaxQueuableSongs() {
     if (!this.maxQueuableSongs) return;
-    this.settings.setMaxQueuableSongPerUser(this.maxQueuableSongs).subscribe({
-      next: (vote) => {
+    (
+      this.settings.setMaxQueuableSongPerUser(this.maxQueuableSongs) as any
+    ).subscribe({
+      next: (vote: any) => {
         this.maxQueuableSongs = vote.maxQueuableSongPerUser;
         this.setMaxQueuableSongsSaveStatus('Sauvegardé avec succès !');
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
         this.setMaxQueuableSongsSaveStatus('Erreur lors de la sauvegarde');
       },

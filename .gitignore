@@ -54,3 +54,6 @@ apps/musira-e2e/cypress/downloads
 
 # SSL certificates
 /certs
+
+# OpenAPI generated clients
+packages/frontend/src/generated/

@@ -261,7 +261,7 @@ export class SearchComponent implements OnInit {
         updateIcon.updateLoading(false);
         updateIcon.completeEmitter();
       },
-      error: (error) => {
+      error: (error: any) => {
         updateIcon.updateLoading(false);
         updateIcon.updateIcon(faXmark);
         if (error?.error?.cause === 'backlog') {

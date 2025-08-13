@@ -10,8 +10,13 @@ import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-import { OAuthProvider } from '@musira/api';
 import { AuthenticationService } from '../authentication.service';
+enum OAuthProvider {
+  GOOGLE = 'google',
+  FACEBOOK = 'facebook',
+  SPOTIFY = 'spotify',
+  MICROSOFT = 'microsoft',
+}
 
 @Component({
   selector: 'musira-login',
