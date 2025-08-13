@@ -1,12 +1,12 @@
-import type {
-  EmailLoginInterface,
-  EmailRegisterInterface,
-  OAuthProviderType,
-} from '@musira/api';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes, randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
+import type {
+  EmailLoginInterface,
+  EmailRegisterInterface,
+  OAuthProviderType,
+} from '../auth/types';
 import type { MusicSession } from '../music-session/entities/music-session.entity';
 import { hashPassword } from '../utils/hash';
 import { EmailUser } from './user.email.entity';

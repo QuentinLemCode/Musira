@@ -1,8 +1,8 @@
 import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
-import type { OAuthProviderType } from '../../../api-types/oauth/oauth';
 import { AuthService } from '../auth.service';
 import { Public } from '../public-routes.decorator';
+import type { OAuthProviderType } from '../types';
 import { OAuthService } from './oauth.service';
 
 @Controller('auth/oauth')

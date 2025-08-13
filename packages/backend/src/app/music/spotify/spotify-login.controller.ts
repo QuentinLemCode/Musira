@@ -1,4 +1,3 @@
-import type { JwtUser } from '@musira/api';
 import {
   BadRequestException,
   Body,
@@ -10,7 +9,14 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { randomUUID } from 'crypto';
+import type { JwtUser } from '../../auth/types';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { MusicSessionService } from '../../music-session/music-session.service';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
@@ -20,6 +26,8 @@ import type { SpotifyOAuthDTO } from '../music.interface';
 import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
 import { SpotifyApiService } from './spotify-api/spotify-api.service';
 
+@ApiTags('Spotify')
+@ApiBearerAuth()
 @Controller('spotify')
 export class SpotifyLoginController {
   constructor(
@@ -30,6 +38,8 @@ export class SpotifyLoginController {
 
   @UseGuards(SessionCreatorGuard)
   @Get(':publicCode/spotify-login')
+  @ApiOperation({ summary: 'Get Spotify login URL for this session' })
+  @ApiParam({ name: 'publicCode', type: Number })
   async spotifyLogin(@MusicSessionParam() musicSession: MusicSession) {
     const uuid = randomUUID();
     this.sessions.setSpotifyAuthUuid(musicSession, uuid);
@@ -57,6 +67,7 @@ export class SpotifyLoginController {
   }
 
   @Post('register-player')
+  @ApiOperation({ summary: 'Register a Spotify player for the session' })
   async spotifyAuthentication(
     @Body() spotifyOAuth: SpotifyOAuthDTO,
     @Request() req: { user: JwtUser },
@@ -91,6 +102,8 @@ export class SpotifyLoginController {
 
   @Post(':publicCode/logout-player')
   @UseGuards(SessionCreatorGuard)
+  @ApiOperation({ summary: 'Logout Spotify player for this session' })
+  @ApiParam({ name: 'publicCode', type: Number })
   async spotifyLogout(@MusicSessionParam() musicSession: MusicSession) {
     await this.spotify.unregisterPlayer(musicSession);
     this.queueEngine.stop();

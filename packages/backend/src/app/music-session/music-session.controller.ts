@@ -1,10 +1,4 @@
-import type {
-  CreateMusicSessionDto,
-  DeletedMusicSessionDto,
-  JwtUser,
-  MusicSessionDto,
-  UpdateMusicSessionDto,
-} from '@musira/api';
+
 import {
   BadRequestException,
   Body,
@@ -18,9 +12,16 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Public } from '../auth/public-routes.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
+import type { CreateMusicSessionDto, DeletedMusicSessionDto, JwtUser, MusicSessionDto, UpdateMusicSessionDto } from '../auth/types';
 import { SessionCreatorGuard } from '../users/session-creator.guard';
 import { UserRole } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
@@ -31,6 +32,8 @@ import {
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionService } from './music-session.service';
 
+@ApiTags('Music Sessions')
+@ApiBearerAuth()
 @Controller('music-session')
 export class MusicSessionController {
   constructor(
@@ -39,10 +42,11 @@ export class MusicSessionController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new music session' })
   async create(
     @Body() createMusicSessionDto: CreateMusicSessionDto,
     @Request() req: { user: JwtUser },
-  ): Promise<MusicSessionDto> {
+  ) {
     if (!req.user.email) throw new ForbiddenException('no jwt');
     const user = await this.users.findByEmail(req.user.email);
     if (!user) {
@@ -67,6 +71,7 @@ export class MusicSessionController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'List all music sessions (admin only)' })
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   async findAll(@Request() req: { user: JwtUser }): Promise<MusicSessionDto[]> {
@@ -83,6 +88,8 @@ export class MusicSessionController {
 
   @Public()
   @Get(':publicCode')
+  @ApiOperation({ summary: 'Get a session by public code' })
+  @ApiParam({ name: 'publicCode', type: Number })
   async findOne(
     @MusicSessionParam() musicSession: MusicSession,
     @Request() req: { user?: JwtUser },
@@ -101,6 +108,8 @@ export class MusicSessionController {
 
   @UseGuards(SessionCreatorGuard)
   @Patch(':publicCode')
+  @ApiOperation({ summary: 'Update a session (creator only)' })
+  @ApiParam({ name: 'publicCode', type: Number })
   async update(
     @Request() req: { user: JwtUser },
     @PublicCode() code: number,
@@ -118,6 +127,8 @@ export class MusicSessionController {
   }
 
   @Delete(':publicCode')
+  @ApiOperation({ summary: 'Delete a session (admin or creator)' })
+  @ApiParam({ name: 'publicCode', type: Number })
   async remove(
     @PublicCode() code: number,
     @Request() req: { user: JwtUser },

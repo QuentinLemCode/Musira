@@ -1,5 +1,5 @@
-import type { OAuthProviderType } from '@musira/api/src/index';
 import { ChildEntity, Column, Index } from 'typeorm';
+import type { OAuthProviderType } from '../auth/types';
 import { User } from './user.entity';
 
 @ChildEntity()

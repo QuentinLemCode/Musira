@@ -1,4 +1,3 @@
-import type { JwtUser } from '@musira/api';
 import {
   BadRequestException,
   Body,
@@ -10,7 +9,14 @@ import {
   Post,
   Request,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Public } from '../../auth/public-routes.decorator';
+import type { JwtUser } from '../../auth/types';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
 import { UserRole } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
@@ -27,6 +33,9 @@ interface QueueResponse {
   backlog: Backlog | null | undefined;
 }
 
+@ApiTags('Queue')
+@ApiBearerAuth()
+@ApiParam({ name: 'publicCode', type: Number })
 @Controller('session/:publicCode/queue')
 export class QueueController {
   constructor(
@@ -38,6 +47,7 @@ export class QueueController {
 
   @Public()
   @Get()
+  @ApiOperation({ summary: 'Get queue and nominated backlog for a session' })
   async getQueue(
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<QueueResponse> {
@@ -50,6 +60,7 @@ export class QueueController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Push a music to the queue' })
   async pushToQueue(
     @Body() music: Music,
     @Request() req: { user: JwtUser },
@@ -80,6 +91,8 @@ export class QueueController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a music from the queue' })
+  @ApiParam({ name: 'id', type: String })
   async deleteFromQueue(
     @Param('id') id: string,
     @Request() req: { user: JwtUser },
@@ -109,6 +122,8 @@ export class QueueController {
   }
 
   @Post('/:id/forward')
+  @ApiOperation({ summary: 'Forward a queued music (move up)' })
+  @ApiParam({ name: 'id', type: String })
   async forwardQueue(
     @Param('id') id: string,
     @Request() req: { user: JwtUser },

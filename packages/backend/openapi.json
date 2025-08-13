@@ -1,0 +1,879 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/session/{publicCode}/music/search": {
+      "get": {
+        "operationId": "MusicController_search",
+        "parameters": [
+          {
+            "name": "query",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Search music on Spotify for this session",
+        "tags": [
+          "Music"
+        ]
+      }
+    },
+    "/api/session/{publicCode}/music/start": {
+      "get": {
+        "operationId": "MusicController_start",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Music"
+        ]
+      }
+    },
+    "/api/session/{publicCode}/music/stop": {
+      "get": {
+        "operationId": "MusicController_stop",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Music"
+        ]
+      }
+    },
+    "/api/session/{publicCode}/music": {
+      "get": {
+        "operationId": "MusicController_currentState",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Music"
+        ]
+      }
+    },
+    "/api/session/{publicCode}/queue": {
+      "get": {
+        "operationId": "QueueController_getQueue",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get queue and nominated backlog for a session",
+        "tags": [
+          "Queue"
+        ]
+      },
+      "post": {
+        "operationId": "QueueController_pushToQueue",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Music"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Push a music to the queue",
+        "tags": [
+          "Queue"
+        ]
+      }
+    },
+    "/api/session/{publicCode}/queue/{id}": {
+      "delete": {
+        "operationId": "QueueController_deleteFromQueue",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a music from the queue",
+        "tags": [
+          "Queue"
+        ]
+      }
+    },
+    "/api/session/{publicCode}/queue/{id}/forward": {
+      "post": {
+        "operationId": "QueueController_forwardQueue",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Forward a queued music (move up)",
+        "tags": [
+          "Queue"
+        ]
+      }
+    },
+    "/api/session/{publicCode}/backlog": {
+      "post": {
+        "operationId": "BacklogController_pushToBacklog",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Music"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Push a music to backlog",
+        "tags": [
+          "Backlog"
+        ]
+      },
+      "get": {
+        "operationId": "BacklogController_getBackLog",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get backlog for session",
+        "tags": [
+          "Backlog"
+        ]
+      }
+    },
+    "/api/session/{publicCode}/backlog/{id}": {
+      "delete": {
+        "operationId": "BacklogController_deleteBacklog",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a backlog item",
+        "tags": [
+          "Backlog"
+        ]
+      }
+    },
+    "/api/session/{publicCode}/backlog/import": {
+      "post": {
+        "operationId": "BacklogController_import",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Import a Spotify playlist into backlog",
+        "tags": [
+          "Backlog"
+        ]
+      }
+    },
+    "/api/spotify/{publicCode}/spotify-login": {
+      "get": {
+        "operationId": "SpotifyLoginController_spotifyLogin",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Spotify login URL for this session",
+        "tags": [
+          "Spotify"
+        ]
+      }
+    },
+    "/api/spotify/register-player": {
+      "post": {
+        "operationId": "SpotifyLoginController_spotifyAuthentication",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Register a Spotify player for the session",
+        "tags": [
+          "Spotify"
+        ]
+      }
+    },
+    "/api/spotify/{publicCode}/logout-player": {
+      "post": {
+        "operationId": "SpotifyLoginController_spotifyLogout",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Logout Spotify player for this session",
+        "tags": [
+          "Spotify"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "HealthController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/music-session": {
+      "post": {
+        "operationId": "MusicSessionController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Function"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new music session",
+        "tags": [
+          "Music Sessions"
+        ]
+      },
+      "get": {
+        "operationId": "MusicSessionController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all music sessions (admin only)",
+        "tags": [
+          "Music Sessions"
+        ]
+      }
+    },
+    "/api/music-session/{publicCode}": {
+      "get": {
+        "operationId": "MusicSessionController_findOne",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a session by public code",
+        "tags": [
+          "Music Sessions"
+        ]
+      },
+      "patch": {
+        "operationId": "MusicSessionController_update",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Function"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a session (creator only)",
+        "tags": [
+          "Music Sessions"
+        ]
+      },
+      "delete": {
+        "operationId": "MusicSessionController_remove",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a session (admin or creator)",
+        "tags": [
+          "Music Sessions"
+        ]
+      }
+    },
+    "/api/session/{publicCode}/settings": {
+      "put": {
+        "operationId": "SettingsController_setSettings",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update session settings",
+        "tags": [
+          "Settings"
+        ]
+      },
+      "get": {
+        "operationId": "SettingsController_getSettings",
+        "parameters": [
+          {
+            "name": "publicCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get session settings",
+        "tags": [
+          "Settings"
+        ]
+      }
+    },
+    "/api/users": {
+      "get": {
+        "operationId": "UsersController_getAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all users (admin only)",
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_deleteSelf",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete self (non-admin only)",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/{id}": {
+      "delete": {
+        "operationId": "UsersController_deleteById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a user by id (admin only)",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/auth/email/login": {
+      "post": {
+        "operationId": "LoginController_login",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Login"
+        ]
+      }
+    },
+    "/api/auth/oauth/login": {
+      "post": {
+        "operationId": "OauthController_login",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Oauth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "LogoutController_logout",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Logout"
+        ]
+      }
+    },
+    "/api/auth/email/register": {
+      "post": {
+        "operationId": "RegisterController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Register"
+        ]
+      }
+    },
+    "/api/auth/email/unlock/{id}": {
+      "post": {
+        "operationId": "UnlockController_unlock",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Unlock"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "AuthController_getMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Musira API",
+    "description": "OpenAPI specification for all Musira backend routes",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "Music": {
+        "type": "object",
+        "properties": {}
+      },
+      "Function": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

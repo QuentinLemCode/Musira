@@ -5,6 +5,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { env } from 'process';
 import { AppModule } from './app/app.module';
 
@@ -22,6 +23,24 @@ async function bootstrap() {
     { logger: getLogger() },
   );
   app.setGlobalPrefix('api');
+  const config = new DocumentBuilder()
+    .setTitle('Musira API')
+    .setDescription('OpenAPI specification for all Musira backend routes')
+    .setVersion('1.0.0')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
+    .addServer('/api')
+    .build();
+  const document = SwaggerModule.createDocument(app, config, {
+    deepScanRoutes: true,
+  });
+  SwaggerModule.setup('api/docs', app, document);
+  // Also expose raw JSON
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .get('/api/openapi.json', (_req: any, reply: any) => {
+      reply.send(document);
+    });
   if (env.ORIGIN) {
     app.enableCors({
       origin: env.ORIGIN,

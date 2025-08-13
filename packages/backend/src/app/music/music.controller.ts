@@ -6,6 +6,13 @@ import {
   ServiceUnavailableException,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Public } from '../auth/public-routes.decorator';
 import { MusicSession } from '../music-session/entities/music-session.entity';
 import { SessionCreatorGuard } from '../users/session-creator.guard';
@@ -20,6 +27,9 @@ import type {
   TrackObjectFull,
 } from './spotify/types/spotify-interfaces';
 
+@ApiTags('Music')
+@ApiBearerAuth()
+@ApiParam({ name: 'publicCode', type: Number })
 @Controller('session/:publicCode/music')
 export class MusicController {
   constructor(
@@ -30,6 +40,8 @@ export class MusicController {
   ) {}
 
   @Get('search')
+  @ApiOperation({ summary: 'Search music on Spotify for this session' })
+  @ApiQuery({ name: 'query', required: true, type: String })
   async search(@Query('query') query: string): Promise<Music[]> {
     if (!query) throw new BadRequestException('no query');
     const results = await this.spotifySearch.search(query);

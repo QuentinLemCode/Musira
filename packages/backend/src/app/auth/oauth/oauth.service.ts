@@ -5,12 +5,9 @@ import {
   Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import {
-  OAuthProvider,
-  type OAuthProviderType,
-} from '../../../api-types/oauth/oauth';
 import type { OAuthUser } from '../../users/user.oauth.entity';
 import { UsersService } from '../../users/users.service';
+import { OAuthProvider, type OAuthProviderType } from '../types';
 
 interface FacebookToken {
   access_token: string;

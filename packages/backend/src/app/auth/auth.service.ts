@@ -1,4 +1,3 @@
-import type { JwtPayload } from '@musira/api/src/index';
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { FastifyReply } from 'fastify';
@@ -6,6 +5,7 @@ import { EmailUser } from '../users/user.email.entity';
 import { UserRole } from '../users/user.entity';
 import type { OAuthUser } from '../users/user.oauth.entity';
 import { UsersService } from '../users/users.service';
+import type { JwtPayload } from './types';
 
 @Injectable()
 export class AuthService {

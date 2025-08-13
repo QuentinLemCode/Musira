@@ -20,7 +20,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "strictPropertyInitialization": false,
-    "types": ["jest"]
+    "types": ["jest", "node", "@fastify/cookie"]
   },
   "include": ["src/**/*"]
 }

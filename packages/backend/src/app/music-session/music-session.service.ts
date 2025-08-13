@@ -1,7 +1,10 @@
-import type { CreateMusicSessionDto, UpdateMusicSessionDto } from '@musira/api';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import type {
+  CreateMusicSessionDto,
+  UpdateMusicSessionDto,
+} from '../auth/types';
 import { User } from '../users/user.entity';
 import { MusicSession } from './entities/music-session.entity';
 import { PublicCodeGeneratorService } from './public-code-generator/public-code-generator.service';

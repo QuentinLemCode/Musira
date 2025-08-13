@@ -4,18 +4,20 @@
   "private": "true",
   "description": "",
   "scripts": {
-    "test": "npm run test --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present --silent",
     "format:check": "npx prettier --check .",
     "generate-ssl": "./scripts/generate-ssl-certs.sh",
     "start:backend": "cd packages/backend && npm start",
     "start:backend:debug": "cd packages/backend && npm run start:debug",
     "start:frontend": "cd packages/frontend && npm run start:dev",
     "start": "concurrently -k -s first -n backend,frontend -c \"yellow,blue\" \"npm run start:backend\" \"npm run start:frontend\"",
-    "e2e": "playwright test",
+    "e2e": "playwright test --reporter=line",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "ci:lint": "eslint .",
-    "build:api": "cd packages/api && npm run compile"
+    "openapi": "cd packages/backend && npm run openapi",
+    "openapi:fetch": "curl -k https://localhost:3020/api/openapi.json -o packages/backend/openapi.json",
+    "api:generate": "cd packages/frontend && npx -y @openapitools/openapi-generator-cli generate -i ../backend/openapi.json -g typescript-angular -o src/generated --additional-properties=ngVersion=20,providedIn=root,npmName=@musira/client,withSeparateModelsAndApi=true,modelSuffix=Dto,apiModulePrefix=Musira,serviceSuffix=Service,enumPropertyNaming=original && npm run api:postgen"
   },
   "repository": {
     "type": "git",
@@ -29,7 +31,6 @@
   "homepage": "https://github.com/QuentinLemCode/musira#readme",
   "workspaces": [
     "packages/backend",
-    "packages/api",
     "packages/frontend"
   ],
   "devDependencies": {

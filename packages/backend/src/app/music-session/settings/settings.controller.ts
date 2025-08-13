@@ -1,4 +1,10 @@
 import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { MusicSession } from '../entities/music-session.entity';
@@ -9,12 +15,16 @@ export interface SettingsQuery {
   maxQueuableSongPerUser: number;
 }
 
+@ApiTags('Settings')
+@ApiBearerAuth()
+@ApiParam({ name: 'publicCode', type: Number })
 @Controller('session/:publicCode/settings')
 export class SettingsController {
   constructor(private readonly settings: SettingsService) {}
 
   @UseGuards(SessionCreatorGuard)
   @Put()
+  @ApiOperation({ summary: 'Update session settings' })
   async setSettings(
     @MusicSessionParam() musicSession: MusicSession,
     @Body() voteSettings: SettingsQuery,
@@ -33,6 +43,7 @@ export class SettingsController {
 
   @UseGuards(SessionCreatorGuard)
   @Get()
+  @ApiOperation({ summary: 'Get session settings' })
   async getSettings(
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<SettingsQuery> {

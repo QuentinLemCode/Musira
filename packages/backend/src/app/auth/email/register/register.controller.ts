@@ -1,4 +1,3 @@
-import type { EmailRegisterInterface } from '@musira/api';
 import {
   BadRequestException,
   Body,
@@ -10,6 +9,7 @@ import type { FastifyReply } from 'fastify';
 import { UsersService } from '../../../users/users.service';
 import { AuthService } from '../../auth.service';
 import { Public } from '../../public-routes.decorator';
+import type { EmailRegisterInterface } from '../../types';
 @Controller('auth/email/register')
 export class RegisterController {
   constructor(
