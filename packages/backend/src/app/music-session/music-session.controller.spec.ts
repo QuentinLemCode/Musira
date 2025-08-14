@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionController } from './music-session.controller';
 import { MusicSessionService } from './music-session.service';
+import { SessionHistoryService } from './session-history.service';
 
 // Mocking MusicSessionService
 const mockSessionService = {
@@ -34,6 +35,13 @@ describe('MusicSessionController', () => {
         { provide: MusicSessionService, useValue: mockSessionService },
         { provide: UsersService, useValue: mockUsersService },
         { provide: JwtService, useValue: mockJwt },
+        {
+          provide: SessionHistoryService,
+          useValue: {
+            recordJoin: jest.fn(),
+            getHistoryForUser: jest.fn(),
+          },
+        },
       ],
     }).compile();
 

@@ -61,7 +61,7 @@ describe('CallbackComponent', () => {
     ).and.returnValue(of(mockToken));
     component.ngOnInit();
     expect(authServiceSpy).toHaveBeenCalledWith('facebook', code, state);
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/'], { replaceUrl: true });
   });
 
   it('should handle error when oAuthLogin throws an error', () => {

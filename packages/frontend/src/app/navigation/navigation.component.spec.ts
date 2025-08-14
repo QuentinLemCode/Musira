@@ -92,7 +92,7 @@ describe('NavigationComponent', () => {
     expect(component.showMenu).toBe(false);
   });
 
-  it('should call user.logout and navigate to login or session page on logout', async () => {
+  it('should call user.logout and close menu on logout', async () => {
     const mockCurrentSession = { code: '123' };
     mockUserService.loggedUser.and.returnValue({ isLoggedIn: true });
     mockMusicSessionsService.currentSession.and.returnValue(mockCurrentSession);
@@ -101,10 +101,7 @@ describe('NavigationComponent', () => {
     await component.logout();
 
     expect(mockUserService.logout).toHaveBeenCalled();
-
-    expect(router.navigate).toHaveBeenCalledWith([mockCurrentSession.code], {
-      replaceUrl: true,
-    });
+    // No navigation is performed by logout anymore
 
     // Reset mocks
     mockUserService.logout.calls.reset();
@@ -115,10 +112,6 @@ describe('NavigationComponent', () => {
     await component.logout();
 
     expect(mockUserService.logout).toHaveBeenCalled();
-
-    // After refactor, we open modal instead of navigating to /user/login
-    // So no navigation assertion here other than showMenu closed
-
     expect(component.showMenu).toBe(false);
   });
 });
