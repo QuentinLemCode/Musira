@@ -39,22 +39,25 @@ export class CallbackComponent implements OnInit {
     if (state && code) {
       try {
         this.auth.oAuthLogin(provider as any, code, state).subscribe({
-          next: () => {
-            // After OAuth, ensure we land on the intended page if user started create-session
-            const sessionsCreator = localStorage.getItem('sessions_creator');
-            if (sessionsCreator === 'true') {
-              localStorage.removeItem('sessions_creator');
-              this.router.navigate(['create-session'], { replaceUrl: true });
-              return;
+          next: async () => {
+            // After OAuth, check backend-stored intent and redirect
+            try {
+              const resp = await this.auth.getIntent().toPromise();
+              if (resp?.intent === 'sessions_creator') {
+                this.router.navigate(['create-session'], { replaceUrl: true });
+                return;
+              }
+            } catch {
+              // ignore
             }
             this.router.navigate(['/'], { replaceUrl: true });
           },
-          error: (err) => {
-            this.error = err?.error?.error || err?.error?.message;
+          error: (error) => {
+            this.error = error?.error?.error || error?.error?.message;
           },
         });
         return;
-      } catch (err) {
+      } catch {
         this.error = 'Invalid request';
       }
     } else {

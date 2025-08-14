@@ -87,7 +87,9 @@ import { MusicSessionsService } from '../sessions/music-sessions.service';
                 </p>
               </li>
               <li>
-                <a [routerLink]="" (click)="logout()">Se déconnecter</a>
+                <a href="#" (click)="logout(); $event.preventDefault()"
+                  >Se déconnecter</a
+                >
               </li>
             }
             @if (!isLogged()) {
@@ -322,13 +324,7 @@ export class NavigationComponent {
 
   async logout() {
     await this.user.logout();
-    if (this.currentSession) {
-      return this.router.navigate([this.currentSession.code], {
-        replaceUrl: true,
-      });
-    }
     this.showMenu = false;
-    this.authModal.open('login');
     return;
   }
 

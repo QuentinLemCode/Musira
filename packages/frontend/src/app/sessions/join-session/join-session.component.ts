@@ -214,7 +214,7 @@ export class JoinSessionComponent {
     this.musicSessions.joinSession(publicCode).subscribe({
       next: () => this.router.navigate([publicCode]),
       error: () => {
-        this.musicSessions.deleteSessionInHistory(publicCode);
+        // no-op: backend-driven history
         this.joinSessionError = 'Ce code de session est invalide';
       },
     });

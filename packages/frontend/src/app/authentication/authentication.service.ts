@@ -108,6 +108,22 @@ export class AuthenticationService {
     }
   }
 
+  // Intent API
+  public setIntent(intent: 'sessions_creator') {
+    return this.http.post<{ success: boolean }>(
+      this.authEndpoint + '/intent',
+      { intent },
+      { withCredentials: true },
+    );
+  }
+
+  public getIntent() {
+    return this.http.get<{ intent: string | null }>(
+      this.authEndpoint + '/intent',
+      { withCredentials: true },
+    );
+  }
+
   deleteAccount() {
     return this.http.delete(this.authEndpoint + '/account');
   }
@@ -121,20 +137,32 @@ export class AuthenticationService {
         provider,
       })
       .pipe(
-        switchMap(() =>
-          this.http.get<JwtUser>(this.authEndpoint + '/me', {
-            withCredentials: true,
-          }),
-        ),
+        switchMap(async () => {
+          // After OAuth, check for any stored intent
+          const me = await firstValueFrom(
+            this.http.get<JwtUser>(this.authEndpoint + '/me', {
+              withCredentials: true,
+            }),
+          );
+          const intentResp = await firstValueFrom(this.getIntent());
+          return { me, intent: intentResp.intent } as {
+            me: JwtUser;
+            intent: string | null;
+          };
+        }),
         tap((user) => {
           const mapped: UserState = {
             isLoggedIn: true,
-            id: user.id,
-            admin: user.admin,
-            userId: String(user.id),
-            username: user.name,
+            id: user.me.id,
+            admin: user.me.admin,
+            userId: String(user.me.id),
+            username: user.me.name,
           };
           this.loggedUser.set(mapped);
+          // Handle post-login intent redirect
+          if (user.intent === 'sessions_creator') {
+            // navigation is handled by the caller (callback component)
+          }
         }),
         map(() => void 0),
       );

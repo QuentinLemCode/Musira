@@ -1,10 +1,14 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, computed, signal } from '@angular/core';
+import { Inject, Injectable, computed, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MusicSessionsService as ApiSessionsService } from '@musira/client';
 import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import {
+  AuthenticationService,
+  type UserState,
+} from '../authentication/authentication.service';
 type CreateMusicSessionDto = { name: string };
 type DeletedMusicSessionDto = { publicCode: number };
 type MusicSessionDto = {
@@ -36,6 +40,8 @@ export class MusicSessionsService {
   });
   public currentSession$ = toObservable(this.currentSession);
 
+  private readonly history = signal<SessionHistory[]>([]);
+
   constructor(
     @Inject(HttpClient) private readonly http: HttpClient,
     @Inject(Router) private readonly router: Router,
@@ -50,6 +56,15 @@ export class MusicSessionsService {
           } else {
             this.joinSession(Number.parseInt(code, 10)).subscribe();
           }
+        }
+      },
+    });
+
+    // Clear session history on logout
+    toObservable(inject(AuthenticationService).loggedUser).subscribe({
+      next: (user: UserState) => {
+        if (user.isLoggedIn === false) {
+          this.history.set([]);
         }
       },
     });
@@ -87,9 +102,9 @@ export class MusicSessionsService {
     return this.http
       .delete<DeletedMusicSessionDto>(this.endpoint + `/${code}`)
       .pipe(
-        tap((result) => {
-          this.deleteSessionInHistory(result.publicCode);
+        tap(() => {
           this.currentSession.set(null);
+          this.refreshSessionHistory();
         }),
       );
   }
@@ -100,49 +115,31 @@ export class MusicSessionsService {
   }
 
   public getSessionHistory(): SessionHistory[] {
-    try {
-      const raw = localStorage.getItem('session_history');
-      if (!raw) return [];
-      const parsed = JSON.parse(raw) as SessionHistory[];
-      return parsed.map((h) => ({
-        musicSession: h.musicSession,
-        access_date: new Date(h.access_date),
-      }));
-    } catch {
-      return [];
-    }
+    return this.history();
   }
 
-  public deleteSessionInHistory(code: number) {
-    try {
-      const history = this.getSessionHistory().filter(
-        (h) => h.musicSession.code !== code,
-      );
-      localStorage.setItem('session_history', JSON.stringify(history));
-    } catch {
-      // noop
-    }
+  public refreshSessionHistory() {
+    this.http
+      .get<
+        { access_date: string; musicSession: MusicSessionDto }[]
+      >(this.endpoint + '/history/me')
+      .subscribe({
+        next: (entries) => {
+          this.history.set(
+            entries.map((e) => ({
+              musicSession: e.musicSession,
+              access_date: new Date(e.access_date),
+            })),
+          );
+        },
+        error: () => {
+          this.history.set([]);
+        },
+      });
   }
 
   private tapCurrentSession = tap<MusicSessionDto>((musicSession) => {
     this.currentSession.set(musicSession);
-    this.saveSessionInHistory(musicSession);
+    this.refreshSessionHistory();
   });
-
-  private saveSessionInHistory(musicSession: MusicSessionDto) {
-    try {
-      const history = this.getSessionHistory();
-      const withoutDup = history.filter(
-        (h) => h.musicSession.code !== musicSession.code,
-      );
-      const newEntry: SessionHistory = {
-        musicSession,
-        access_date: new Date(),
-      };
-      const updated = [newEntry, ...withoutDup].slice(0, 10);
-      localStorage.setItem('session_history', JSON.stringify(updated));
-    } catch {
-      // noop
-    }
-  }
 }

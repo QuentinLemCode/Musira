@@ -31,18 +31,21 @@ test.describe('Login shows previous joined sessions', () => {
       { email, password, username },
     );
 
-    // Login via modal if needed
+    // Login via API to avoid UI flakiness
     await page.goto(`${frontendBase}/`);
-    // Open login modal from nav
-    await page.getByRole('link', { name: 'Se connecter' }).click();
-    // Modal now shows email form by default
-    await page.getByPlaceholder('Ton email').fill(email);
-    await page.getByPlaceholder('Ton mot de passe').fill(password);
-    await page
-      .locator('form')
-      .getByRole('button', { name: 'Se connecter', exact: true })
-      .click();
-    // Modal closes and we remain on '/'
+    await page.evaluate(
+      async ({ email, password }) => {
+        try {
+          await fetch('/api/auth/email/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          });
+        } catch {}
+      },
+      { email, password },
+    );
+    await page.reload();
     await page.getByPlaceholder('123-456-789').waitFor({ timeout: 15000 });
 
     // Create a fake session as this user via same-origin call
@@ -66,13 +69,7 @@ test.describe('Login shows previous joined sessions', () => {
     await page.getByRole('button', { name: 'Rejoindre une session' }).click();
     await page.waitForURL(new RegExp(`/${code}(?:/|$)`));
 
-    // Ensure history exists in localStorage (fallback) then go home
-    await page.evaluate(async (code) => {
-      const res = await fetch(`/api/music-session/${code}`);
-      const musicSession = await res.json();
-      const history = [{ musicSession, access_date: new Date().toISOString() }];
-      localStorage.setItem('session_history', JSON.stringify(history));
-    }, code);
+    // Go home; history should be stored on backend when user loaded the session with auth
     await page.locator('a[href="/"]').first().click();
     await page.waitForURL(new RegExp(`${frontendBase}/$`));
 

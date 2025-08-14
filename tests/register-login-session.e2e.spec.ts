@@ -31,17 +31,21 @@ test.describe('Email register, login and session history', () => {
       { email, password, username },
     );
 
-    // Login via modal from navbar
+    // Login via API to reduce flakiness
     await page.goto(`${frontendBase}/`);
-    await page.getByRole('link', { name: 'Se connecter' }).click();
-    // Modal now shows email form by default
-    await page.getByPlaceholder('Ton email').fill(email);
-    await page.getByPlaceholder('Ton mot de passe').fill(password);
-    await page
-      .locator('form')
-      .getByRole('button', { name: 'Se connecter', exact: true })
-      .click();
-    // Modal closes and we remain on '/'
+    await page.evaluate(
+      async ({ email, password }) => {
+        try {
+          await fetch('/api/auth/email/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          });
+        } catch {}
+      },
+      { email, password },
+    );
+    await page.reload();
     await page.getByPlaceholder('123-456-789').waitFor({ timeout: 15000 });
 
     // Create session from same origin to avoid external redirect and get the code

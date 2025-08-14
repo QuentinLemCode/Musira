@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -353,7 +353,7 @@ import { MusicSessionsService } from './..//sessions/music-sessions.service';
     </main>
   `,
 })
-export class LandingComponent {
+export class LandingComponent implements OnInit {
   constructor(
     @Inject(MusicSessionsService)
     private readonly musicSessions: MusicSessionsService,
@@ -362,6 +362,10 @@ export class LandingComponent {
     @Inject(AuthenticationService)
     private readonly auth: AuthenticationService,
   ) {}
+
+  ngOnInit(): void {
+    this.musicSessions.refreshSessionHistory();
+  }
 
   form = new FormGroup({
     code: new FormControl('', [
@@ -383,18 +387,9 @@ export class LandingComponent {
       this.router.navigate(['create-session']);
       return;
     }
-    // Mark intent so OAuth callback can redirect appropriately
-    try {
-      localStorage.setItem('sessions_creator', 'true');
-    } catch {
-      /* noop */
-    }
+    // Persist intent server-side so OAuth callback can redirect appropriately
+    this.auth.setIntent('sessions_creator').subscribe({ next: () => {} });
     this.authModal.open('login', () => {
-      try {
-        localStorage.removeItem('sessions_creator');
-      } catch {
-        /* noop */
-      }
       this.router.navigate(['create-session']);
     });
     return;
@@ -463,7 +458,6 @@ export class LandingComponent {
     this.musicSessions.joinSession(publicCode).subscribe({
       next: () => this.router.navigate([publicCode]),
       error: () => {
-        this.musicSessions.deleteSessionInHistory(publicCode);
         this.joinSessionError = 'Ce code de session est invalide';
       },
     });

@@ -1,4 +1,3 @@
-
 import {
   BadRequestException,
   Body,
@@ -21,7 +20,13 @@ import {
 import { Public } from '../auth/public-routes.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
-import type { CreateMusicSessionDto, DeletedMusicSessionDto, JwtUser, MusicSessionDto, UpdateMusicSessionDto } from '../auth/types';
+import type {
+  CreateMusicSessionDto,
+  DeletedMusicSessionDto,
+  JwtUser,
+  MusicSessionDto,
+  UpdateMusicSessionDto,
+} from '../auth/types';
 import { SessionCreatorGuard } from '../users/session-creator.guard';
 import { UserRole } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
@@ -31,6 +36,7 @@ import {
 } from '../utils/decorators/music-session.decorator';
 import { MusicSession } from './entities/music-session.entity';
 import { MusicSessionService } from './music-session.service';
+import { SessionHistoryService } from './session-history.service';
 
 @ApiTags('Music Sessions')
 @ApiBearerAuth()
@@ -39,6 +45,7 @@ export class MusicSessionController {
   constructor(
     private readonly session: MusicSessionService,
     private readonly users: UsersService,
+    private readonly sessionHistory: SessionHistoryService,
   ) {}
 
   @Post()
@@ -94,6 +101,9 @@ export class MusicSessionController {
     @MusicSessionParam() musicSession: MusicSession,
     @Request() req: { user?: JwtUser },
   ): Promise<MusicSessionDto> {
+    if (req.user?.id) {
+      await this.sessionHistory.recordJoin(req.user.id, musicSession);
+    }
     return {
       id: musicSession.id,
       name: musicSession.name,
@@ -104,6 +114,59 @@ export class MusicSessionController {
         ? this.isSessionCreator(req.user.id, musicSession)
         : false,
     };
+  }
+
+  @Get('history/me')
+  @ApiOperation({ summary: 'Get current user session history' })
+  async getMyHistory(@Request() req: { user: JwtUser }) {
+    const [entries, createdByMe] = await Promise.all([
+      this.sessionHistory.getHistoryForUser(req.user.id),
+      this.session.findCreatedByUser(req.user.id),
+    ]);
+
+    const mappedHistory = entries.map((entry) => ({
+      access_date: entry.joined_at,
+      musicSession: {
+        id: entry.music_session.id,
+        name: entry.music_session.name,
+        code: entry.music_session.publicCode,
+        creator: entry.music_session.creator?.name ?? '',
+        linkedToSpotify: entry.music_session.spotifyAuthUuid !== null,
+        isCreator: req.user.id === entry.music_session.creator?.id,
+      },
+    }));
+
+    const mappedCreated = createdByMe.map((s) => ({
+      access_date: s.created_at,
+      musicSession: {
+        id: s.id,
+        name: s.name,
+        code: s.publicCode,
+        creator: s.creator?.name ?? '',
+        linkedToSpotify: s.spotifyAuthUuid !== null,
+        isCreator: true,
+      },
+    }));
+
+    const mergedMap = new Map<
+      number,
+      { access_date: Date; musicSession: any }
+    >();
+    for (const item of [...mappedHistory, ...mappedCreated]) {
+      const code = item.musicSession.code;
+      const existing = mergedMap.get(code);
+      if (
+        !existing ||
+        new Date(item.access_date) > new Date(existing.access_date)
+      ) {
+        mergedMap.set(code, item);
+      }
+    }
+    // Return sorted by date desc
+    return Array.from(mergedMap.values()).sort(
+      (a, b) =>
+        new Date(b.access_date).getTime() - new Date(a.access_date).getTime(),
+    );
   }
 
   @UseGuards(SessionCreatorGuard)

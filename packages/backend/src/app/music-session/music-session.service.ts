@@ -81,4 +81,12 @@ export class MusicSessionService {
   remove(publicCode: number) {
     return this.musicSession.delete({ publicCode });
   }
+
+  findCreatedByUser(userId: number) {
+    return this.musicSession.find({
+      where: { creator: { id: userId } },
+      relations: ['creator'],
+      order: { created_at: 'DESC' },
+    });
+  }
 }
