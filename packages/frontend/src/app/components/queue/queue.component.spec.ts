@@ -1,9 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import type {
-  BacklogDtoDto,
-  CurrentMusicDtoDto,
-  QueueDtoDto,
-} from '@musira/client';
+import type { BacklogDto, CurrentMusicDto, QueueDto } from '@musira/client';
 import { Subject, throwError } from 'rxjs';
 import {
   backlogFixture,
@@ -20,9 +16,9 @@ describe('QueueComponent', () => {
   let component: QueueComponent;
   let fixture: ComponentFixture<QueueComponent>;
 
-  let subGetQueue: Subject<QueueDtoDto[]>;
-  let subGetBacklog: Subject<BacklogDtoDto>;
-  let subCurrentMusic: Subject<CurrentMusicDtoDto>;
+  let subGetQueue: Subject<QueueDto[]>;
+  let subGetBacklog: Subject<BacklogDto>;
+  let subCurrentMusic: Subject<CurrentMusicDto>;
 
   const mockQueueService = {
     get: jasmine.createSpy('get'),

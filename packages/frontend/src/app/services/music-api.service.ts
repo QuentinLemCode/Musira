@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, computed } from '@angular/core';
-import type { CurrentMusicDtoDto, MusicDtoDto } from '@musira/client';
+import type { CurrentMusicDto, MusicDto } from '@musira/client';
 import { MusicService, SpotifyService } from '@musira/client';
 import type { Observable, Subscription } from 'rxjs';
 import { ReplaySubject, combineLatest, timer } from 'rxjs';
@@ -17,7 +17,7 @@ export class MusicApiService {
     () => this.session.currentSession()?.code,
   );
 
-  private readonly $status = new ReplaySubject<CurrentMusicDtoDto>(1);
+  private readonly $status = new ReplaySubject<CurrentMusicDto>(1);
 
   private $polling?: Subscription;
 
@@ -54,9 +54,9 @@ export class MusicApiService {
     });
   }
 
-  search(query: string): Observable<MusicDtoDto[]> {
+  search(query: string): Observable<MusicDto[]> {
     const publicCode = this.currentPublicCode();
-    if (!publicCode) return new ReplaySubject<MusicDtoDto[]>(1);
+    if (!publicCode) return new ReplaySubject<MusicDto[]>(1);
     return this.musicApi.musicControllerSearch(query, publicCode, 'body');
   }
 
@@ -94,20 +94,20 @@ export class MusicApiService {
     return this.$status.asObservable();
   }
 
-  startEngine(): Observable<CurrentMusicDtoDto> {
+  startEngine(): Observable<CurrentMusicDto> {
     const publicCode = this.currentPublicCode();
     if (!publicCode) return this.$status.asObservable();
     return this.musicApi
       .musicControllerStart(publicCode, 'body')
-      .pipe(tap((status: CurrentMusicDtoDto) => this.$status.next(status)));
+      .pipe(tap((status: CurrentMusicDto) => this.$status.next(status)));
   }
 
-  stopEngine(): Observable<CurrentMusicDtoDto> {
+  stopEngine(): Observable<CurrentMusicDto> {
     const publicCode = this.currentPublicCode();
     if (!publicCode) return this.$status.asObservable();
     return this.musicApi
       .musicControllerStop(publicCode, 'body')
-      .pipe(tap((status: CurrentMusicDtoDto) => this.$status.next(status)));
+      .pipe(tap((status: CurrentMusicDto) => this.$status.next(status)));
   }
 
   private launchPolling() {
@@ -125,7 +125,7 @@ export class MusicApiService {
     const publicCode = this.currentPublicCode();
     if (!publicCode) return;
     this.musicApi.musicControllerCurrentState(publicCode, 'body').subscribe({
-      next: (status: CurrentMusicDtoDto) => this.$status.next(status),
+      next: (status: CurrentMusicDto) => this.$status.next(status),
       error: (err) => this.$status.error(err),
     });
   }

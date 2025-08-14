@@ -1,13 +1,13 @@
 type EmailRefreshResponseDTO = unknown;
 import type {
-  BacklogDtoDto,
-  CurrentMusicDtoDto,
-  MusicDtoDto,
-  QueueDtoDto,
+  BacklogDto,
+  CurrentMusicDto,
+  MusicDto,
+  QueueDto,
 } from '@musira/client';
-import { QueueDtoDto as QueueDtoType } from '@musira/client';
+import { QueueDto as QueueDtoType } from '@musira/client';
 
-export const musicFixture: MusicDtoDto = {
+export const musicFixture: MusicDto = {
   album: 'test',
   artist: 'test',
   cover: 'test',
@@ -16,7 +16,7 @@ export const musicFixture: MusicDtoDto = {
   uri: 'spotify:track:refijr',
 };
 
-export const queueFixture: QueueDtoDto = {
+export const queueFixture: QueueDto = {
   id: 1,
   forward_votes: 0,
   music: musicFixture,
@@ -27,16 +27,16 @@ export const queueFixture: QueueDtoDto = {
   },
 };
 
-export const backlogFixture: BacklogDtoDto = {
+export const backlogFixture: BacklogDto = {
   id: 1,
   music: musicFixture,
 };
 
-export const currentMusicFixture: CurrentMusicDtoDto = {
+export const currentMusicFixture: CurrentMusicDto = {
   engineStarted: true,
   isSpotifyAccountRegistered: true,
   currentPlay: musicFixture,
-  message: 'test',
+  message: { text: 'test' },
   queue: [],
 };
 

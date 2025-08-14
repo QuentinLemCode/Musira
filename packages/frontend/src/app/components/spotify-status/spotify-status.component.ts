@@ -4,7 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import type { CurrentMusicDtoDto, FullBacklogDtoDto } from '@musira/client';
+import type { CurrentMusicDto, FullBacklogDto } from '@musira/client';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
@@ -125,8 +125,8 @@ export class SpotifyStatusComponent {
   isQueueEmpty = false;
   currentSessionCode: number | undefined;
   collapsed = false;
-  musicStatus: CurrentMusicDtoDto | undefined;
-  backlog: FullBacklogDtoDto[] | undefined;
+  musicStatus: CurrentMusicDto | undefined;
+  backlog: FullBacklogDto[] | undefined;
   error = '';
 
   startEngine() {

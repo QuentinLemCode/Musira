@@ -17,7 +17,7 @@ import {
   faSearch,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import type { MusicDtoDto } from '@musira/client';
+import type { MusicDto } from '@musira/client';
 import { of } from 'rxjs';
 import {
   catchError,
@@ -153,7 +153,7 @@ export class SearchComponent implements OnInit {
   @Input() forBacklog = false;
 
   search = new FormControl<string>('');
-  results: MusicDtoDto[] | null = null;
+  results: MusicDto[] | null = null;
   resultsHidden = false;
   loading = false;
   error = '';
@@ -228,7 +228,7 @@ export class SearchComponent implements OnInit {
     this.resultsHidden = false;
   }
 
-  addToQueue(music: MusicDtoDto, updateIcon: IconUpdateStatus) {
+  addToQueue(music: MusicDto, updateIcon: IconUpdateStatus) {
     updateIcon.updateLoading(true);
     this.queue.push(music).subscribe({
       next: () => {
@@ -258,7 +258,7 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  addToBacklog(music: MusicDtoDto, updateIcon: IconUpdateStatus) {
+  addToBacklog(music: MusicDto, updateIcon: IconUpdateStatus) {
     updateIcon.updateLoading(true);
     this.queue.pushBacklog(music).subscribe({
       next: () => {

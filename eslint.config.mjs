@@ -28,6 +28,7 @@ export default [
       '.lintstagedrc.js',
       'packages/backend/.eslintrc.js',
       'packages/frontend/karma.conf.js',
+      'packages/frontend/src/generated/**',
     ],
   },
 

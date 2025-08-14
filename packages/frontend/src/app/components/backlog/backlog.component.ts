@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import type { FullBacklogDtoDto } from '@musira/client';
+import type { FullBacklogDto } from '@musira/client';
 import { interval, type Observer } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { QueueService } from '../../services/queue.service';
@@ -34,7 +34,7 @@ import { MusicComponent } from '../music/music.component';
   styles: [``],
 })
 export class BacklogComponent {
-  backlog: FullBacklogDtoDto[] | null = null;
+  backlog: FullBacklogDto[] | null = null;
   loading = true;
   error = '';
 
@@ -46,7 +46,7 @@ export class BacklogComponent {
   };
 
   constructor(@Inject(QueueService) private readonly queue: QueueService) {
-    const subsribeParam: Partial<Observer<FullBacklogDtoDto[]>> = {
+    const subsribeParam: Partial<Observer<FullBacklogDto[]>> = {
       next: (backlog) => {
         this.backlog = backlog;
         this.loading = false;

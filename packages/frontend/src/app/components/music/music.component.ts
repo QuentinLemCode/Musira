@@ -13,7 +13,7 @@ import {
   faForwardFast,
   faPlus,
 } from '@fortawesome/free-solid-svg-icons';
-import type { MusicDtoDto } from '@musira/client';
+import type { MusicDto } from '@musira/client';
 
 export interface MusicComponentConfiguration {
   votable: boolean;
@@ -177,7 +177,7 @@ export class MusicComponent implements OnInit {
   username?: string;
 
   @Input()
-  music?: MusicDtoDto;
+  music?: MusicDto;
 
   @Input()
   voteCount = 0;

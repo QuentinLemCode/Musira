@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, computed } from '@angular/core';
 import type {
-  BacklogDtoDto,
-  FullBacklogDtoDto,
-  MusicDtoDto,
-  QueueDtoDto,
-  QueueResponseDtoDto,
+  BacklogDto,
+  FullBacklogDto,
+  MusicDto,
+  QueueDto,
+  QueueResponseDto,
 } from '@musira/client';
 import {
   BacklogService as ApiBacklogService,
@@ -24,12 +24,12 @@ import { VisibilityService } from './visibility.service';
 export class QueueService {
   private readonly queueEndpoint;
   private readonly backlogEndpoint;
-  private readonly $queue = new ReplaySubject<QueueDtoDto[]>(1);
-  private readonly $backlog = new ReplaySubject<BacklogDtoDto | null>(1);
+  private readonly $queue = new ReplaySubject<QueueDto[]>(1);
+  private readonly $backlog = new ReplaySubject<BacklogDto | null>(1);
 
   private cacheFullBacklog: null | {
     timestamp: number;
-    backlog: FullBacklogDtoDto[];
+    backlog: FullBacklogDto[];
   } = null;
 
   private $polling?: Subscription;
@@ -75,7 +75,7 @@ export class QueueService {
     });
   }
 
-  push(music: MusicDtoDto) {
+  push(music: MusicDto) {
     const publicCode = this.session.currentSession()?.code;
     if (!publicCode) return of(void 0);
     return this.apiQueue
@@ -110,7 +110,7 @@ export class QueueService {
       return this.apiBacklog
         .backlogControllerGetBackLog(publicCode, 'body')
         .pipe(
-          tap((backlog: FullBacklogDtoDto[]) => {
+          tap((backlog: FullBacklogDto[]) => {
             this.cacheFullBacklog = {
               timestamp: Date.now(),
               backlog,
@@ -125,7 +125,7 @@ export class QueueService {
     return this.apiBacklog.backlogControllerImport(code, { spotifyPlaylistId });
   }
 
-  pushBacklog(music: MusicDtoDto) {
+  pushBacklog(music: MusicDto) {
     const publicCode = this.session.currentSession()?.code;
     if (!publicCode) return of(void 0);
     return this.apiBacklog
@@ -194,7 +194,7 @@ export class QueueService {
     const publicCode = this.session.currentSession()?.code;
     if (!publicCode) return;
     this.apiQueue.queueControllerGetQueue(publicCode, 'body').subscribe({
-      next: (response: QueueResponseDtoDto) => {
+      next: (response: QueueResponseDto) => {
         this.$queue.next(response.queue);
         this.$backlog.next(response.backlog);
       },

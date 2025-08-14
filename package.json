@@ -18,7 +18,7 @@
     "ci:lint": "eslint .",
     "openapi": "cd packages/backend && npm run openapi",
     "openapi:fetch": "curl -k https://localhost:3020/api/openapi.json -o packages/backend/openapi.json",
-    "api:generate": "cd packages/frontend && npx -y @openapitools/openapi-generator-cli generate -i ../backend/openapi.json -g typescript-angular -o src/generated --additional-properties=ngVersion=20,providedIn=root,npmName=@musira/client,withSeparateModelsAndApi=true,modelSuffix=Dto,apiModulePrefix=Musira,serviceSuffix=Service,enumPropertyNaming=original && npm run api:postgen",
+    "api:generate": "cd packages/frontend && npx -y @openapitools/openapi-generator-cli generate -i ../backend/openapi.json -g typescript-angular -o src/generated --additional-properties=ngVersion=20,providedIn=root,npmName=@musira/client,withSeparateModelsAndApi=true,apiModulePrefix=Musira,serviceSuffix=Service,enumPropertyNaming=original",
     "api:watch": "npx -y chokidar-cli \"packages/backend/openapi.json\" -c \"npm run api:generate\""
   },
   "repository": {

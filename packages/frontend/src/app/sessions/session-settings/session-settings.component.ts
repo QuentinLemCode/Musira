@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowRotateLeft } from '@fortawesome/free-solid-svg-icons';
-import type { CurrentMusicDtoDto } from '@musira/client';
+import type { CurrentMusicDto } from '@musira/client';
 import { BacklogComponent } from '../../components/backlog/backlog.component';
 import { MusicComponent } from '../../components/music/music.component';
 import { SearchComponent } from '../../components/search/search.component';
@@ -130,7 +130,7 @@ export class SessionSettingsComponent {
   maxQueuableSongs: number | undefined;
   faArrowRotateLeft = faArrowRotateLeft;
   error = '';
-  musicStatus: CurrentMusicDtoDto | null = null;
+  musicStatus: CurrentMusicDto | null = null;
 
   maxVotesSaveStatus = '';
   maxQueuableSongsSaveStatus = '';

@@ -4,8 +4,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import type { BacklogDtoDto, MusicDtoDto, QueueDtoDto } from '@musira/client';
-import { QueueDtoDto as QueueDtoType } from '@musira/client';
+import type { BacklogDto, MusicDto, QueueDto } from '@musira/client';
+import { QueueDto as QueueDtoType } from '@musira/client';
 import { tap } from 'rxjs/operators';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { MusicApiService } from '../../services/music-api.service';
@@ -66,10 +66,10 @@ import { MusicComponent } from '../music/music.component';
   ],
 })
 export class QueueComponent {
-  queues: QueueDtoDto[] | null = null;
-  playing: MusicDtoDto | null = null;
+  queues: QueueDto[] | null = null;
+  playing: MusicDto | null = null;
   playingUser = '';
-  backlog: BacklogDtoDto | null = null;
+  backlog: BacklogDto | null = null;
   loading = true;
   error = '';
   isEngineStarted = false;
@@ -81,7 +81,7 @@ export class QueueComponent {
     backlog: false,
   };
 
-  getMusicConfig(queue: QueueDtoDto) {
+  getMusicConfig(queue: QueueDto) {
     const user = this.user.loggedUser();
     const isQueuedByUser = user.isLoggedIn && queue.user.id === +(user.id ?? 0);
     return {
@@ -168,7 +168,7 @@ export class QueueComponent {
     });
   }
 
-  private loadQueue(queues: QueueDtoDto[]) {
+  private loadQueue(queues: QueueDto[]) {
     const indexPlaying = queues.findIndex(
       (q) => q.status === QueueDtoType.StatusEnum.NUMBER_1,
     );
