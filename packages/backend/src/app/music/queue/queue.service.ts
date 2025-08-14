@@ -83,6 +83,7 @@ export class QueueService {
     await this.queue.save(queueOrId);
     await this.queue.softRemove(queueOrId);
     await this.updatePriority(queueOrId.userId);
+    return;
   }
 
   async vote(queueOrId: Queue | string | number, user: User) {

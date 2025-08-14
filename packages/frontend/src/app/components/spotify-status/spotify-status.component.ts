@@ -4,10 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import type {
-  CurrentMusic,
-  FullBacklog,
-} from '../../services/music-api.interface';
+import type { CurrentMusicDtoDto, FullBacklogDtoDto } from '@musira/client';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
@@ -25,65 +22,70 @@ import { SpotifyLoginComponent } from '../spotify-login/spotify-login.component'
     SpotifyLoginComponent,
   ],
   template: `
-    <ul *ngIf="musicStatus !== undefined; else loading">
-      <li *ngIf="musicStatus.isSpotifyAccountRegistered">
-        ✅ Connecté à Spotify
-      </li>
-      <li *ngIf="!musicStatus.isSpotifyAccountRegistered">
-        ❌ Non connecté à Spotify
-        <ul>
+    @if (musicStatus !== undefined) {
+      <ul>
+        @if (musicStatus.isSpotifyAccountRegistered) {
+          <li>✅ Connecté à Spotify</li>
+        }
+        @if (!musicStatus.isSpotifyAccountRegistered) {
           <li>
-            <musira-spotify-login
-              [format]="'Link'"
-              [text]="'Se connecter'"
-            ></musira-spotify-login>
+            ❌ Non connecté à Spotify
+            <ul>
+              <li>
+                <musira-spotify-login
+                  [format]="'Link'"
+                  [text]="'Se connecter'"
+                ></musira-spotify-login>
+              </li>
+            </ul>
           </li>
-        </ul>
-      </li>
-      <li
-        class="cursor-pointer"
-        *ngIf="musicStatus.engineStarted"
-        (click)="collapsed = !collapsed"
-      >
-        ✅ <span class="underline">Gestion de la playlist</span>
-        <div *ngIf="collapsed" class="ml-4 mt-2 mb-2 text-xl">
-          <a (click)="stopEngine()">Arrêter la gestion de la playlist</a>
-        </div>
-      </li>
-      <li
-        class="cursor-pointer"
-        *ngIf="!musicStatus.engineStarted"
-        (click)="collapsed = !collapsed"
-      >
-        ❌ <span class="underline">Gestion de la playlist arrếté</span>
-        <div class="ml-4 mt-2 mb-2 text-xl">
-          <a *ngIf="!isQueueEmpty; else addSongMessage" (click)="startEngine()"
-            >Lancer la gestion de la playlist</a
-          >
-        </div>
-      </li>
-      <li *ngIf="backlog && backlog.length > 0">
-        ✅ Titres présent en réserve
-      </li>
-      <li *ngIf="!backlog || backlog.length === 0">
-        ❌ Ancun titre en réserve
-        <div class="ml-4">
-          <a
-            [routerLink]="['/', currentSessionCode, 'session-settings']"
-            fragment="backlog"
-            class="ml-4 mt-2 mb-2 text-xl"
-            >Ajouter des titres à la réserve</a
-          >
-        </div>
-      </li>
-    </ul>
-    <p *ngIf="error">{{ error }}</p>
-
-    <ng-template #loading> Chargement </ng-template>
-    <ng-template #addSongMessage>
-      Ajouter des titres en files d'attente avant de lancer la gestion de
-      playlist
-    </ng-template>
+        }
+        @if (musicStatus.engineStarted) {
+          <li class="cursor-pointer" (click)="collapsed = !collapsed">
+            ✅ <span class="underline">Gestion de la playlist</span>
+            @if (collapsed) {
+              <div class="ml-4 mt-2 mb-2 text-xl">
+                <a (click)="stopEngine()">Arrêter la gestion de la playlist</a>
+              </div>
+            }
+          </li>
+        }
+        @if (!musicStatus.engineStarted) {
+          <li class="cursor-pointer" (click)="collapsed = !collapsed">
+            ❌ <span class="underline">Gestion de la playlist arrếté</span>
+            <div class="ml-4 mt-2 mb-2 text-xl">
+              @if (!isQueueEmpty) {
+                <a (click)="startEngine()">Lancer la gestion de la playlist</a>
+              } @else {
+                Ajouter des titres en files d'attente avant de lancer la gestion
+                de playlist
+              }
+            </div>
+          </li>
+        }
+        @if (backlog && backlog.length > 0) {
+          <li>✅ Titres présent en réserve</li>
+        }
+        @if (!backlog || backlog.length === 0) {
+          <li>
+            ❌ Ancun titre en réserve
+            <div class="ml-4">
+              <a
+                [routerLink]="['/', currentSessionCode, 'session-settings']"
+                fragment="backlog"
+                class="ml-4 mt-2 mb-2 text-xl"
+                >Ajouter des titres à la réserve</a
+              >
+            </div>
+          </li>
+        }
+      </ul>
+    } @else {
+      Chargement
+    }
+    @if (error) {
+      <p>{{ error }}</p>
+    }
   `,
   styles: [``],
 })
@@ -123,8 +125,8 @@ export class SpotifyStatusComponent {
   isQueueEmpty = false;
   currentSessionCode: number | undefined;
   collapsed = false;
-  musicStatus: CurrentMusic | undefined;
-  backlog: FullBacklog[] | undefined;
+  musicStatus: CurrentMusicDtoDto | undefined;
+  backlog: FullBacklogDtoDto[] | undefined;
   error = '';
 
   startEngine() {

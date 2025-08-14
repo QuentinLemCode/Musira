@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -17,6 +18,8 @@ import { Public } from '../auth/public-routes.decorator';
 import { MusicSession } from '../music-session/entities/music-session.entity';
 import { SessionCreatorGuard } from '../users/session-creator.guard';
 import { MusicSessionParam } from '../utils/decorators/music-session.decorator';
+import { CurrentMusicDto } from './dto/current-music.dto';
+import { MusicDto } from './dto/music.dto';
 import type { CurrentMusic, Music } from './music.interface';
 import { QueueEngineService } from './queue/queue-engine/queue-engine.service';
 import { QueueService } from './queue/queue.service';
@@ -42,6 +45,7 @@ export class MusicController {
   @Get('search')
   @ApiOperation({ summary: 'Search music on Spotify for this session' })
   @ApiQuery({ name: 'query', required: true, type: String })
+  @ApiOkResponse({ type: MusicDto, isArray: true })
   async search(@Query('query') query: string): Promise<Music[]> {
     if (!query) throw new BadRequestException('no query');
     const results = await this.spotifySearch.search(query);
@@ -50,6 +54,7 @@ export class MusicController {
 
   @UseGuards(SessionCreatorGuard)
   @Get('start')
+  @ApiOkResponse({ type: CurrentMusicDto })
   async start(
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<CurrentMusic> {
@@ -60,6 +65,7 @@ export class MusicController {
 
   @UseGuards(SessionCreatorGuard)
   @Get('stop')
+  @ApiOkResponse({ type: CurrentMusicDto })
   async stop(
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<CurrentMusic> {
@@ -69,6 +75,7 @@ export class MusicController {
 
   @Public()
   @Get()
+  @ApiOkResponse({ type: CurrentMusicDto })
   async currentState(
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<CurrentMusic> {

@@ -1,13 +1,13 @@
 type EmailRefreshResponseDTO = unknown;
-import {
-  Status,
-  type Backlog,
-  type CurrentMusic,
-  type Music,
-  type Queue,
-} from '../app/services/music-api.interface';
+import type {
+  BacklogDtoDto,
+  CurrentMusicDtoDto,
+  MusicDtoDto,
+  QueueDtoDto,
+} from '@musira/client';
+import { QueueDtoDto as QueueDtoType } from '@musira/client';
 
-export const musicFixture: Music = {
+export const musicFixture: MusicDtoDto = {
   album: 'test',
   artist: 'test',
   cover: 'test',
@@ -16,23 +16,23 @@ export const musicFixture: Music = {
   uri: 'spotify:track:refijr',
 };
 
-export const queueFixture: Queue = {
+export const queueFixture: QueueDtoDto = {
   id: 1,
   forward_votes: 0,
   music: musicFixture,
-  status: Status.PLAYING,
+  status: QueueDtoType.StatusEnum.NUMBER_1,
   user: {
     id: 1,
     name: 'toto',
   },
 };
 
-export const backlogFixture: Backlog = {
+export const backlogFixture: BacklogDtoDto = {
   id: 1,
   music: musicFixture,
 };
 
-export const currentMusicFixture: CurrentMusic = {
+export const currentMusicFixture: CurrentMusicDtoDto = {
   engineStarted: true,
   isSpotifyAccountRegistered: true,
   currentPlay: musicFixture,

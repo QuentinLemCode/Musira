@@ -17,6 +17,7 @@ import {
   faSearch,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+import type { MusicDtoDto } from '@musira/client';
 import { of } from 'rxjs';
 import {
   catchError,
@@ -26,7 +27,6 @@ import {
   mergeMap,
   tap,
 } from 'rxjs/operators';
-import type { Music } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import { MusicSessionsService } from '../../sessions/music-sessions.service';
@@ -54,38 +54,43 @@ import {
       [formControl]="search"
       placeholder="Rechercher une musique"
     />
-    <span class="search-icon" *ngIf="results === null || resultsHidden"
-      ><fa-icon
-        [icon]="iconSearch"
-        [ngClass]="loading ? 'fa-beat-fade' : ''"
-      ></fa-icon
-    ></span>
+    @if (results === null || resultsHidden) {
+      <span class="search-icon"
+        ><fa-icon
+          [icon]="iconSearch"
+          [ngClass]="loading ? 'fa-beat-fade' : ''"
+        ></fa-icon
+      ></span>
+    }
 
-    <span
-      class="search-icon cursor-pointer"
-      *ngIf="results !== null && !resultsHidden"
-    >
-      <fa-icon
-        [icon]="iconClose"
-        (click)="hideResults({ clearInput: true })"
-      ></fa-icon>
-    </span>
+    @if (results !== null && !resultsHidden) {
+      <span class="search-icon cursor-pointer">
+        <fa-icon
+          [icon]="iconClose"
+          (click)="hideResults({ clearInput: true })"
+        ></fa-icon>
+      </span>
+    }
 
-    <p *ngIf="error">{{ error }}</p>
+    @if (error) {
+      <p>{{ error }}</p>
+    }
 
-    <div
-      *ngIf="!resultsHidden"
-      id="search-results"
-      [ngClass]="resultsHidden || results === null ? 'hide' : 'show'"
-    >
-      <musira-music
-        *ngFor="let music of results"
-        [music]="music"
-        [config]="musicConfig"
-        (addToQueue)="addToQueue(music, $event)"
-        (addToBacklog)="addToBacklog(music, $event)"
-      ></musira-music>
-    </div>
+    @if (!resultsHidden) {
+      <div
+        id="search-results"
+        [ngClass]="resultsHidden || results === null ? 'hide' : 'show'"
+      >
+        @for (music of results ?? []; track music.uri) {
+          <musira-music
+            [music]="music"
+            [config]="musicConfig"
+            (addToQueue)="addToQueue(music, $event)"
+            (addToBacklog)="addToBacklog(music, $event)"
+          ></musira-music>
+        }
+      </div>
+    }
   `,
   styles: [
     `
@@ -148,7 +153,7 @@ export class SearchComponent implements OnInit {
   @Input() forBacklog = false;
 
   search = new FormControl<string>('');
-  results: Music[] | null = null;
+  results: MusicDtoDto[] | null = null;
   resultsHidden = false;
   loading = false;
   error = '';
@@ -223,7 +228,7 @@ export class SearchComponent implements OnInit {
     this.resultsHidden = false;
   }
 
-  addToQueue(music: Music, updateIcon: IconUpdateStatus) {
+  addToQueue(music: MusicDtoDto, updateIcon: IconUpdateStatus) {
     updateIcon.updateLoading(true);
     this.queue.push(music).subscribe({
       next: () => {
@@ -253,7 +258,7 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  addToBacklog(music: Music, updateIcon: IconUpdateStatus) {
+  addToBacklog(music: MusicDtoDto, updateIcon: IconUpdateStatus) {
     updateIcon.updateLoading(true);
     this.queue.pushBacklog(music).subscribe({
       next: () => {

@@ -32,19 +32,23 @@ enum OAuthProvider {
         <a (click)="emailLogin = !emailLogin">Se connecter avec un email</a>
       </div>
 
-      <form *ngIf="emailLogin" [formGroup]="form" (ngSubmit)="submit()">
-        <input placeholder="Ton email" formControlName="email" />
-        <input
-          placeholder="Ton mot de passe"
-          name="password"
-          type="password"
-          formControlName="password"
-        />
-        <button [disabled]="isSubmitDisabled" type="submit">
-          Se connecter
-        </button>
-      </form>
-      <p class="error" *ngIf="error">{{ error }}</p>
+      @if (emailLogin) {
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <input placeholder="Ton email" formControlName="email" />
+          <input
+            placeholder="Ton mot de passe"
+            name="password"
+            type="password"
+            formControlName="password"
+          />
+          <button [disabled]="isSubmitDisabled" type="submit">
+            Se connecter
+          </button>
+        </form>
+      }
+      @if (error) {
+        <p class="error">{{ error }}</p>
+      }
     </div>
   `,
   styles: [``],

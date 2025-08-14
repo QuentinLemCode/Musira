@@ -28,14 +28,17 @@ import { MusicSessionsService } from '../music-sessions.service';
     <h3 class="text-lg">Oranisé par {{ currentSession?.creator }}</h3>
     <h4 class="italic text-right">#{{ formattedSessionCode }}</h4>
 
-    <musira-spotify-status *ngIf="isCreator"></musira-spotify-status>
+    @if (isCreator) {
+      <musira-spotify-status></musira-spotify-status>
+    }
 
-    <musira-search *ngIf="isLoggedIn; else loginBox"></musira-search>
-    <ng-template #loginBox>
-      <a [routerLink]="['/user/login']"
-        >Connecte-toi pour ajouter des musiques</a
-      >
-    </ng-template>
+    @if (isLoggedIn) {
+      <musira-search></musira-search>
+    } @else {
+      <a [routerLink]="['/user/login']">
+        Connecte-toi pour ajouter des musiques
+      </a>
+    }
     <musira-queue></musira-queue>
   `,
   styles: [``],

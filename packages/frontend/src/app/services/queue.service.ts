@@ -1,21 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, computed } from '@angular/core';
+import type {
+  BacklogDtoDto,
+  FullBacklogDtoDto,
+  MusicDtoDto,
+  QueueDtoDto,
+  QueueResponseDtoDto,
+} from '@musira/client';
 import {
   BacklogService as ApiBacklogService,
   QueueService as ApiQueueService,
 } from '@musira/client';
 import type { Subscription } from 'rxjs';
-import { ReplaySubject, combineLatest, of, timer } from 'rxjs';
+import { ReplaySubject, combineLatest, map, of, timer } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
-import type {
-  Backlog,
-  FullBacklog,
-  Music,
-  Queue,
-  QueueResponse,
-} from './music-api.interface';
 import { VisibilityService } from './visibility.service';
 
 @Injectable({
@@ -24,12 +24,12 @@ import { VisibilityService } from './visibility.service';
 export class QueueService {
   private readonly queueEndpoint;
   private readonly backlogEndpoint;
-  private readonly $queue = new ReplaySubject<Queue[]>(1);
-  private readonly $backlog = new ReplaySubject<Backlog | null>(1);
+  private readonly $queue = new ReplaySubject<QueueDtoDto[]>(1);
+  private readonly $backlog = new ReplaySubject<BacklogDtoDto | null>(1);
 
   private cacheFullBacklog: null | {
     timestamp: number;
-    backlog: FullBacklog[];
+    backlog: FullBacklogDtoDto[];
   } = null;
 
   private $polling?: Subscription;
@@ -75,15 +75,20 @@ export class QueueService {
     });
   }
 
-  push(music: Music) {
+  push(music: MusicDtoDto) {
     const publicCode = this.session.currentSession()?.code;
-    if (!publicCode) return of(null);
+    if (!publicCode) return of(void 0);
     return this.apiQueue
-      .queueControllerPushToQueue(publicCode, music as unknown as object)
+      .queueControllerPushToQueue(
+        publicCode,
+        music as unknown as object,
+        'body',
+      )
       .pipe(
         tap(() => {
           this.loadQueue();
         }),
+        map(() => void 0),
       );
   }
 
@@ -102,48 +107,54 @@ export class QueueService {
       !this.cacheFullBacklog ||
       this.cacheFullBacklog.timestamp > Date.now() - 10000
     ) {
-      return this.apiBacklog.backlogControllerGetBackLog(publicCode).pipe(
-        tap((backlog: any) => {
-          this.cacheFullBacklog = {
-            timestamp: Date.now(),
-            backlog: backlog as FullBacklog[],
-          };
-        }),
-      );
+      return this.apiBacklog
+        .backlogControllerGetBackLog(publicCode, 'body')
+        .pipe(
+          tap((backlog: FullBacklogDtoDto[]) => {
+            this.cacheFullBacklog = {
+              timestamp: Date.now(),
+              backlog,
+            };
+          }),
+        );
     }
     return of(this.cacheFullBacklog.backlog);
   }
 
   public importPlaylist(code: number, spotifyPlaylistId: string) {
-    return this.apiBacklog.backlogControllerImport(code);
+    return this.apiBacklog.backlogControllerImport(code, { spotifyPlaylistId });
   }
 
-  pushBacklog(music: Music) {
+  pushBacklog(music: MusicDtoDto) {
     const publicCode = this.session.currentSession()?.code;
-    if (!publicCode) return of([]);
-    return this.apiBacklog.backlogControllerPushToBacklog(
-      publicCode,
-      music as unknown as object,
-    ) as unknown as any;
+    if (!publicCode) return of(void 0);
+    return this.apiBacklog
+      .backlogControllerPushToBacklog(
+        publicCode,
+        music as unknown as object,
+        'body',
+      )
+      .pipe(map(() => void 0));
   }
 
   forward(id: string | number) {
     const publicCode = this.session.currentSession()?.code;
-    if (!publicCode) return of(null);
+    if (!publicCode) return of(void 0);
     return this.apiQueue
-      .queueControllerForwardQueue(String(id), publicCode)
+      .queueControllerForwardQueue(String(id), publicCode, 'body')
       .pipe(
         tap(() => {
           this.loadQueue();
         }),
+        map(() => void 0),
       );
   }
 
   delete(id: string | number) {
     const publicCode = this.session.currentSession()?.code;
-    if (!publicCode) return of(null);
+    if (!publicCode) return of(void 0);
     return this.apiQueue
-      .queueControllerDeleteFromQueue(String(id), publicCode)
+      .queueControllerDeleteFromQueue(String(id), publicCode, 'body')
       .pipe(
         tap(() => {
           this.$queue.pipe(first()).subscribe({
@@ -155,6 +166,7 @@ export class QueueService {
             },
           });
         }),
+        map(() => void 0),
       );
   }
 
@@ -181,11 +193,10 @@ export class QueueService {
   private loadQueue() {
     const publicCode = this.session.currentSession()?.code;
     if (!publicCode) return;
-    this.apiQueue.queueControllerGetQueue(publicCode).subscribe({
-      next: (response) => {
-        const data = response as unknown as QueueResponse;
-        this.$queue.next(data.queue);
-        this.$backlog.next(data.backlog);
+    this.apiQueue.queueControllerGetQueue(publicCode, 'body').subscribe({
+      next: (response: QueueResponseDtoDto) => {
+        this.$queue.next(response.queue);
+        this.$backlog.next(response.backlog);
       },
       error: (err) => {
         this.$queue.error(err);

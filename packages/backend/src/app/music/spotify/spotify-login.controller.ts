@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
@@ -40,6 +42,7 @@ export class SpotifyLoginController {
   @Get(':publicCode/spotify-login')
   @ApiOperation({ summary: 'Get Spotify login URL for this session' })
   @ApiParam({ name: 'publicCode', type: Number })
+  @ApiOkResponse({ type: String })
   async spotifyLogin(@MusicSessionParam() musicSession: MusicSession) {
     const uuid = randomUUID();
     this.sessions.setSpotifyAuthUuid(musicSession, uuid);
@@ -68,6 +71,14 @@ export class SpotifyLoginController {
 
   @Post('register-player')
   @ApiOperation({ summary: 'Register a Spotify player for the session' })
+  @ApiCreatedResponse({
+    schema: {
+      properties: {
+        connected: { type: 'boolean' },
+        publicCode: { type: 'number' },
+      },
+    },
+  })
   async spotifyAuthentication(
     @Body() spotifyOAuth: SpotifyOAuthDTO,
     @Request() req: { user: JwtUser },

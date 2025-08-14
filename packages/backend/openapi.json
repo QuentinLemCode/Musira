@@ -24,7 +24,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MusicDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -33,7 +43,9 @@
           }
         ],
         "summary": "Search music on Spotify for this session",
-        "tags": ["Music"]
+        "tags": [
+          "Music"
+        ]
       }
     },
     "/api/session/{publicCode}/music/start": {
@@ -51,7 +63,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentMusicDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -59,7 +78,9 @@
             "bearer": []
           }
         ],
-        "tags": ["Music"]
+        "tags": [
+          "Music"
+        ]
       }
     },
     "/api/session/{publicCode}/music/stop": {
@@ -77,7 +98,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentMusicDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -85,7 +113,9 @@
             "bearer": []
           }
         ],
-        "tags": ["Music"]
+        "tags": [
+          "Music"
+        ]
       }
     },
     "/api/session/{publicCode}/music": {
@@ -103,7 +133,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentMusicDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -111,7 +148,9 @@
             "bearer": []
           }
         ],
-        "tags": ["Music"]
+        "tags": [
+          "Music"
+        ]
       }
     },
     "/api/session/{publicCode}/queue": {
@@ -129,7 +168,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueueResponseDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -138,7 +184,9 @@
           }
         ],
         "summary": "Get queue and nominated backlog for a session",
-        "tags": ["Queue"]
+        "tags": [
+          "Queue"
+        ]
       },
       "post": {
         "operationId": "QueueController_pushToQueue",
@@ -164,7 +212,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueueDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -173,7 +228,9 @@
           }
         ],
         "summary": "Push a music to the queue",
-        "tags": ["Queue"]
+        "tags": [
+          "Queue"
+        ]
       }
     },
     "/api/session/{publicCode}/queue/{id}": {
@@ -198,7 +255,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": ""
           }
         },
@@ -208,7 +265,9 @@
           }
         ],
         "summary": "Delete a music from the queue",
-        "tags": ["Queue"]
+        "tags": [
+          "Queue"
+        ]
       }
     },
     "/api/session/{publicCode}/queue/{id}/forward": {
@@ -234,7 +293,14 @@
         ],
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueueDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -243,7 +309,9 @@
           }
         ],
         "summary": "Forward a queued music (move up)",
-        "tags": ["Queue"]
+        "tags": [
+          "Queue"
+        ]
       }
     },
     "/api/session/{publicCode}/backlog": {
@@ -271,7 +339,17 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FullBacklogDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -280,7 +358,9 @@
           }
         ],
         "summary": "Push a music to backlog",
-        "tags": ["Backlog"]
+        "tags": [
+          "Backlog"
+        ]
       },
       "get": {
         "operationId": "BacklogController_getBackLog",
@@ -296,7 +376,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FullBacklogDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -305,7 +395,9 @@
           }
         ],
         "summary": "Get backlog for session",
-        "tags": ["Backlog"]
+        "tags": [
+          "Backlog"
+        ]
       }
     },
     "/api/session/{publicCode}/backlog/{id}": {
@@ -330,7 +422,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": ""
           }
         },
@@ -340,7 +432,9 @@
           }
         ],
         "summary": "Delete a backlog item",
-        "tags": ["Backlog"]
+        "tags": [
+          "Backlog"
+        ]
       }
     },
     "/api/session/{publicCode}/backlog/import": {
@@ -356,9 +450,30 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "spotifyPlaylistId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResultDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -367,7 +482,9 @@
           }
         ],
         "summary": "Import a Spotify playlist into backlog",
-        "tags": ["Backlog"]
+        "tags": [
+          "Backlog"
+        ]
       }
     },
     "/api/spotify/{publicCode}/spotify-login": {
@@ -385,7 +502,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -394,7 +518,9 @@
           }
         ],
         "summary": "Get Spotify login URL for this session",
-        "tags": ["Spotify"]
+        "tags": [
+          "Spotify"
+        ]
       }
     },
     "/api/spotify/register-player": {
@@ -403,7 +529,21 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "connected": {
+                      "type": "boolean"
+                    },
+                    "publicCode": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -412,7 +552,9 @@
           }
         ],
         "summary": "Register a Spotify player for the session",
-        "tags": ["Spotify"]
+        "tags": [
+          "Spotify"
+        ]
       }
     },
     "/api/spotify/{publicCode}/logout-player": {
@@ -439,7 +581,9 @@
           }
         ],
         "summary": "Logout Spotify player for this session",
-        "tags": ["Spotify"]
+        "tags": [
+          "Spotify"
+        ]
       }
     },
     "/api/health": {
@@ -451,7 +595,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/api/music-session": {
@@ -469,7 +615,9 @@
           }
         ],
         "summary": "Create a new music session",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       },
       "get": {
         "operationId": "MusicSessionController_findAll",
@@ -485,7 +633,9 @@
           }
         ],
         "summary": "List all music sessions (admin only)",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       }
     },
     "/api/music-session/{publicCode}": {
@@ -512,7 +662,9 @@
           }
         ],
         "summary": "Get a session by public code",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       },
       "patch": {
         "operationId": "MusicSessionController_update",
@@ -537,7 +689,9 @@
           }
         ],
         "summary": "Update a session (creator only)",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       },
       "delete": {
         "operationId": "MusicSessionController_remove",
@@ -562,7 +716,9 @@
           }
         ],
         "summary": "Delete a session (admin or creator)",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       }
     },
     "/api/session/{publicCode}/settings": {
@@ -580,7 +736,21 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "maxVotes": {
+                      "type": "number"
+                    },
+                    "maxQueuableSongPerUser": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -589,7 +759,9 @@
           }
         ],
         "summary": "Update session settings",
-        "tags": ["Settings"]
+        "tags": [
+          "Settings"
+        ]
       },
       "get": {
         "operationId": "SettingsController_getSettings",
@@ -605,7 +777,21 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "maxVotes": {
+                      "type": "number"
+                    },
+                    "maxQueuableSongPerUser": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -614,7 +800,9 @@
           }
         ],
         "summary": "Get session settings",
-        "tags": ["Settings"]
+        "tags": [
+          "Settings"
+        ]
       }
     },
     "/api/users": {
@@ -632,7 +820,9 @@
           }
         ],
         "summary": "List all users (admin only)",
-        "tags": ["Users"]
+        "tags": [
+          "Users"
+        ]
       },
       "delete": {
         "operationId": "UsersController_deleteSelf",
@@ -648,7 +838,9 @@
           }
         ],
         "summary": "Delete self (non-admin only)",
-        "tags": ["Users"]
+        "tags": [
+          "Users"
+        ]
       }
     },
     "/api/users/{id}": {
@@ -675,7 +867,9 @@
           }
         ],
         "summary": "Delete a user by id (admin only)",
-        "tags": ["Users"]
+        "tags": [
+          "Users"
+        ]
       }
     },
     "/api/auth/email/login": {
@@ -687,7 +881,9 @@
             "description": ""
           }
         },
-        "tags": ["Login"]
+        "tags": [
+          "Login"
+        ]
       }
     },
     "/api/auth/oauth/login": {
@@ -699,7 +895,9 @@
             "description": ""
           }
         },
-        "tags": ["Oauth"]
+        "tags": [
+          "Oauth"
+        ]
       }
     },
     "/api/auth/logout": {
@@ -711,7 +909,9 @@
             "description": ""
           }
         },
-        "tags": ["Logout"]
+        "tags": [
+          "Logout"
+        ]
       }
     },
     "/api/auth/email/register": {
@@ -723,7 +923,9 @@
             "description": ""
           }
         },
-        "tags": ["Register"]
+        "tags": [
+          "Register"
+        ]
       }
     },
     "/api/auth/email/unlock/{id}": {
@@ -744,7 +946,9 @@
             "description": ""
           }
         },
-        "tags": ["Unlock"]
+        "tags": [
+          "Unlock"
+        ]
       }
     },
     "/api/auth/me": {
@@ -761,7 +965,9 @@
             "bearer": []
           }
         ],
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       }
     }
   },
@@ -782,9 +988,205 @@
       }
     },
     "schemas": {
+      "MusicDto": {
+        "type": "object",
+        "properties": {
+          "artist": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "album": {
+            "type": "string"
+          },
+          "uri": {
+            "type": "string",
+            "description": "Spotify track URI"
+          },
+          "cover": {
+            "type": "string",
+            "description": "Cover image URL"
+          },
+          "duration": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "artist",
+          "title",
+          "album",
+          "uri",
+          "duration"
+        ]
+      },
+      "UserLightDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "QueueDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "status": {
+            "type": "number",
+            "enum": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "description": "0=PENDING, 1=PLAYING, 2=FINISHED, 3=CANCELLED"
+          },
+          "music": {
+            "$ref": "#/components/schemas/MusicDto"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserLightDto"
+          },
+          "forward_votes": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "music",
+          "user",
+          "forward_votes"
+        ]
+      },
+      "CurrentMusicDto": {
+        "type": "object",
+        "properties": {
+          "isSpotifyAccountRegistered": {
+            "type": "boolean"
+          },
+          "currentPlay": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MusicDto"
+              }
+            ]
+          },
+          "queue": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueueDto"
+            }
+          },
+          "engineStarted": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "isSpotifyAccountRegistered",
+          "engineStarted"
+        ]
+      },
+      "BacklogDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "music": {
+            "$ref": "#/components/schemas/MusicDto"
+          }
+        },
+        "required": [
+          "id",
+          "music"
+        ]
+      },
+      "QueueResponseDto": {
+        "type": "object",
+        "properties": {
+          "queue": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueueDto"
+            }
+          },
+          "backlog": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BacklogDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "queue",
+          "backlog"
+        ]
+      },
       "Music": {
         "type": "object",
         "properties": {}
+      },
+      "FullBacklogDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "music": {
+            "$ref": "#/components/schemas/MusicDto"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deleted_at": {
+            "type": "object",
+            "nullable": true
+          },
+          "play_count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "music",
+          "created_at",
+          "updated_at",
+          "play_count"
+        ]
+      },
+      "ImportResultDto": {
+        "type": "object",
+        "properties": {
+          "added": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "added"
+        ]
       }
     }
   }

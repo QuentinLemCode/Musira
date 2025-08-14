@@ -61,16 +61,18 @@ type MusicSessionDto = {
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let session of sessionsList">
-          <th>{{ session.id }}</th>
-          <th>{{ session.name }}</th>
-          <th>{{ session.code }}</th>
-          <th>{{ session.creator }}</th>
-          <th>{{ session.linkedToSpotify }}</th>
-          <td>
-            <button (click)="deleteSession(session.code)">Delete</button>
-          </td>
-        </tr>
+        @for (session of sessionsList; track session.id) {
+          <tr>
+            <th>{{ session.id }}</th>
+            <th>{{ session.name }}</th>
+            <th>{{ session.code }}</th>
+            <th>{{ session.creator }}</th>
+            <th>{{ session.linkedToSpotify }}</th>
+            <td>
+              <button (click)="deleteSession(session.code)">Delete</button>
+            </td>
+          </tr>
+        }
       </tbody>
     </table>
 
@@ -89,19 +91,21 @@ type MusicSessionDto = {
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of usersList">
-          <th>{{ user.id }}</th>
-          <th>{{ user.name }}</th>
-          <th>{{ user.role }}</th>
-          <th>{{ user.type === 'EMAIL' && user.loginTries }}</th>
-          <th>{{ user.type === 'EMAIL' && user.locked }}</th>
-          <th>{{ user.created_at }}</th>
-          <th>{{ user.updated_at }}</th>
-          <td class="actions">
-            <button (click)="deleteUser(user.id)">Delete</button>
-            <button (click)="unlockUser(user.id)">Unlock</button>
-          </td>
-        </tr>
+        @for (user of usersList; track user.id) {
+          <tr>
+            <th>{{ user.id }}</th>
+            <th>{{ user.name }}</th>
+            <th>{{ user.role }}</th>
+            <th>{{ user.type === 'EMAIL' && user.loginTries }}</th>
+            <th>{{ user.type === 'EMAIL' && user.locked }}</th>
+            <th>{{ user.created_at }}</th>
+            <th>{{ user.updated_at }}</th>
+            <td class="actions">
+              <button (click)="deleteUser(user.id)">Delete</button>
+              <button (click)="unlockUser(user.id)">Unlock</button>
+            </td>
+          </tr>
+        }
       </tbody>
     </table>
 
@@ -118,7 +122,9 @@ type MusicSessionDto = {
       />
     </label>
     <button (click)="importPlaylist()">Import</button>
-    <p *ngIf="error">{{ error }}</p>
+    @if (error) {
+      <p>{{ error }}</p>
+    }
   `,
   styles: [
     `

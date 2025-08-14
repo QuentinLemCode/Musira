@@ -11,7 +11,11 @@ function isOAuthProvider(value: unknown): value is string {
 
 @Component({
   selector: 'musira-callback',
-  template: ` <p *ngIf="error">{{ error }}</p> `,
+  template: `
+    @if (error) {
+      <p>{{ error }}</p>
+    }
+  `,
   styles: [``],
   standalone: true,
   imports: [CommonModule],

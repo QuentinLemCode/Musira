@@ -38,7 +38,9 @@ import { AuthenticationService } from '../authentication.service';
         Créer un compte
       </button>
     </form>
-    <p class="error" *ngIf="error">{{ error }}</p>
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
   `,
   styles: [``],
   standalone: true,

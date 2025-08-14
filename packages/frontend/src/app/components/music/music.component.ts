@@ -13,7 +13,7 @@ import {
   faForwardFast,
   faPlus,
 } from '@fortawesome/free-solid-svg-icons';
-import type { Music } from '../../services/music-api.interface';
+import type { MusicDtoDto } from '@musira/client';
 
 export interface MusicComponentConfiguration {
   votable: boolean;
@@ -44,58 +44,71 @@ export interface IconUpdateStatus {
     FontAwesomeModule,
   ],
   template: `
-    <ng-container *ngIf="music">
+    @if (music) {
       <div class="cover">
         <img [src]="music.cover" alt="album cover" />
       </div>
       <div class="info">
         <div class="title">{{ music.title }}</div>
         <div class="artist">{{ music.artist }}</div>
-        <div *ngIf="username" class="adder">
-          Ajouté par {{ username | titlecase }}
-        </div>
-        <div *ngIf="backlog" class="adder">Musique de la réserve</div>
-        <div *ngIf="message" class="adder">
-          {{ message }}
-        </div>
-      </div>
-      <div class="vote" *ngIf="config?.votable">
-        <button (click)="vote.emit(updateStatusDelete)">
-          <fa-icon [icon]="iconForward"></fa-icon>
-          <div
-            class="vote-count"
-            *ngIf="voteCount > 0"
-            [ngClass]="loadingDelete ? ['fa-beat-fade'] : []"
-          >
-            {{ voteCount }}
+        @if (username) {
+          <div class="adder">Ajouté par {{ username | titlecase }}</div>
+        }
+        @if (backlog) {
+          <div class="adder">Musique de la réserve</div>
+        }
+        @if (message) {
+          <div class="adder">
+            {{ message }}
           </div>
-        </button>
+        }
       </div>
-      <div class="remove" *ngIf="config?.deletable">
-        <button (click)="delete.emit(updateStatusForward)">
-          <fa-icon
-            [icon]="iconDelete"
-            [ngClass]="loadingForward ? ['fa-beat-fade'] : []"
-          ></fa-icon>
-        </button>
-      </div>
-      <div class="add-to-queue" *ngIf="config?.queueable">
-        <button (click)="addToQueue.emit(updateStatusAdd)">
-          <fa-icon
-            [icon]="iconAdd"
-            [ngClass]="loadingAdd ? ['fa-beat-fade'] : []"
-          ></fa-icon>
-        </button>
-      </div>
-      <div class="add-to-backlog" *ngIf="config?.backlog">
-        <button (click)="addToBacklog.emit(updateStatusBacklog)">
-          <fa-icon
-            [icon]="iconBacklog"
-            [ngClass]="loadingBacklog ? ['fa-beat-fade'] : []"
-          ></fa-icon>
-        </button>
-      </div>
-    </ng-container>
+      @if (config?.votable) {
+        <div class="vote">
+          <button (click)="vote.emit(updateStatusDelete)">
+            <fa-icon [icon]="iconForward"></fa-icon>
+            @if (voteCount > 0) {
+              <div
+                class="vote-count"
+                [ngClass]="loadingDelete ? ['fa-beat-fade'] : []"
+              >
+                {{ voteCount }}
+              </div>
+            }
+          </button>
+        </div>
+      }
+      @if (config?.deletable) {
+        <div class="remove">
+          <button (click)="delete.emit(updateStatusForward)">
+            <fa-icon
+              [icon]="iconDelete"
+              [ngClass]="loadingForward ? ['fa-beat-fade'] : []"
+            ></fa-icon>
+          </button>
+        </div>
+      }
+      @if (config?.queueable) {
+        <div class="add-to-queue">
+          <button (click)="addToQueue.emit(updateStatusAdd)">
+            <fa-icon
+              [icon]="iconAdd"
+              [ngClass]="loadingAdd ? ['fa-beat-fade'] : []"
+            ></fa-icon>
+          </button>
+        </div>
+      }
+      @if (config?.backlog) {
+        <div class="add-to-backlog">
+          <button (click)="addToBacklog.emit(updateStatusBacklog)">
+            <fa-icon
+              [icon]="iconBacklog"
+              [ngClass]="loadingBacklog ? ['fa-beat-fade'] : []"
+            ></fa-icon>
+          </button>
+        </div>
+      }
+    }
   `,
   styles: [
     `
@@ -164,7 +177,7 @@ export class MusicComponent implements OnInit {
   username?: string;
 
   @Input()
-  music?: Music;
+  music?: MusicDtoDto;
 
   @Input()
   voteCount = 0;

@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
@@ -25,6 +26,14 @@ export class SettingsController {
   @UseGuards(SessionCreatorGuard)
   @Put()
   @ApiOperation({ summary: 'Update session settings' })
+  @ApiOkResponse({
+    schema: {
+      properties: {
+        maxVotes: { type: 'number' },
+        maxQueuableSongPerUser: { type: 'number' },
+      },
+    },
+  })
   async setSettings(
     @MusicSessionParam() musicSession: MusicSession,
     @Body() voteSettings: SettingsQuery,
@@ -44,6 +53,14 @@ export class SettingsController {
   @UseGuards(SessionCreatorGuard)
   @Get()
   @ApiOperation({ summary: 'Get session settings' })
+  @ApiOkResponse({
+    schema: {
+      properties: {
+        maxVotes: { type: 'number' },
+        maxQueuableSongPerUser: { type: 'number' },
+      },
+    },
+  })
   async getSettings(
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<SettingsQuery> {

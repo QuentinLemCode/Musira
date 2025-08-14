@@ -41,4 +41,28 @@ function fixTsConfigPaths() {
 
 touchIndex();
 fixTsConfigPaths();
+// Fix incorrect OpenAPI types post-generation
+try {
+  const fbPath = path.join(genDir, "model", "fullBacklogDto.ts");
+  if (fs.existsSync(fbPath)) {
+    let content = fs.readFileSync(fbPath, "utf8");
+    content = content.replace(
+      /deleted_at\?:\s*object\s*\|\s*null;/,
+      "deleted_at?: string | null;",
+    );
+    fs.writeFileSync(fbPath, content, "utf8");
+  }
+
+  const cmPath = path.join(genDir, "model", "currentMusicDto.ts");
+  if (fs.existsSync(cmPath)) {
+    let content = fs.readFileSync(cmPath, "utf8");
+    content = content.replace(
+      /message\?:\s*object\s*\|\s*null;/,
+      "message?: string | null;",
+    );
+    fs.writeFileSync(cmPath, content, "utf8");
+  }
+} catch (e) {
+  console.warn("postgen: skipped DTO hotfix (", e?.message, ")");
+}
 console.log("Post-gen done.");

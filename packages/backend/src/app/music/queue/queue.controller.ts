@@ -11,6 +11,9 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
@@ -23,6 +26,7 @@ import { UsersService } from '../../users/users.service';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import type { Backlog } from '../backlog/backlog.entity';
 import { BacklogService } from '../backlog/backlog.service';
+import { QueueDto, QueueResponseDto } from '../dto/queue.dto';
 import { Music } from '../music.entity';
 import { QueueEngineService } from './queue-engine/queue-engine.service';
 import type { Queue } from './queue.entity';
@@ -48,6 +52,7 @@ export class QueueController {
   @Public()
   @Get()
   @ApiOperation({ summary: 'Get queue and nominated backlog for a session' })
+  @ApiOkResponse({ type: QueueResponseDto })
   async getQueue(
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<QueueResponse> {
@@ -61,6 +66,7 @@ export class QueueController {
 
   @Post()
   @ApiOperation({ summary: 'Push a music to the queue' })
+  @ApiCreatedResponse({ type: QueueDto })
   async pushToQueue(
     @Body() music: Music,
     @Request() req: { user: JwtUser },
@@ -93,6 +99,7 @@ export class QueueController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a music from the queue' })
   @ApiParam({ name: 'id', type: String })
+  @ApiNoContentResponse()
   async deleteFromQueue(
     @Param('id') id: string,
     @Request() req: { user: JwtUser },
@@ -124,6 +131,7 @@ export class QueueController {
   @Post('/:id/forward')
   @ApiOperation({ summary: 'Forward a queued music (move up)' })
   @ApiParam({ name: 'id', type: String })
+  @ApiCreatedResponse({ type: QueueDto })
   async forwardQueue(
     @Param('id') id: string,
     @Request() req: { user: JwtUser },

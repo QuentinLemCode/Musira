@@ -1,4 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type {
+  BacklogDtoDto,
+  CurrentMusicDtoDto,
+  QueueDtoDto,
+} from '@musira/client';
 import { Subject, throwError } from 'rxjs';
 import {
   backlogFixture,
@@ -6,11 +11,6 @@ import {
   queueFixture,
 } from '../../../tests/fixtures';
 import { AuthenticationService } from '../../authentication/authentication.service';
-import type {
-  Backlog,
-  CurrentMusic,
-  Queue,
-} from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import type { IconUpdateStatus } from '../music/music.component';
@@ -20,9 +20,9 @@ describe('QueueComponent', () => {
   let component: QueueComponent;
   let fixture: ComponentFixture<QueueComponent>;
 
-  let subGetQueue: Subject<Queue[]>;
-  let subGetBacklog: Subject<Backlog>;
-  let subCurrentMusic: Subject<CurrentMusic>;
+  let subGetQueue: Subject<QueueDtoDto[]>;
+  let subGetBacklog: Subject<BacklogDtoDto>;
+  let subCurrentMusic: Subject<CurrentMusicDtoDto>;
 
   const mockQueueService = {
     get: jasmine.createSpy('get'),

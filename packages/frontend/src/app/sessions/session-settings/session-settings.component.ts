@@ -6,12 +6,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import type { CurrentMusicDtoDto } from '@musira/client';
 import { BacklogComponent } from '../../components/backlog/backlog.component';
 import { MusicComponent } from '../../components/music/music.component';
 import { SearchComponent } from '../../components/search/search.component';
 import { SpotifyLoginComponent } from '../../components/spotify-login/spotify-login.component';
 import { SpotifyStatusComponent } from '../../components/spotify-status/spotify-status.component';
-import type { CurrentMusic } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { SettingsService } from '../../services/settings.service';
 import { MusicSessionsService } from '../music-sessions.service';
@@ -42,26 +42,31 @@ import { MusicSessionsService } from '../music-sessions.service';
     <h1>Status de votre session Spotify</h1>
     <musira-spotify-status></musira-spotify-status>
 
-    <p *ngIf="error" class="error">{{ error }}</p>
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
 
-    <div *ngIf="musicStatus; else loading" class="mt-4">
-      <p *ngIf="musicStatus.message">{{ musicStatus.message }}</p>
-      <h2 *ngIf="musicStatus.currentPlay">
-        Musique en cours de lecture sur Spotify :
-      </h2>
-      <musira-music
-        *ngIf="musicStatus.currentPlay"
-        [music]="musicStatus.currentPlay"
-      ></musira-music>
+    @if (musicStatus; as status) {
+      <div class="mt-4">
+        @if (status.message) {
+          <p>{{ status.message }}</p>
+        }
+        @if (status.currentPlay) {
+          <h2>Musique en cours de lecture sur Spotify :</h2>
+          <musira-music [music]="status.currentPlay"></musira-music>
+        }
 
-      <h1 id="backlog">Réserve de titres :</h1>
-      <p>
-        Lorsqu'il n'y a plus de musique dans la playlist, un titre au hasard
-        passera depuis cette réserve.
-      </p>
-      <musira-search [forBacklog]="true"></musira-search>
-      <musira-backlog></musira-backlog>
-    </div>
+        <h1 id="backlog">Réserve de titres :</h1>
+        <p>
+          Lorsqu'il n'y a plus de musique dans la playlist, un titre au hasard
+          passera depuis cette réserve.
+        </p>
+        <musira-search [forBacklog]="true"></musira-search>
+        <musira-backlog></musira-backlog>
+      </div>
+    } @else {
+      <p>Chargement...</p>
+    }
 
     <ng-template #notAuthenticated>
       <musira-spotify-login
@@ -74,45 +79,48 @@ import { MusicSessionsService } from '../music-sessions.service';
     </ng-template>
 
     <h1 class="mt-8">Paramètres</h1>
-    <div
-      *ngIf="maxVote !== undefined"
-      class="flex flex-row flex-nowrap justify-evenly items-baseline mb-2"
-    >
-      <label for="maxVotes">Nombre de votes pour passer une musique :</label>
-      <input class="w-24" type="number" name="maxVotes" [(ngModel)]="maxVote" />
-      <button (click)="setMaxVotes()">Sauvegarder</button>
-    </div>
-    <p *ngIf="maxVotesSaveStatus" class="text-center">
-      {{ maxVotesSaveStatus }}
-    </p>
+    @if (maxVote !== undefined) {
+      <div class="flex flex-row flex-nowrap justify-evenly items-baseline mb-2">
+        <label for="maxVotes">Nombre de votes pour passer une musique :</label>
+        <input
+          class="w-24"
+          type="number"
+          name="maxVotes"
+          [(ngModel)]="maxVote"
+        />
+        <button (click)="setMaxVotes()">Sauvegarder</button>
+      </div>
+    }
+    @if (maxVotesSaveStatus) {
+      <p class="text-center">{{ maxVotesSaveStatus }}</p>
+    }
 
-    <div
-      *ngIf="maxQueuableSongs !== undefined"
-      class="flex flex-row flex-nowrap justify-evenly items-baseline"
-    >
-      <label for="maxSongs">Nombre maximum de musique par utilisateur :</label>
-      <input
-        class="w-24"
-        type="number"
-        name="maxSongs"
-        [(ngModel)]="maxQueuableSongs"
-      />
-      <button (click)="setMaxQueuableSongs()">Sauvegarder</button>
-    </div>
-    <p *ngIf="maxQueuableSongsSaveStatus" class="text-center">
-      {{ maxQueuableSongsSaveStatus }}
-    </p>
+    @if (maxQueuableSongs !== undefined) {
+      <div class="flex flex-row flex-nowrap justify-evenly items-baseline">
+        <label for="maxSongs"
+          >Nombre maximum de musique par utilisateur :</label
+        >
+        <input
+          class="w-24"
+          type="number"
+          name="maxSongs"
+          [(ngModel)]="maxQueuableSongs"
+        />
+        <button (click)="setMaxQueuableSongs()">Sauvegarder</button>
+      </div>
+    }
+    @if (maxQueuableSongsSaveStatus) {
+      <p class="text-center">{{ maxQueuableSongsSaveStatus }}</p>
+    }
 
     <div class="mt-8">
       <h1>Zone dangereuse</h1>
       <button (click)="deleteSession()">Supprimer la session</button>
-      <button
-        class="ml-4"
-        *ngIf="musicStatus?.isSpotifyAccountRegistered"
-        (click)="logoutPlayer()"
-      >
-        Déconnecter de Spotify
-      </button>
+      @if (musicStatus?.isSpotifyAccountRegistered) {
+        <button class="ml-4" (click)="logoutPlayer()">
+          Déconnecter de Spotify
+        </button>
+      }
     </div>
   `,
   styles: [``],
@@ -122,7 +130,7 @@ export class SessionSettingsComponent {
   maxQueuableSongs: number | undefined;
   faArrowRotateLeft = faArrowRotateLeft;
   error = '';
-  musicStatus: CurrentMusic | null = null;
+  musicStatus: CurrentMusicDtoDto | null = null;
 
   maxVotesSaveStatus = '';
   maxQueuableSongsSaveStatus = '';

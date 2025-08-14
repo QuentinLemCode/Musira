@@ -4,10 +4,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import type { BacklogDtoDto, MusicDtoDto, QueueDtoDto } from '@musira/client';
+import { QueueDtoDto as QueueDtoType } from '@musira/client';
 import { tap } from 'rxjs/operators';
 import { AuthenticationService } from '../../authentication/authentication.service';
-import type { Backlog, Music, Queue } from '../../services/music-api.interface';
-import { Status } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import type {
@@ -28,31 +28,34 @@ import { MusicComponent } from '../music/music.component';
     MusicComponent,
   ],
   template: `
-    <p *ngIf="loading">Chargement ...</p>
-    <p *ngIf="error">{{ error }}</p>
+    @if (loading) {
+      <p>Chargement ...</p>
+    }
+    @if (error) {
+      <p>{{ error }}</p>
+    }
 
-    <ng-container *ngIf="queues !== null">
-      <ng-container *ngIf="playing">
+    @if (queues !== null) {
+      @if (playing) {
         <h3>En cours de lecture</h3>
         <musira-music [music]="playing" [username]="playingUser"></musira-music>
         <hr />
-      </ng-container>
+      }
       <h3>File d'attente</h3>
-      <musira-music
-        *ngFor="let queue of queues"
-        [music]="queue.music"
-        [username]="queue.user.name"
-        [config]="getMusicConfig(queue)"
-        (delete)="delete(queue.id, $event)"
-        (vote)="vote(queue.id, $event)"
-        [voteCount]="queue.forward_votes"
-      ></musira-music>
-      <musira-music
-        *ngIf="backlog"
-        [music]="backlog.music"
-        [backlog]="true"
-      ></musira-music>
-    </ng-container>
+      @for (queue of queues!; track queue.id) {
+        <musira-music
+          [music]="queue.music"
+          [username]="queue.user.name"
+          [config]="getMusicConfig(queue)"
+          (delete)="delete(queue.id, $event)"
+          (vote)="vote(queue.id, $event)"
+          [voteCount]="queue.forward_votes"
+        ></musira-music>
+      }
+      @if (backlog) {
+        <musira-music [music]="backlog.music" [backlog]="true"></musira-music>
+      }
+    }
   `,
   styles: [
     `
@@ -63,10 +66,10 @@ import { MusicComponent } from '../music/music.component';
   ],
 })
 export class QueueComponent {
-  queues: Queue[] | null = null;
-  playing: Music | null = null;
+  queues: QueueDtoDto[] | null = null;
+  playing: MusicDtoDto | null = null;
   playingUser = '';
-  backlog: Backlog | null = null;
+  backlog: BacklogDtoDto | null = null;
   loading = true;
   error = '';
   isEngineStarted = false;
@@ -78,7 +81,7 @@ export class QueueComponent {
     backlog: false,
   };
 
-  getMusicConfig(queue: Queue) {
+  getMusicConfig(queue: QueueDtoDto) {
     const user = this.user.loggedUser();
     const isQueuedByUser = user.isLoggedIn && queue.user.id === +(user.id ?? 0);
     return {
@@ -165,8 +168,10 @@ export class QueueComponent {
     });
   }
 
-  private loadQueue(queues: Queue[]) {
-    const indexPlaying = queues.findIndex((q) => q.status === Status.PLAYING);
+  private loadQueue(queues: QueueDtoDto[]) {
+    const indexPlaying = queues.findIndex(
+      (q) => q.status === QueueDtoType.StatusEnum.NUMBER_1,
+    );
     if (indexPlaying !== -1) {
       const [playing] = queues.splice(indexPlaying, 1);
       if (playing) {
