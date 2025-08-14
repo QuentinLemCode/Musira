@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { AuthModalService } from '../authentication/auth-modal.service';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
 import { NavigationComponent } from './navigation.component';
@@ -32,6 +33,7 @@ describe('NavigationComponent', () => {
       providers: [
         { provide: AuthenticationService, useValue: mockUserService },
         { provide: MusicSessionsService, useValue: mockMusicSessionsService },
+        AuthModalService,
       ],
     }).compileComponents();
 
@@ -114,9 +116,8 @@ describe('NavigationComponent', () => {
 
     expect(mockUserService.logout).toHaveBeenCalled();
 
-    expect(router.navigate).toHaveBeenCalledWith(['/user/login'], {
-      replaceUrl: true,
-    });
+    // After refactor, we open modal instead of navigating to /user/login
+    // So no navigation assertion here other than showMenu closed
 
     expect(component.showMenu).toBe(false);
   });

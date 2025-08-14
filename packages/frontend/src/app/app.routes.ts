@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { AdminGuard } from './shared/admin.guard';
 import { authGuard } from './shared/auth.guard';
 import { musicSessionGuard } from './shared/music-session.guard';
-import { notAuthGuard } from './shared/not-auth.guard';
 
 export const routes: Routes = [
   {
@@ -50,19 +49,13 @@ export const routes: Routes = [
   },
   {
     path: 'user/login',
-    loadComponent: () =>
-      import('./authentication/login/login.component').then(
-        (m) => m.LoginComponent,
-      ),
-    canActivate: [notAuthGuard],
+    redirectTo: '',
+    pathMatch: 'full',
   },
   {
     path: 'user/register',
-    loadComponent: () =>
-      import('./authentication/register/register.component').then(
-        (m) => m.RegisterComponent,
-      ),
-    canActivate: [notAuthGuard],
+    redirectTo: '',
+    pathMatch: 'full',
   },
   {
     path: 'user/delete-account',
@@ -90,10 +83,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./sessions/join-session/join-session.component').then(
-        (m) => m.JoinSessionComponent,
-      ),
-    canActivate: [authGuard],
+      import('./landing/landing.component').then((m) => m.LandingComponent),
   },
   {
     path: '**',

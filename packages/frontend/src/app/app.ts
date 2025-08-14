@@ -6,6 +6,7 @@ import {
   faLinkedin,
   faTwitterSquare,
 } from '@fortawesome/free-brands-svg-icons';
+import { AuthModalComponent } from './authentication/auth-modal.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { DashboardService } from './services/dashboard.service';
 
@@ -18,6 +19,7 @@ import { DashboardService } from './services/dashboard.service';
       </header>
     }
     <router-outlet></router-outlet>
+    <musira-auth-modal></musira-auth-modal>
     @if (!isDashboard) {
       <footer>
         <p>
@@ -48,7 +50,13 @@ import { DashboardService } from './services/dashboard.service';
       }
     `,
   ],
-  imports: [FontAwesomeModule, RouterOutlet, RouterModule, NavigationComponent],
+  imports: [
+    FontAwesomeModule,
+    RouterOutlet,
+    RouterModule,
+    NavigationComponent,
+    AuthModalComponent,
+  ],
   providers: [DashboardService],
   standalone: true,
 })

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import type { OnInit } from '@angular/core';
-import { Component, Inject } from '@angular/core';
+import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import type {
   AbstractControl,
   ValidationErrors,
@@ -20,29 +20,54 @@ import { AuthenticationService } from '../authentication.service';
 @Component({
   selector: 'musira-register',
   template: `
-    <form [formGroup]="form" (ngSubmit)="submit()">
-      <input placeholder="Ton prénom" formControlName="username" />
-      <input placeholder="Ton email" formControlName="email" />
-      <input
-        type="password"
-        name="password"
-        placeholder="Ton mot de passe"
-        formControlName="password"
-      />
-      <input
-        type="password"
-        placeholder="Confirme ton mot de passe"
-        formControlName="passwordConfirmation"
-      />
-      <button type="submit" [disabled]="form.invalid || loading">
-        Créer un compte
-      </button>
-    </form>
-    @if (error) {
-      <p class="error">{{ error }}</p>
-    }
+    <div class="modal-register">
+      <h3>Créer un compte</h3>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <input placeholder="Ton prénom" formControlName="username" />
+        <input placeholder="Ton email" formControlName="email" />
+        <input
+          type="password"
+          name="password"
+          placeholder="Ton mot de passe"
+          formControlName="password"
+        />
+        <input
+          type="password"
+          placeholder="Confirme ton mot de passe"
+          formControlName="passwordConfirmation"
+        />
+        <button type="submit" [disabled]="form.invalid || loading">
+          Créer un compte
+        </button>
+      </form>
+      @if (error) {
+        <p class="error">{{ error }}</p>
+      }
+    </div>
   `,
-  styles: [``],
+  styles: [
+    `
+      @use '../../../colors.scss' as *;
+      .modal-register {
+        display: grid;
+        gap: 12px;
+      }
+      h3 {
+        margin: 0;
+        font-size: 22px;
+      }
+      form {
+        display: grid;
+        gap: 8px;
+      }
+      button {
+        width: 100%;
+      }
+      .error {
+        color: #ff6b6b;
+      }
+    `,
+  ],
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
 })
@@ -70,6 +95,7 @@ export class RegisterComponent implements OnInit {
 
   faCircle = faCircleNotch;
   loading = false;
+  @Output() success = new EventEmitter<void>();
 
   ngOnInit(): void {
     this.form.controls.passwordConfirmation.setValidators([
@@ -115,6 +141,7 @@ export class RegisterComponent implements OnInit {
             admin: false,
           });
           this.router.navigate(['/'], { replaceUrl: true });
+          this.success.emit();
         },
         error: (error) => {
           this.loading = false;

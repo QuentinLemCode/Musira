@@ -6,6 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { of } from 'rxjs';
 import { App } from './app';
+import { AuthModalComponent } from './authentication/auth-modal.component';
 import { AuthenticationService } from './authentication/authentication.service';
 import { NavigationComponent } from './navigation/navigation.component';
 import { DashboardService } from './services/dashboard.service';
@@ -26,6 +27,7 @@ describe('App', () => {
         HttpClientTestingModule,
         FontAwesomeModule,
         NavigationComponent,
+        AuthModalComponent,
         RouterTestingModule,
       ],
       providers: [

@@ -6,6 +6,7 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
+import { AuthModalService } from '../authentication/auth-modal.service';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { authGuard } from './auth.guard';
 
@@ -31,6 +32,7 @@ describe('authGuard', () => {
       providers: [
         { provide: AuthenticationService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock },
+        AuthModalService,
       ],
     });
   });
@@ -46,7 +48,7 @@ describe('authGuard', () => {
     expect(routerMock.createUrlTree).not.toHaveBeenCalled();
   });
 
-  it('should create UrlTree to login if user not logged in', () => {
+  it('should create UrlTree to home if user not logged in (modal opens)', () => {
     userServiceMock.loggedUser.set({ isLoggedIn: false });
 
     const result = TestBed.runInInjectionContext(() =>
@@ -54,6 +56,6 @@ describe('authGuard', () => {
     );
 
     expect(result).toBeDefined();
-    expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/user/login']);
+    expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
   });
 });

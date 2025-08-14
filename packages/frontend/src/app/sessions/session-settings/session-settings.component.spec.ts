@@ -11,6 +11,7 @@ import {
   SpotifyStatusStubComponent,
 } from '../../../tests/components-stubs';
 import { mockObservable } from '../../../tests/mock';
+import type { CurrentMusic } from '../../services/music-api.interface';
 import { MusicApiService } from '../../services/music-api.service';
 import { QueueService } from '../../services/queue.service';
 import {

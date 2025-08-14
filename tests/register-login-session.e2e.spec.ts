@@ -31,20 +31,18 @@ test.describe('Email register, login and session history', () => {
       { email, password, username },
     );
 
-    // Login page may auto-redirect to home after register via cookie; handle both cases
-    await page.goto(`${frontendBase}/user/login`);
-    try {
-      await page.waitForURL(`${frontendBase}/`, { timeout: 3000 });
-    } catch {
-      await page.getByText('Se connecter avec un email').click();
-      await page.getByPlaceholder('Ton email').fill(email);
-      await page.getByPlaceholder('Ton mot de passe').fill(password);
-      await page
-        .locator('form')
-        .getByRole('button', { name: 'Se connecter', exact: true })
-        .click();
-      await page.waitForURL(`${frontendBase}/`);
-    }
+    // Login via modal from navbar
+    await page.goto(`${frontendBase}/`);
+    await page.getByRole('link', { name: 'Se connecter' }).click();
+    // Modal now shows email form by default
+    await page.getByPlaceholder('Ton email').fill(email);
+    await page.getByPlaceholder('Ton mot de passe').fill(password);
+    await page
+      .locator('form')
+      .getByRole('button', { name: 'Se connecter', exact: true })
+      .click();
+    // Modal closes and we remain on '/'
+    await page.getByPlaceholder('123-456-789').waitFor({ timeout: 15000 });
 
     // Create session from same origin to avoid external redirect and get the code
     const code = await page.evaluate(async () => {

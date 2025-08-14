@@ -29,6 +29,11 @@ export class MusicApiService {
     @Inject(MusicService) private readonly musicApi: MusicService,
     @Inject(SpotifyService) private readonly spotifyApi: SpotifyService,
   ) {
+    // Provide an initial status to avoid indefinite "Chargement" in the UI
+    this.$status.next({
+      engineStarted: false,
+      isSpotifyAccountRegistered: false,
+    });
     const pollingObservable = combineLatest([
       this.visibility.change,
       this.session.currentSession$,
@@ -38,6 +43,11 @@ export class MusicApiService {
         if (visibility.visible && session?.linkedToSpotify) {
           this.launchPolling();
         } else {
+          // When not linked to Spotify, expose a deterministic status
+          this.$status.next({
+            engineStarted: false,
+            isSpotifyAccountRegistered: false,
+          });
           this.stopPolling();
         }
       },
@@ -53,8 +63,9 @@ export class MusicApiService {
   getUrlLogin(): Observable<string> {
     const publicCode = this.currentPublicCode();
     if (!publicCode) return new ReplaySubject<string>(1);
-    return this.spotifyApi
-      .spotifyLoginControllerSpotifyLogin(publicCode, 'body')
+    const url = `${environment.serverUrl}spotify/${publicCode}/spotify-login`;
+    return this.http
+      .get(url, { responseType: 'text', withCredentials: true })
       .pipe(shareReplay(1));
   }
 

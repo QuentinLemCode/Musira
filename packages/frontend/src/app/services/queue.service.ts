@@ -65,10 +65,10 @@ export class QueueService {
         if (visibility.visible && session?.linkedToSpotify) {
           this.launchPolling();
         } else {
-          if (!session?.linkedToSpotify) {
-            this.$queue.next([]);
-            this.$backlog.next(null);
-          }
+          // When there is no Spotify link or tab not visible, ensure
+          // subscribers are not stuck waiting for first values
+          this.$queue.next([]);
+          this.$backlog.next(null);
           this.stopPolling();
         }
       },

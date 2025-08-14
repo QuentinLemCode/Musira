@@ -40,7 +40,14 @@ export class CallbackComponent implements OnInit {
       try {
         this.auth.oAuthLogin(provider as any, code, state).subscribe({
           next: () => {
-            this.router.navigate(['/']);
+            // After OAuth, ensure we land on the intended page if user started create-session
+            const sessionsCreator = localStorage.getItem('sessions_creator');
+            if (sessionsCreator === 'true') {
+              localStorage.removeItem('sessions_creator');
+              this.router.navigate(['create-session'], { replaceUrl: true });
+              return;
+            }
+            this.router.navigate(['/'], { replaceUrl: true });
           },
           error: (err) => {
             this.error = err?.error?.error || err?.error?.message;

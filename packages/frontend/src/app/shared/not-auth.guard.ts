@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import type { CanActivateFn } from '@angular/router';
 import { Router } from '@angular/router';
+import { AuthModalService } from '../authentication/auth-modal.service';
 import { AuthenticationService } from '../authentication/authentication.service';
 
 export const notAuthGuard: CanActivateFn = async () => {
@@ -19,9 +20,11 @@ export const notAuthGuard: CanActivateFn = async () => {
       return router.createUrlTree(['/']);
     }
     console.log(
-      'User not logged in after refresh, allowing access to login page',
+      'User not logged in after refresh, redirecting home and opening modal',
     );
-    return true;
+    const modal = inject(AuthModalService);
+    modal.open('login');
+    return router.createUrlTree(['/']);
   }
 
   console.log('User is logged in, redirecting to home page');

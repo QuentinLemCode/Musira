@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, UrlTree } from '@angular/router';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { AdminGuard } from './admin.guard';
 
@@ -14,6 +14,9 @@ describe('AdminGuard', () => {
   beforeEach(() => {
     routerMock = {
       navigate: jasmine.createSpy('navigate').and.returnValue(true),
+      createUrlTree: jasmine
+        .createSpy('createUrlTree')
+        .and.returnValue({} as unknown as UrlTree),
     };
 
     TestBed.configureTestingModule({

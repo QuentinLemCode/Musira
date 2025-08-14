@@ -11,12 +11,12 @@ html {
 }
 
 body {
-  padding-top: 1rem;
+  padding-top: 0;
   background: var(--bg-primary);
   color: var(--font-primary);
   line-height: 1.4;
   display: grid;
-  grid-template-columns: 1fr min(70rem, 95%) 1fr;
+  grid-template-columns: 1fr min(72rem, 96%) 1fr;
   margin: 0;
   font-size: 14px;
 
@@ -51,12 +51,12 @@ input {
   background: var(--bg-secondary);
   border-radius: 25px;
   border: none;
-  padding: 25px;
+  padding: 14px 18px;
   cursor: pointer;
   color: var(--font-primary);
   font-weight: 500;
   font-size: 16px;
-  line-height: 21px;
+  line-height: 1.4;
 
   &:disabled {
     background: var(--disabled);
@@ -114,4 +114,17 @@ h1 {
 
 hr {
   width: 100%;
+}
+
+/* A11y utility: hide content visually but keep it readable by screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

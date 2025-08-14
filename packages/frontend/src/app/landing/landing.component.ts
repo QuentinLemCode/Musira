@@ -171,6 +171,22 @@ import { MusicSessionsService } from './..//sessions/music-sessions.service';
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 16px;
       }
+      .join-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 8px;
+        flex-wrap: wrap;
+      }
+      .join-row input {
+        flex: 1 1 220px;
+        min-width: 0;
+        width: 100%;
+      }
+      .join-row button {
+        flex: 0 0 auto;
+        max-width: 100%;
+      }
       .muted {
         color: var(--text-light);
       }
@@ -251,6 +267,16 @@ import { MusicSessionsService } from './..//sessions/music-sessions.service';
         .grid {
           grid-template-columns: 1fr;
         }
+        .join-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .join-row input {
+          flex: 0 1 auto;
+        }
+        .join-row button {
+          width: 100%;
+        }
       }
     `,
   ],
@@ -275,9 +301,7 @@ import { MusicSessionsService } from './..//sessions/music-sessions.service';
           </p>
           <form [formGroup]="form" (ngSubmit)="joinSession()">
             <label for="code" class="muted">Code de session</label>
-            <div
-              style="display:flex; gap: 8px; align-items: center; margin-top: 8px;"
-            >
+            <div class="join-row">
               <input
                 id="code"
                 type="text"
@@ -359,14 +383,21 @@ export class LandingComponent {
       this.router.navigate(['create-session']);
       return;
     }
-    this.authModal.open('login', () =>
-      this.router.navigate(['create-session']),
-    );
+    // Mark intent so OAuth callback can redirect appropriately
+    try {
+      localStorage.setItem('sessions_creator', 'true');
+    } catch {
+      /* noop */
+    }
+    this.authModal.open('login', () => {
+      try {
+        localStorage.removeItem('sessions_creator');
+      } catch {
+        /* noop */
+      }
+      this.router.navigate(['create-session']);
+    });
     return;
-  }
-
-  scrollToJoin() {
-    // No-op; single page layout already shows join card
   }
 
   onInputChange(event: Event) {

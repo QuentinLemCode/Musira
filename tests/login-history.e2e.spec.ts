@@ -16,32 +16,34 @@ test.describe('Login shows previous joined sessions', () => {
     const password = 'password123';
     const username = 'HistoryUser';
 
-    // Register user
-    await page.goto(`${frontendBase}/user/register`);
-    await page.getByPlaceholder('Ton prénom').fill(username);
-    await page.getByPlaceholder('Ton email').fill(email);
-    await page.locator('input[name="password"]').fill(password);
-    // The UI uses a placeholder for confirmation, no name attribute
-    await page.getByPlaceholder('Confirme ton mot de passe').fill(password);
-    await page.getByRole('button', { name: 'Créer un compte' }).click();
+    // Register user via API for stability
+    await page.goto(`${frontendBase}/`);
+    await page.evaluate(
+      async ({ email, password, username }) => {
+        try {
+          await fetch('/api/auth/email/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, username, password }),
+          });
+        } catch {}
+      },
+      { email, password, username },
+    );
 
-    // Login explicitly if not already redirected/logged in
-    await page.goto(`${frontendBase}/user/login`);
-    try {
-      await page
-        .getByText('Se connecter avec un email')
-        .click({ timeout: 2000 });
-      await page.getByPlaceholder('Ton email').fill(email);
-      await page.getByPlaceholder('Ton mot de passe').fill(password);
-      await page
-        .locator('form')
-        .getByRole('button', { name: 'Se connecter', exact: true })
-        .click();
-      await page.waitForURL(`${frontendBase}/`);
-    } catch {
-      // If we are redirected to home because already logged in, continue
-      await page.waitForURL(new RegExp(`${frontendBase}/$`));
-    }
+    // Login via modal if needed
+    await page.goto(`${frontendBase}/`);
+    // Open login modal from nav
+    await page.getByRole('link', { name: 'Se connecter' }).click();
+    // Modal now shows email form by default
+    await page.getByPlaceholder('Ton email').fill(email);
+    await page.getByPlaceholder('Ton mot de passe').fill(password);
+    await page
+      .locator('form')
+      .getByRole('button', { name: 'Se connecter', exact: true })
+      .click();
+    // Modal closes and we remain on '/'
+    await page.getByPlaceholder('123-456-789').waitFor({ timeout: 15000 });
 
     // Create a fake session as this user via same-origin call
     const code = await page.evaluate(async () => {
@@ -56,7 +58,7 @@ test.describe('Login shows previous joined sessions', () => {
     });
 
     // Join the session via the UI (client-side navigation), not hard navigation
-    // We are already on '/', just wait for the join form
+    // We are on '/', wait for the join form
     await page.getByPlaceholder('123-456-789').waitFor({ timeout: 15000 });
     const formatted = code.replace(/(\d{3})(\d{3})(\d{3})/, '$1-$2-$3');
     // Use stable placeholder from template instead of formControlName
@@ -75,8 +77,8 @@ test.describe('Login shows previous joined sessions', () => {
     await page.waitForURL(new RegExp(`${frontendBase}/$`));
 
     // Verify the history shows at least one entry with the created session
-    await page.waitForSelector('.session-history', { timeout: 15000 });
-    const firstCard = page.locator('.session-history').first();
+    await page.waitForSelector('.history-card', { timeout: 15000 });
+    const firstCard = page.locator('.history-card').first();
     await expect(firstCard).toContainText('Party A');
   });
 });

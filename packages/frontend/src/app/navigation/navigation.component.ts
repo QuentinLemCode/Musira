@@ -10,6 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { AuthModalService } from '../authentication/auth-modal.service';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
 
@@ -24,16 +25,12 @@ import { MusicSessionsService } from '../sessions/music-sessions.service';
     FontAwesomeModule,
   ],
   template: `
-    <nav>
-      <div
-        class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
-      >
-        <a href="/" class="flex items-center">
-          <img src="/public/logo-white.webp" class="h-8 mr-3" alt="Logo" />
-          <span
-            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
-            >Musira</span
-          >
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <a href="/" class="brand">
+          <img class="logo-dark" src="/public/logo-white.webp" alt="Musira" />
+          <img class="logo-light" src="/public/logo-dark.webp" alt="Musira" />
+          <span>Musira</span>
         </a>
         @if (
           currentSession ||
@@ -42,66 +39,42 @@ import { MusicSessionsService } from '../sessions/music-sessions.service';
           (!isLogged() && !onLoginOrRegisterPage)
         ) {
           <button
+            class="menu-toggle"
             (click)="toggleMenu()"
             type="button"
-            class="bg-yellow-primary inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
             aria-controls="navbar-default"
             aria-expanded="false"
           >
             <span class="sr-only">Ouvrir menu</span>
-            <svg
-              class="w-5 h-5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 17 14"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M1 1h15M1 7h15M1 13h15"
-              />
+            <svg aria-hidden="true" viewBox="0 0 20 20">
+              <path d="M2 4h16M2 10h16M2 16h16" />
             </svg>
           </button>
         }
         <div
-          class="w-full md:block md:w-auto"
-          [ngClass]="showMenu ? 'visible' : 'hidden'"
+          class="menu"
+          [ngClass]="showMenu ? 'open' : ''"
           id="navbar-default"
         >
-          <ul
-            #menuList
-            class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:dark:bg-gray-900 dark:border-gray-700"
-          >
+          <ul #menuList>
             @if (currentSession) {
               @if (isSessionCreator) {
                 <li>
                   <a
                     [routerLink]="[currentSession.code, 'session-settings']"
                     (click)="toggleMenu()"
-                    class="block py-2 pl-3 pr-4"
                     >Paramètre de la session</a
                   >
                 </li>
               }
               <li>
-                <a (click)="exitSession()" class="block py-2 pl-3 pr-4"
-                  >Quitter la session</a
-                >
-              </li>
-              <li class="md:hidden">
-                <hr class="block py-2 pl-3 pr-4 mt-4" />
+                <a (click)="exitSession()">Quitter la session</a>
               </li>
             }
 
             @if (isAdmin()) {
               <li>
-                <a
-                  [routerLink]="['/admin']"
-                  (click)="toggleMenu()"
-                  class="block py-2 pl-3 pr-4"
+                <a [routerLink]="['/admin']" (click)="toggleMenu()"
                   >Administration</a
                 >
               </li>
@@ -109,28 +82,17 @@ import { MusicSessionsService } from '../sessions/music-sessions.service';
 
             @if (isLogged()) {
               <li>
-                <p class="block py-2 pl-3 pr-4">
-                  <fa-icon [icon]="faUser" class="mr-4"></fa-icon
-                  >{{ username() }}
+                <p class="user">
+                  <fa-icon [icon]="faUser"></fa-icon>{{ username() }}
                 </p>
               </li>
               <li>
-                <a
-                  [routerLink]=""
-                  (click)="logout()"
-                  class="block py-2 pl-3 pr-4"
-                  >Se déconnecter</a
-                >
+                <a [routerLink]="" (click)="logout()">Se déconnecter</a>
               </li>
             }
-            @if (!isLogged() && !onLoginOrRegisterPage) {
+            @if (!isLogged()) {
               <li>
-                <a
-                  [routerLink]="['/user/login']"
-                  (click)="toggleMenu()"
-                  class="block py-2 pl-3 pr-4"
-                  >Se connecter</a
-                >
+                <a href="#" (click)="openLogin()">Se connecter</a>
               </li>
             }
           </ul>
@@ -138,7 +100,172 @@ import { MusicSessionsService } from '../sessions/music-sessions.service';
       </div>
     </nav>
   `,
-  styles: [``],
+  styles: [
+    `
+      @use '../../colors.scss' as *;
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: saturate(150%) blur(8px);
+        background: var(--navbar-bg);
+        border-bottom: 1px solid var(--navbar-border);
+      }
+      .navbar-inner {
+        width: 100%;
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px min(max(2vw, 12px), 24px);
+        position: relative;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--font-primary);
+        gap: 8px;
+      }
+      .brand img {
+        height: 22px;
+        width: auto;
+      }
+      .brand .logo-light {
+        display: none;
+      }
+      @media (prefers-color-scheme: light) {
+        .brand .logo-dark {
+          display: none;
+        }
+        .brand .logo-light {
+          display: inline-block;
+        }
+      }
+      .brand span {
+        font-weight: 700;
+        font-size: 18px;
+      }
+      .menu-toggle {
+        all: unset;
+        display: inline-flex;
+        background: transparent;
+        border-radius: 8px;
+        padding: 6px;
+        margin-left: auto;
+        cursor: pointer;
+      }
+      .menu-toggle svg {
+        width: 22px;
+        height: 22px;
+        stroke: var(--font-primary);
+        stroke-width: 2;
+        fill: none;
+      }
+      .menu {
+        display: none;
+        position: absolute;
+        top: 54px;
+        right: 12px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--navbar-border);
+        border-radius: 12px;
+        padding: 8px 0;
+        width: min(92vw, 320px);
+        box-shadow: 0 8px 28px
+          color-mix(in srgb, var(--neutral) 40%, transparent);
+      }
+      .menu.open {
+        display: block;
+      }
+      @media (min-width: 768px) {
+        .menu {
+          display: block;
+          position: static;
+          background: transparent;
+          border: none;
+          padding: 0;
+          width: auto;
+          box-shadow: none;
+        }
+      }
+      .menu ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        margin: 0;
+        padding: 0;
+      }
+      .menu li + li {
+        border-top: 1px solid var(--navbar-border);
+      }
+      .menu li {
+        display: flex;
+        align-items: center;
+        height: 52px;
+      }
+      .menu li:first-child {
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+      }
+      .menu li:last-child {
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
+      }
+      .menu li {
+        min-width: 0;
+      }
+      .menu a,
+      .menu .user {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        padding: 0 16px;
+        line-height: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .menu .user {
+        margin: 0;
+      }
+      .menu a {
+        color: var(--font-primary);
+        text-decoration: none;
+      }
+      .menu a:hover {
+        color: var(--primary-link-hover);
+      }
+      .user {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      @media (min-width: 768px) {
+        .menu-toggle {
+          display: none;
+        }
+        .menu ul {
+          flex-direction: row;
+          gap: 24px;
+          align-items: center;
+          white-space: nowrap;
+        }
+        .menu li + li {
+          border-top: none;
+        }
+        .menu a,
+        .menu .user {
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          white-space: nowrap;
+        }
+      }
+    `,
+  ],
 })
 export class NavigationComponent {
   showMenu = false;
@@ -161,6 +288,7 @@ export class NavigationComponent {
     @Inject(MusicSessionsService)
     private readonly sessions: MusicSessionsService,
     @Inject(Router) private readonly router: Router,
+    @Inject(AuthModalService) private readonly authModal: AuthModalService,
   ) {}
 
   isListEmpty() {
@@ -200,6 +328,12 @@ export class NavigationComponent {
       });
     }
     this.showMenu = false;
-    return this.router.navigate(['/user/login'], { replaceUrl: true });
+    this.authModal.open('login');
+    return;
+  }
+
+  openLogin() {
+    this.toggleMenu();
+    this.authModal.open('login');
   }
 }

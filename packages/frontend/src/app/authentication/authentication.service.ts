@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
-import { firstValueFrom, tap } from 'rxjs';
+import { firstValueFrom, map, switchMap, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 type JwtUser = { id: number; admin: boolean; name: string };
 type OAuthProviderType = 'google' | 'facebook' | 'spotify' | 'microsoft';
@@ -114,11 +114,30 @@ export class AuthenticationService {
 
   oAuthLogin(provider: OAuthProviderType, code: string, state: string) {
     this.checkState(state);
-    return this.http.post(this.authEndpoint + '/oauth/login', {
-      code,
-      state,
-      provider,
-    });
+    return this.http
+      .post(this.authEndpoint + '/oauth/login', {
+        code,
+        state,
+        provider,
+      })
+      .pipe(
+        switchMap(() =>
+          this.http.get<JwtUser>(this.authEndpoint + '/me', {
+            withCredentials: true,
+          }),
+        ),
+        tap((user) => {
+          const mapped: UserState = {
+            isLoggedIn: true,
+            id: user.id,
+            admin: user.admin,
+            userId: String(user.id),
+            username: user.name,
+          };
+          this.loggedUser.set(mapped);
+        }),
+        map(() => void 0),
+      );
   }
 
   emailLogin(email: string, password: string) {
