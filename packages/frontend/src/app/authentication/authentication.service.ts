@@ -1,3 +1,4 @@
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { firstValueFrom, map, switchMap, tap } from 'rxjs';
@@ -43,6 +44,8 @@ export class AuthenticationService {
   constructor() {}
 
   public refreshAuthStatus() {
+    // Avoid HTTP calls during SSR/route extraction
+    if (!isPlatformBrowser(this.platformId)) return;
     console.log(
       'checkAuthStatus() called, current loggedUser state:',
       this.loggedUser(),
@@ -86,6 +89,10 @@ export class AuthenticationService {
    * from the `/auth/me` endpoint if a cookie exists. Always resolves.
    */
   public async initializeAuth(): Promise<void> {
+    // Skip initialization on the server to prevent SSR route extraction timeouts
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
     try {
       const user = await firstValueFrom(
         this.http.get<JwtUser>(this.authEndpoint + '/me', {
@@ -272,6 +279,10 @@ export class AuthenticationService {
   }
 
   private redirectUrl(provider: OAuthProviderType) {
+    // During SSR, window is not available; return a placeholder that won't be used server-side
+    if (!isPlatformBrowser(this.platformId)) {
+      return `https://localhost/oauth/callback/${provider}`;
+    }
     return `https://${window.location.host}/oauth/callback/${provider}`;
   }
 }
