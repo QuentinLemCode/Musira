@@ -65,10 +65,10 @@ jobs:
               echo "Backend is up"; break; fi; sleep 1; done
           echo "Waiting for frontend (HTTPS)..."
           for i in {1..120}; do
-            if curl -k -sSf https://localhost:4200 > /dev/null; then
+            if curl -k -sSf https://localhost:8787 > /dev/null; then
               echo "Frontend is up"; break; fi; sleep 1; done
 
-      # Run Playwright E2E tests against https://localhost:4200
+      # Run Playwright E2E tests against https://localhost:8787
       - name: Run E2E tests
         run: npm run e2e
       - uses: actions/upload-artifact@v4
