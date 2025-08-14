@@ -35,6 +35,8 @@ jobs:
       - run: npm run format:check
       - run: npm run ci:lint
       - run: npm run build:backend
+      - name: Launch database
+        run: docker compose -f docker-compose.test.yml up -d
       - run: npm run openapi
       - run: npm run api:generate
       - run: npm run build:frontend
@@ -47,10 +49,6 @@ jobs:
       # Install Playwright browsers and system dependencies
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-
-      # Launch MySQL for the app
-      - name: Launch database
-        run: docker compose -f docker-compose.test.yml up -d
 
       # Generate local SSL certs for Angular HTTPS dev server
       - name: Generate SSL certificates
