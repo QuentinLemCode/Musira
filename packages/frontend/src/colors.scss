@@ -1,11 +1,35 @@
 :root {
-  --bg-primary: #0b0b0b;
-  --bg-secondary: #1b1b1b;
-  --font-primary: #f1f1f1;
-  --text-light: #a3a3a3;
-  --primary: #1db954;
-  --primary-hover: #1aa34a;
-  --primary-link: #7dcfff;
-  --primary-link-hover: #b1e1ff;
-  --disabled: #3a3a3a;
+  --bg-primary: #f0f3f8;
+  --bg-secondary: #ffffff;
+  --primary: #fef179;
+  --primary-hover: #f1c93c;
+  --neutral: #191919;
+  --disabled: #8f8f8f;
+  --font-primary: #191919;
+  --font-secondary: #60666f;
+  --primary-link: #7a6e01;
+  --primary-link-hover: #725b08;
+  --surface-border: rgba(0, 0, 0, 0.12);
+  /* Aliases used across components */
+  --text-light: var(--font-secondary);
+  --navbar-border: var(--surface-border);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #191919;
+    --bg-secondary: #000000;
+    --primary: #fef179;
+    --primary-link: #fef179;
+    --primary-hover: #f1c93c;
+    --primary-link-hover: #f1c93c;
+    --neutral: #f0f3f8;
+    --disabled: #8f8f8f;
+    --font-primary: #f0f3f8;
+    --font-secondary: #bcbec1;
+    --surface-border: rgba(255, 255, 255, 0.12);
+    /* Aliases used across components */
+    --text-light: var(--font-secondary);
+    --navbar-border: var(--surface-border);
+  }
 }
