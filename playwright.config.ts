@@ -23,7 +23,7 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: 'https://localhost:8787',
+    baseURL: 'http://localhost:8787',
     ignoreHTTPSErrors: true,
     trace: 'on-first-retry',
     viewport: { width: 1280, height: 800 },

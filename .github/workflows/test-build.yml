@@ -57,15 +57,16 @@ jobs:
       # Start backend and frontend and wait for readiness
       - name: Start application (backend + frontend)
         run: |
+          export COOKIE_SECURE=false
           npm run start:backend &
           npm run start:frontend &
           echo "Waiting for backend..."
           for i in {1..120}; do
             if curl -sSf http://localhost:3020/api/health > /dev/null; then
               echo "Backend is up"; break; fi; sleep 1; done
-          echo "Waiting for frontend (HTTPS)..."
+          echo "Waiting for frontend (HTTP)..."
           for i in {1..120}; do
-            if curl -k -sSf https://localhost:8787 > /dev/null; then
+            if curl -sSf http://localhost:8787 > /dev/null; then
               echo "Frontend is up"; break; fi; sleep 1; done
 
       # Run Playwright E2E tests against https://localhost:8787

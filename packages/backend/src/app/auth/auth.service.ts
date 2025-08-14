@@ -40,9 +40,10 @@ export class AuthService {
       subject: user.id.toString(),
     });
 
+    const secureCookies = (process.env.COOKIE_SECURE ?? 'true') !== 'false';
     res.setCookie('access_token', token, {
       httpOnly: true,
-      secure: true,
+      secure: secureCookies,
       sameSite: 'strict',
       path: '/',
       maxAge: 60 * 60 * 24 * 30, // 30 days
@@ -52,9 +53,10 @@ export class AuthService {
   }
 
   logout(res: FastifyReply) {
+    const secureCookies = (process.env.COOKIE_SECURE ?? 'true') !== 'false';
     res.clearCookie('access_token', {
       httpOnly: true,
-      secure: true,
+      secure: secureCookies,
       sameSite: 'strict',
       path: '/',
     });

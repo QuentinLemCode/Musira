@@ -1,7 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-const frontendBase = 'https://localhost:4200';
-
 function randomEmail() {
   return `user_${Date.now()}_${Math.floor(Math.random() * 10000)}@example.com`;
 }
@@ -17,7 +15,7 @@ test.describe('Login shows previous joined sessions', () => {
     const username = 'HistoryUser';
 
     // Register user via API for stability
-    await page.goto(`${frontendBase}/`);
+    await page.goto('/');
     await page.evaluate(
       async ({ email, password, username }) => {
         try {
@@ -32,7 +30,7 @@ test.describe('Login shows previous joined sessions', () => {
     );
 
     // Login via API to avoid UI flakiness
-    await page.goto(`${frontendBase}/`);
+    await page.goto('/');
     await page.evaluate(
       async ({ email, password }) => {
         try {
@@ -71,7 +69,7 @@ test.describe('Login shows previous joined sessions', () => {
 
     // Go home; history should be stored on backend when user loaded the session with auth
     await page.locator('a[href="/"]').first().click();
-    await page.waitForURL(new RegExp(`${frontendBase}/$`));
+    await page.waitForURL(/\/$/);
 
     // Verify the history shows at least one entry with the created session
     await page.waitForSelector('.history-card', { timeout: 15000 });

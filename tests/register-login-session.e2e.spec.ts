@@ -1,7 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-const frontendBase = 'https://localhost:4200';
-
 function randomEmail() {
   return `user_${Date.now()}_${Math.floor(Math.random() * 10000)}@example.com`;
 }
@@ -17,7 +15,7 @@ test.describe('Email register, login and session history', () => {
     const username = 'PlaywrightUser';
 
     // Prime origin and register via API for stability
-    await page.goto(`${frontendBase}/`);
+    await page.goto('/');
     await page.evaluate(
       async ({ email, password, username }) => {
         try {
@@ -32,7 +30,7 @@ test.describe('Email register, login and session history', () => {
     );
 
     // Login via API to reduce flakiness
-    await page.goto(`${frontendBase}/`);
+    await page.goto('/');
     await page.evaluate(
       async ({ email, password }) => {
         try {

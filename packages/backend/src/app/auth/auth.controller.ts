@@ -22,9 +22,10 @@ export class AuthController {
     if (intent !== 'sessions_creator') {
       return { success: false };
     }
+    const secureCookies = (process.env.COOKIE_SECURE ?? 'true') !== 'false';
     res.setCookie('login_intent', intent, {
       httpOnly: true,
-      secure: true,
+      secure: secureCookies,
       sameSite: 'strict',
       path: '/',
       maxAge: 60 * 10,
@@ -39,9 +40,10 @@ export class AuthController {
   ) {
     const intent = req.cookies['login_intent'] ?? null;
     if (intent) {
+      const secureCookies = (process.env.COOKIE_SECURE ?? 'true') !== 'false';
       res.clearCookie('login_intent', {
         httpOnly: true,
-        secure: true,
+        secure: secureCookies,
         sameSite: 'strict',
         path: '/',
       });
