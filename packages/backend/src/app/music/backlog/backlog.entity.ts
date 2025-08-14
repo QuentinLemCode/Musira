@@ -8,10 +8,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Music } from '../music.entity';
 import { MusicSession } from '../../music-session/entities/music-session.entity';
+import { Music } from '../music.entity';
 
-// eslint-disable-next-line no-restricted-syntax
 export enum Status {
   PENDING,
   PLAYING,

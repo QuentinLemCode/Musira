@@ -47,7 +47,6 @@ describe('CreateSessionComponent', () => {
 
   it('should call musicSessions.create on createSession', async () => {
     const sessionName = 'Test Session';
-    const createSessionDto = { name: sessionName };
     const sub = new Subject();
     const createSessionSpy = mockMusicSessionsService.create.and.returnValue(
       sub.asObservable(),

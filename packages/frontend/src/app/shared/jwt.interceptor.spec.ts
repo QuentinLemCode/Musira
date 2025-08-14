@@ -9,7 +9,6 @@ import { JwtInterceptor } from './jwt.interceptor';
 describe('JwtInterceptor', () => {
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
-  let originalGetItem: (key: string) => string | null;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

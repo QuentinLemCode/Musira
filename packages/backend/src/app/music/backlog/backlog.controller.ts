@@ -54,7 +54,7 @@ export class BacklogController {
   async deleteBacklog(@Param('id') id: string) {
     try {
       await this.backlog.delete(id);
-    } catch (error) {
+    } catch {
       throw new NotFoundException();
     }
   }

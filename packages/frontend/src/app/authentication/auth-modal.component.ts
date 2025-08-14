@@ -69,7 +69,7 @@ import { RegisterComponent } from './register/register.component';
   ],
   template: `
     @if (isOpen()) {
-      <div class="overlay" (click)="onBackdrop($event)">
+      <div class="overlay" (click)="onBackdrop()">
         <div class="modal" (click)="$event.stopPropagation()">
           <div class="header">
             <div class="tabs">
@@ -112,7 +112,7 @@ export class AuthModalComponent {
   isOpen = computed(() => this.modal.isOpen());
   mode = computed(() => this.modal.mode());
 
-  onBackdrop(event: MouseEvent) {
+  onBackdrop() {
     this.close();
   }
 

@@ -32,12 +32,10 @@ async function generateOpenApi() {
   });
 
   await app.close();
-  // eslint-disable-next-line no-console
   console.log(`OpenAPI spec written to ${outputPath}`);
 }
 
 generateOpenApi().catch((err) => {
-  // eslint-disable-next-line no-console
   console.error(err);
   process.exit(1);
 });

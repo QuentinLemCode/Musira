@@ -5,7 +5,6 @@ import {
   UsersService as ApiUsersService,
 } from '@musira/client';
 import { environment } from '../../environments/environment';
-type UserResponseDTO = any;
 
 @Injectable({
   providedIn: 'root',

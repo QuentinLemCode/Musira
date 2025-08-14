@@ -11,13 +11,6 @@ const OAuthProvider = {
   SPOTIFY: 'spotify',
   MICROSOFT: 'microsoft',
 } as const;
-
-const LocalStorageKeys = {
-  TOKEN: 'token',
-  SESSIONS_CREATOR: 'sessions_creator',
-  STATE: 'state',
-} as const;
-
 interface BaseUserState {
   username: string;
   userId: string;
