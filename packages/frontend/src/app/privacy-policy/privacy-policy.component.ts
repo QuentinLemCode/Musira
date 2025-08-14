@@ -7,87 +7,99 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'musira-privacy-policy',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule, FontAwesomeModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+  ],
   template: `
-<h1>Privacy Policy</h1>
+    <h1>Privacy Policy</h1>
 
-<p>
-  This Privacy Policy describes how Musira collects and uses personal
-  information obtained through the website
-  <a href="https://musira.fr">musira.fr</a>.
-</p>
+    <p>
+      This Privacy Policy describes how Musira collects and uses personal
+      information obtained through the website
+      <a href="https://musira.fr">musira.fr</a>.
+    </p>
 
-<h2>Information We Collect</h2>
-<p>
-  <strong>Personal Information:</strong> Musira collects names and email
-  addresses from users who voluntarily submit this information through contact
-  forms, registration forms, or other interactive features on the website.
-</p>
+    <h2>Information We Collect</h2>
+    <p>
+      <strong>Personal Information:</strong> Musira collects names and email
+      addresses from users who voluntarily submit this information through
+      contact forms, registration forms, or other interactive features on the
+      website.
+    </p>
 
-<h2>Use of Information</h2>
-<p>The collected information is used for the following purposes:</p>
-<ul>
-  <li>
-    To personalize user experience and improve our website's content and
-    offerings.
-  </li>
-  <li>
-    To communicate with users, respond to inquiries, and fulfill requests.
-  </li>
-  <li>
-    To send occasional updates, promotions, or relevant information via email.
-    Users have the option to opt-out of these communications at any time.
-  </li>
-</ul>
+    <h2>Use of Information</h2>
+    <p>The collected information is used for the following purposes:</p>
+    <ul>
+      <li>
+        To personalize user experience and improve our website's content and
+        offerings.
+      </li>
+      <li>
+        To communicate with users, respond to inquiries, and fulfill requests.
+      </li>
+      <li>
+        To send occasional updates, promotions, or relevant information via
+        email. Users have the option to opt-out of these communications at any
+        time.
+      </li>
+    </ul>
 
-<h2>Protection of Information</h2>
-<p>
-  Musira employs suitable data collection, storage, and processing practices,
-  implementing security measures to protect against unauthorized access,
-  alteration, disclosure, or destruction of users personal information,
-  including names and email addresses.
-</p>
+    <h2>Protection of Information</h2>
+    <p>
+      Musira employs suitable data collection, storage, and processing
+      practices, implementing security measures to protect against unauthorized
+      access, alteration, disclosure, or destruction of users personal
+      information, including names and email addresses.
+    </p>
 
-<h2>Sharing of Information</h2>
-<p>
-  Musira does not sell, trade, or rent users personal identification information
-  to third parties. However, we may share aggregated demographic information
-  that does not contain any personal identification details about visitors and
-  users with trusted partners, affiliates, or advertisers.
-</p>
+    <h2>Sharing of Information</h2>
+    <p>
+      Musira does not sell, trade, or rent users personal identification
+      information to third parties. However, we may share aggregated demographic
+      information that does not contain any personal identification details
+      about visitors and users with trusted partners, affiliates, or
+      advertisers.
+    </p>
 
-<h2>Third-Party Websites</h2>
-<p>
-  Users may encounter links to external websites or services on Musira's
-  website. Please note that these third-party sites have their own privacy
-  policies, and Musira does not assume any responsibility or liability for their
-  content or practices.
-</p>
+    <h2>Third-Party Websites</h2>
+    <p>
+      Users may encounter links to external websites or services on Musira's
+      website. Please note that these third-party sites have their own privacy
+      policies, and Musira does not assume any responsibility or liability for
+      their content or practices.
+    </p>
 
-<h2>Consent</h2>
-<p>
-  By using the Musira website, users consent to the terms outlined in this
-  Privacy Policy.
-</p>
+    <h2>Consent</h2>
+    <p>
+      By using the Musira website, users consent to the terms outlined in this
+      Privacy Policy.
+    </p>
 
-<h2>Changes to This Policy</h2>
-<p>
-  Musira reserves the right to update or modify this Privacy Policy at any time.
-  Users are encouraged to frequently check this page for any changes to stay
-  informed about how personal information is being collected and used.
-</p>
+    <h2>Changes to This Policy</h2>
+    <p>
+      Musira reserves the right to update or modify this Privacy Policy at any
+      time. Users are encouraged to frequently check this page for any changes
+      to stay informed about how personal information is being collected and
+      used.
+    </p>
 
-<h2>Contact Us</h2>
-<p>
-  If you have any questions about this Privacy Policy or the practices of this
-  site, please contact us at
-  <a href="mailto:contact@musira.fr">contact&#64;musira.fr</a>.
-</p>
-
-`,
-  styles: [`h2 {
-  line-height: 48px;
-}
-`],
+    <h2>Contact Us</h2>
+    <p>
+      If you have any questions about this Privacy Policy or the practices of
+      this site, please contact us at
+      <a href="mailto:contact@musira.fr">contact&#64;musira.fr</a>.
+    </p>
+  `,
+  styles: [
+    `
+      h2 {
+        line-height: 48px;
+      }
+    `,
+  ],
 })
 export class PrivacyPolicyComponent {}

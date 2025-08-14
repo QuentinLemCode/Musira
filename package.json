@@ -6,6 +6,7 @@
   "scripts": {
     "test": "npm run test --workspaces --if-present --silent",
     "format:check": "npx prettier --check .",
+    "format:write": "npx prettier --write .",
     "generate-ssl": "./scripts/generate-ssl-certs.sh",
     "start:backend": "cd packages/backend && npm start",
     "start:backend:debug": "cd packages/backend && npm run start:debug",

@@ -7,11 +7,14 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'musira-not-found',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule, FontAwesomeModule],
-  template: `
-<h4>Page introuvable, déso</h4>
-
-`,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+  ],
+  template: ` <h4>Page introuvable, déso</h4> `,
   styles: [``],
 })
 export class NotFoundComponent {}
