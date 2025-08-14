@@ -11,6 +11,8 @@
     "start:backend": "cd packages/backend && npm start",
     "start:backend:debug": "cd packages/backend && npm run start:debug",
     "start:frontend": "cd packages/frontend && npm run start:dev",
+    "build:backend": "cd packages/backend && npm run build",
+    "build:frontend": "cd packages/frontend && npm run build",
     "start": "concurrently -k -s first -n backend,frontend -c \"yellow,blue\" \"npm run start:backend\" \"npm run start:frontend\"",
     "e2e": "playwright test --reporter=line",
     "lint": "eslint .",
