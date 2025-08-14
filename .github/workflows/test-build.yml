@@ -35,6 +35,8 @@ jobs:
       - run: npm run format:check
       - run: npm run ci:lint
       - run: npm run build:backend
+      - run: npm run openapi
+      - run: npm run api:generate
       - run: npm run build:frontend
       # Run backend unit tests (Jest)
       - name: Run unit tests (backend)
