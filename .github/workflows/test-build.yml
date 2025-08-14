@@ -44,7 +44,7 @@ jobs:
       - name: Run unit tests (backend)
         run: npm --workspace @musira/backend run test
       - name: Run unit tests (frontend)
-        run: npm --workspace @musira/frontend run test:ci
+        run: npm --workspace @musira/frontend run test
 
       # Install Playwright browsers and system dependencies
       - name: Install Playwright Browsers
