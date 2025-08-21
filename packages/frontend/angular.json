@@ -31,7 +31,10 @@
                 "glob": "**/*",
                 "input": "public",
                 "output": "public"
-              }
+              },
+              { "glob": "robots.txt", "input": "src", "output": "/" },
+              { "glob": "sitemap.xml", "input": "src", "output": "/" },
+              { "glob": "favicon.ico", "input": "src", "output": "/" }
             ],
             "styles": ["src/styles.scss"],
             "server": "src/main.server.ts",

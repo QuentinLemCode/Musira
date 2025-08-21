@@ -2,7 +2,7 @@ import type { Environment } from './environment.interface';
 
 export const environment: Environment = {
   production: true,
-  serverUrl: '/api/',
+  serverUrl: 'https://api.musira.fr/',
   googleClientId:
     '315266048563-u7ap28p393uegvd0m8al1gbjjepoaub6.apps.googleusercontent.com',
   facebookClientId: '1003579960707915',

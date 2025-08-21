@@ -1,0 +1,24 @@
+{
+  "name": "@musira/infra",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pulumi project for Musira GCP infra (Compute VM with CapRover and Cloud SQL MySQL).",
+  "scripts": {
+    "up": "pulumi up",
+    "preview": "pulumi preview",
+    "destroy": "pulumi destroy",
+    "refresh": "pulumi refresh",
+    "stack:init": "pulumi stack init dev || true",
+    "stack:select": "pulumi stack select dev",
+    "config:sample": "pulumi config set infra:dbTier db-f1-micro && pulumi config set infra:machineType e2-medium"
+  },
+  "dependencies": {
+    "@pulumi/gcp": "^7.38.0",
+    "@pulumi/cloudflare": "^5.28.0",
+    "@pulumi/pulumi": "^3.131.0",
+    "@pulumi/random": "^4.16.2"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.2"
+  }
+}

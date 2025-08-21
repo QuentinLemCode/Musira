@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy (disabled)
 
 on:
   workflow_run:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion != 'failure' }}
+    if: false
     name: 'Deploy on Raspberry ⚡'
     runs-on: ubuntu-latest
     steps:

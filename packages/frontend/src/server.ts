@@ -10,36 +10,66 @@ const angularApp = new AngularAppEngine();
 export const reqHandler = createRequestHandler(async (req) => {
   const url = new URL(req.url);
 
-  // Proxy API calls to the backend
-  if (url.pathname.startsWith('/api')) {
-    const backendUrl = new URL(req.url);
-    backendUrl.protocol = 'http:';
-    backendUrl.hostname = '127.0.0.1';
-    backendUrl.port = '3020';
+  // Serve favicon from /public for common crawlers/browsers expectation at /favicon.ico
+  if (url.pathname === '/favicon.ico') {
+    return Response.redirect('/public/favicon.ico', 301);
+  }
 
-    // Clone the incoming request for the backend, preserving method, headers and body
-    const init: RequestInit = {
-      method: req.method,
-      headers: new Headers(req.headers),
-      body:
-        req.method === 'GET' || req.method === 'HEAD'
-          ? undefined
-          : await req.clone().arrayBuffer(),
-      redirect: 'manual',
-    };
-
-    const backendResponse = await fetch(backendUrl, init);
-
-    // Return backend response as-is, including status, headers and body
-    return new Response(backendResponse.body, {
-      status: backendResponse.status,
-      statusText: backendResponse.statusText,
-      headers: backendResponse.headers,
+  // Serve robots.txt at the root for SEO
+  if (url.pathname === '/robots.txt') {
+    const origin = url.origin;
+    const body = `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`;
+    return new Response(body, {
+      headers: { 'content-type': 'text/plain; charset=utf-8' },
     });
   }
 
+  // Serve a minimal sitemap for static, indexable pages
+  if (url.pathname === '/sitemap.xml') {
+    const origin = url.origin;
+    const urls = ['/', '/privacy-policy'];
+    const now = new Date().toISOString();
+    const xml =
+      `<?xml version="1.0" encoding="UTF-8"?>` +
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` +
+      urls
+        .map(
+          (path) =>
+            `<url>` +
+            `<loc>${origin}${path}</loc>` +
+            `<lastmod>${now}</lastmod>` +
+            `<changefreq>weekly</changefreq>` +
+            `<priority>${path === '/' ? '1.0' : '0.5'}</priority>` +
+            `</url>`,
+        )
+        .join('') +
+      `</urlset>`;
+    return new Response(xml, {
+      headers: { 'content-type': 'application/xml; charset=utf-8' },
+    });
+  }
+
+  // Do not proxy API calls anymore; frontend calls the absolute API URL.
+  // Requests to /api should be handled by the backend domain, not the worker.
+  if (url.pathname.startsWith('/api')) {
+    return new Response('Not Found', { status: 404 });
+  }
+
   const res = await angularApp.handle(req);
-  return res ?? new Response('Page not found.', { status: 404 });
+  if (!res) return new Response('Page not found.', { status: 404 });
+
+  // Mark OAuth callback pages as non-indexable at the HTTP level too
+  if (url.pathname.startsWith('/oauth/callback/')) {
+    const headers = new Headers(res.headers);
+    headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return new Response(res.body, {
+      status: res.status,
+      statusText: res.statusText,
+      headers,
+    });
+  }
+
+  return res;
 });
 
 export default { fetch: reqHandler };

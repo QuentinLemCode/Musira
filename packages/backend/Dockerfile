@@ -1,15 +1,16 @@
-FROM node:slim
-
-RUN apk add --no-cache dumb-init
+FROM node:20-alpine
 
 ENV NODE_ENV=production
 ENV TZ=Europe/Paris
 
 WORKDIR /app
 
-COPY dist/apps/api ./apps/api
-COPY dist/libs ./libs
+# Install runtime deps for the backend only
+COPY packages/backend/package*.json ./
+RUN npm ci --omit=dev
 
-USER node
-EXPOSE 80
-CMD ["dumb-init", "node", "dist/apps/api/src/main.js"]
+# Copy compiled dist from the monorepo (built in CI before docker build)
+COPY packages/backend/dist ./dist
+
+EXPOSE 3020
+CMD ["node", "dist/main.js"]

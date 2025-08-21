@@ -22,28 +22,28 @@ async function bootstrap() {
     new FastifyAdapter({ logger: true }),
     { logger: getLogger() },
   );
-  app.setGlobalPrefix('api');
   const config = new DocumentBuilder()
     .setTitle('Musira API')
     .setDescription('OpenAPI specification for all Musira backend routes')
     .setVersion('1.0.0')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
-    .addServer('/api')
+    .addServer('/')
     .build();
   const document = SwaggerModule.createDocument(app, config, {
     deepScanRoutes: true,
   });
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('docs', app, document);
   // Also expose raw JSON
   app
     .getHttpAdapter()
     .getInstance()
-    .get('/api/openapi.json', (_req: any, reply: any) => {
+    .get('/openapi.json', (_req: any, reply: any) => {
       reply.send(document);
     });
   if (env.ORIGIN) {
     app.enableCors({
-      origin: env.ORIGIN,
+      origin: env.ORIGIN.split(',').map((s) => s.trim()),
+      credentials: true,
     });
   }
 

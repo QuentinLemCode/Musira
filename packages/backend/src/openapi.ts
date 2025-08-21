@@ -13,7 +13,6 @@ async function generateOpenApi() {
     AppModule,
     new FastifyAdapter({ logger: false }),
   );
-  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .setTitle('Musira API')
