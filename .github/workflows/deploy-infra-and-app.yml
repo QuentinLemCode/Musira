@@ -124,13 +124,21 @@ jobs:
           echo "DB_PASSWORD=$(cat outputs.json | jq -r '.cloudSqlPassword')" >> $GITHUB_ENV
           echo "DB_PUBLIC_IP=$(cat outputs.json | jq -r '.cloudSqlPublicIp')" >> $GITHUB_ENV
 
-      - name: Deploy backend to CapRover
-        uses: caprover/deploy-from-github@v1.1.2
-        with:
-          server: https://${{ inputs.caprover_domain }}
-          app: ${{ secrets.BACKEND_APP }}
-          token: ${{ secrets.CAPROVER_APP_TOKEN }}
-          image: ${{ secrets.BACKEND_IMAGE }}
+      - name: Install CapRover CLI
+        run: npm i -g caprover
+
+      - name: Deploy backend to CapRover (password auth)
+        env:
+          CAPROVER_SERVER: https://${{ inputs.caprover_domain }}
+          CAPROVER_ADMIN_PASSWORD: ${{ secrets.CAPROVER_ADMIN_PASSWORD }}
+          BACKEND_APP: ${{ secrets.BACKEND_APP }}
+          BACKEND_IMAGE: ${{ secrets.BACKEND_IMAGE }}
+        run: |
+          caprover deploy \
+            --caproverUrl=${CAPROVER_SERVER} \
+            --caproverPassword=${CAPROVER_ADMIN_PASSWORD} \
+            --appName=${BACKEND_APP} \
+            --imageName=${BACKEND_IMAGE}
 
       - name: Deploy frontend to Cloudflare (wrangler)
         working-directory: packages/frontend

@@ -47,10 +47,17 @@ jobs:
             ghcr.io/${{ github.repository }}/backend:latest
             ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
 
-      - name: Deploy to CapRover
-        uses: caprover/deploy-from-github@v1.1.2
-        with:
-          server: ${{ secrets.CAPROVER_SERVER }}
-          app: ${{ secrets.BACKEND_APP }}
-          token: ${{ secrets.CAPROVER_APP_TOKEN }}
-          image: ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+      - name: Install CapRover CLI
+        run: npm i -g caprover
+
+      - name: Deploy to CapRover (password auth)
+        env:
+          CAPROVER_SERVER: ${{ secrets.CAPROVER_SERVER }}
+          CAPROVER_ADMIN_PASSWORD: ${{ secrets.CAPROVER_ADMIN_PASSWORD }}
+          BACKEND_APP: ${{ secrets.BACKEND_APP }}
+        run: |
+          caprover deploy \
+            --caproverUrl=${CAPROVER_SERVER} \
+            --caproverPassword=${CAPROVER_ADMIN_PASSWORD} \
+            --appName=${BACKEND_APP} \
+            --imageName=ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
