@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api/session/{publicCode}/music/search": {
+    "/session/{publicCode}/music/search": {
       "get": {
         "operationId": "MusicController_search",
         "parameters": [
@@ -46,7 +46,7 @@
         "tags": ["Music"]
       }
     },
-    "/api/session/{publicCode}/music/start": {
+    "/session/{publicCode}/music/start": {
       "get": {
         "operationId": "MusicController_start",
         "parameters": [
@@ -79,7 +79,7 @@
         "tags": ["Music"]
       }
     },
-    "/api/session/{publicCode}/music/stop": {
+    "/session/{publicCode}/music/stop": {
       "get": {
         "operationId": "MusicController_stop",
         "parameters": [
@@ -112,7 +112,7 @@
         "tags": ["Music"]
       }
     },
-    "/api/session/{publicCode}/music": {
+    "/session/{publicCode}/music": {
       "get": {
         "operationId": "MusicController_currentState",
         "parameters": [
@@ -145,7 +145,7 @@
         "tags": ["Music"]
       }
     },
-    "/api/session/{publicCode}/queue": {
+    "/session/{publicCode}/queue": {
       "get": {
         "operationId": "QueueController_getQueue",
         "parameters": [
@@ -221,7 +221,7 @@
         "tags": ["Queue"]
       }
     },
-    "/api/session/{publicCode}/queue/{id}": {
+    "/session/{publicCode}/queue/{id}": {
       "delete": {
         "operationId": "QueueController_deleteFromQueue",
         "parameters": [
@@ -256,7 +256,7 @@
         "tags": ["Queue"]
       }
     },
-    "/api/session/{publicCode}/queue/{id}/forward": {
+    "/session/{publicCode}/queue/{id}/forward": {
       "post": {
         "operationId": "QueueController_forwardQueue",
         "parameters": [
@@ -298,7 +298,7 @@
         "tags": ["Queue"]
       }
     },
-    "/api/session/{publicCode}/backlog": {
+    "/session/{publicCode}/backlog": {
       "post": {
         "operationId": "BacklogController_pushToBacklog",
         "parameters": [
@@ -380,7 +380,7 @@
         "tags": ["Backlog"]
       }
     },
-    "/api/session/{publicCode}/backlog/{id}": {
+    "/session/{publicCode}/backlog/{id}": {
       "delete": {
         "operationId": "BacklogController_deleteBacklog",
         "parameters": [
@@ -415,7 +415,7 @@
         "tags": ["Backlog"]
       }
     },
-    "/api/session/{publicCode}/backlog/import": {
+    "/session/{publicCode}/backlog/import": {
       "post": {
         "operationId": "BacklogController_import",
         "parameters": [
@@ -463,7 +463,7 @@
         "tags": ["Backlog"]
       }
     },
-    "/api/spotify/{publicCode}/spotify-login": {
+    "/spotify/{publicCode}/spotify-login": {
       "get": {
         "operationId": "SpotifyLoginController_spotifyLogin",
         "parameters": [
@@ -497,7 +497,7 @@
         "tags": ["Spotify"]
       }
     },
-    "/api/spotify/register-player": {
+    "/spotify/register-player": {
       "post": {
         "operationId": "SpotifyLoginController_spotifyAuthentication",
         "parameters": [],
@@ -529,7 +529,7 @@
         "tags": ["Spotify"]
       }
     },
-    "/api/spotify/{publicCode}/logout-player": {
+    "/spotify/{publicCode}/logout-player": {
       "post": {
         "operationId": "SpotifyLoginController_spotifyLogout",
         "parameters": [
@@ -556,7 +556,7 @@
         "tags": ["Spotify"]
       }
     },
-    "/api/health": {
+    "/health": {
       "get": {
         "operationId": "HealthController_get",
         "parameters": [],
@@ -568,7 +568,7 @@
         "tags": ["Health"]
       }
     },
-    "/api/music-session": {
+    "/music-session": {
       "post": {
         "operationId": "MusicSessionController_create",
         "parameters": [],
@@ -602,7 +602,7 @@
         "tags": ["Music Sessions"]
       }
     },
-    "/api/music-session/{publicCode}": {
+    "/music-session/{publicCode}": {
       "get": {
         "operationId": "MusicSessionController_findOne",
         "parameters": [
@@ -679,7 +679,7 @@
         "tags": ["Music Sessions"]
       }
     },
-    "/api/music-session/history/me": {
+    "/music-session/history/me": {
       "get": {
         "operationId": "MusicSessionController_getMyHistory",
         "parameters": [],
@@ -697,7 +697,7 @@
         "tags": ["Music Sessions"]
       }
     },
-    "/api/session/{publicCode}/settings": {
+    "/session/{publicCode}/settings": {
       "put": {
         "operationId": "SettingsController_setSettings",
         "parameters": [
@@ -777,7 +777,7 @@
         "tags": ["Settings"]
       }
     },
-    "/api/users": {
+    "/users": {
       "get": {
         "operationId": "UsersController_getAll",
         "parameters": [],
@@ -811,7 +811,7 @@
         "tags": ["Users"]
       }
     },
-    "/api/users/{id}": {
+    "/users/{id}": {
       "delete": {
         "operationId": "UsersController_deleteById",
         "parameters": [
@@ -838,7 +838,7 @@
         "tags": ["Users"]
       }
     },
-    "/api/auth/email/login": {
+    "/auth/email/login": {
       "post": {
         "operationId": "LoginController_login",
         "parameters": [],
@@ -850,7 +850,7 @@
         "tags": ["Login"]
       }
     },
-    "/api/auth/oauth/login": {
+    "/auth/oauth/login": {
       "post": {
         "operationId": "OauthController_login",
         "parameters": [],
@@ -862,7 +862,7 @@
         "tags": ["Oauth"]
       }
     },
-    "/api/auth/logout": {
+    "/auth/logout": {
       "post": {
         "operationId": "LogoutController_logout",
         "parameters": [],
@@ -874,7 +874,7 @@
         "tags": ["Logout"]
       }
     },
-    "/api/auth/email/register": {
+    "/auth/email/register": {
       "post": {
         "operationId": "RegisterController_create",
         "parameters": [],
@@ -886,7 +886,7 @@
         "tags": ["Register"]
       }
     },
-    "/api/auth/email/unlock/{id}": {
+    "/auth/email/unlock/{id}": {
       "post": {
         "operationId": "UnlockController_unlock",
         "parameters": [
@@ -907,7 +907,7 @@
         "tags": ["Unlock"]
       }
     },
-    "/api/auth/me": {
+    "/auth/me": {
       "get": {
         "operationId": "AuthController_getMe",
         "parameters": [],
@@ -924,7 +924,7 @@
         "tags": ["Auth"]
       }
     },
-    "/api/auth/intent": {
+    "/auth/intent": {
       "post": {
         "operationId": "AuthController_setIntent",
         "parameters": [],

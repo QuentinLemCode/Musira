@@ -30,6 +30,7 @@ const caproverAdminPassword =
     ? pulumi.secret(process.env.CAPROVER_ADMIN_PASSWORD)
     : pulumi.secret(''));
 const backendApp = config.get('backendApp') ?? process.env.BACKEND_APP ?? '';
+const enableRedis = config.getBoolean('enableRedis') ?? true;
 const cloudflareZone =
   config.get('cloudflareZone') ?? process.env.CLOUDFLARE_ZONE ?? '';
 const apexDomain =
@@ -221,6 +222,58 @@ export const cloudSqlPassword = dbPassword;
 export const cloudSqlPublicIp = sqlInstance.ipAddresses.apply(
   (ips) => ips?.[0]?.ipAddress ?? '',
 );
+
+// Optional: provision a Redis instance (Compute Engine + Docker) for BullMQ
+let redisIp: pulumi.Output<string> | undefined;
+if (enableRedis) {
+  const redisVmIp = new gcp.compute.Address('redis-ip', {
+    addressType: 'EXTERNAL',
+    region,
+  });
+  const redisFirewall = new gcp.compute.Firewall('redis-firewall', {
+    network: 'default',
+    allows: [{ protocol: 'tcp', ports: ['6379'] }],
+    direction: 'INGRESS',
+    sourceRanges: ['0.0.0.0/0'],
+  });
+  const redisVm = new gcp.compute.Instance(
+    'redis-vm',
+    {
+      machineType: 'e2-micro',
+      zone,
+      bootDisk: {
+        initializeParams: {
+          image: 'debian-cloud/debian-12',
+          size: 10,
+          type: 'pd-balanced',
+        },
+      },
+      networkInterfaces: [
+        {
+          network: 'default',
+          accessConfigs: [
+            {
+              natIp: redisVmIp.address,
+            },
+          ],
+        },
+      ],
+      metadataStartupScript: `#!/bin/bash
+set -eux
+apt-get update && apt-get install -y docker.io
+systemctl enable docker && systemctl start docker
+docker run -d --name redis -p 6379:6379 --restart=always redis:7-alpine
+`,
+      tags: ['redis'],
+    },
+    { dependsOn: [redisFirewall] },
+  );
+  redisIp = redisVm.networkInterfaces.apply(
+    (nics) => nics?.[0]?.accessConfigs?.[0]?.natIp ?? '',
+  );
+}
+
+export const redisPublicIp = redisIp ?? pulumi.output('');
 
 // Notes for wiring: you must configure DNS for caproverDomain to point to instanceIp.
 
