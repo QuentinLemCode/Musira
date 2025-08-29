@@ -6,7 +6,8 @@ import type { Environment } from './environment.interface';
 
 export const environment: Environment = {
   production: false,
-  serverUrl: 'http://localhost:3020/',
+  // Use dev-server proxy for same-origin cookies
+  serverUrl: '/api/',
   googleClientId:
     '457105191031-2h4ebd67152dheadkcqpb8k990252etk.apps.googleusercontent.com',
   facebookClientId: '1003579960707915',

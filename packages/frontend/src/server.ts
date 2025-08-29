@@ -49,10 +49,37 @@ export const reqHandler = createRequestHandler(async (req) => {
     });
   }
 
-  // Do not proxy API calls anymore; frontend calls the absolute API URL.
-  // Requests to /api should be handled by the backend domain, not the worker.
+  // Proxy API calls to local backend when running with Wrangler (same-origin cookies)
   if (url.pathname.startsWith('/api')) {
-    return new Response('Not Found', { status: 404 });
+    const backendOrigin = 'http://127.0.0.1:3020';
+    const upstream = new URL(backendOrigin);
+    // Rewrite path by stripping the /api prefix
+    const rewrittenPath = url.pathname.replace(/^\/api/, '');
+    upstream.pathname = rewrittenPath || '/';
+    upstream.search = url.search;
+
+    // Build proxied request
+    const headers = new Headers(req.headers);
+    headers.delete('host');
+
+    const init: RequestInit = {
+      method: req.method,
+      headers,
+      body:
+        req.method !== 'GET' && req.method !== 'HEAD'
+          ? (req as any).body
+          : undefined,
+      redirect: 'manual',
+    };
+
+    const backendResp = await fetch(upstream.toString(), init);
+
+    // Return backend response as-is (including Set-Cookie headers)
+    return new Response(backendResp.body, {
+      status: backendResp.status,
+      statusText: backendResp.statusText,
+      headers: backendResp.headers,
+    });
   }
 
   const res = await angularApp.handle(req);
