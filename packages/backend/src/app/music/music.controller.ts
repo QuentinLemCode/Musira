@@ -59,7 +59,6 @@ export class MusicController {
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<CurrentMusic> {
     const status = await this.queueEngine.start(musicSession);
-    await new Promise((r) => setTimeout(r, 2000));
     return this.generateState(musicSession, status.message);
   }
 

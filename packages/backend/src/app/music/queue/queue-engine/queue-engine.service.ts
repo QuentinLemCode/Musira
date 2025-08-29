@@ -1,12 +1,14 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import {
   GoneException,
   Injectable,
   Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { SchedulerRegistry } from '@nestjs/schedule';
-import { setTimeout } from 'timers';
+import type { Queue as BullQueue } from 'bullmq';
+import { MUSIC_ENGINE_QUEUE } from '../../../jobs/jobs.module';
 import type { MusicSession } from '../../../music-session/entities/music-session.entity';
+import { MusicSessionService } from '../../../music-session/music-session.service';
 import type { User } from '../../../users/user.entity';
 import { UserRole } from '../../../users/user.entity';
 import type { Backlog } from '../../backlog/backlog.entity';
@@ -35,8 +37,10 @@ export class QueueEngineService {
   constructor(
     private readonly spotify: SpotifyApiService,
     private readonly queues: QueueService,
-    private readonly schedulerRegistry: SchedulerRegistry,
     private readonly backlog: BacklogService,
+    private readonly sessions: MusicSessionService,
+    @InjectQueue(MUSIC_ENGINE_QUEUE)
+    private readonly engineQueue: BullQueue,
   ) {}
 
   private readonly logger = new Logger('QueueEngine');
@@ -70,10 +74,8 @@ export class QueueEngineService {
       return { started: false, message: QueueEngineService.FAIL_PLAY };
     }
     await this.queues.setPlaying(queue);
-    // we wait a bit for the music launch
-    setTimeout(() => {
-      this.launchEngine(musicSession, queue);
-    }, 5000);
+    // schedule engine launch in 5s
+    await this.scheduleLaunch(5000, musicSession.id, queue.id, false);
     return {
       started: true,
     };
@@ -121,7 +123,7 @@ export class QueueEngineService {
     if (!queue.music) {
       queue = await this.queues.getQueue(queue.id);
     }
-    this.deleteTimeouts();
+    await this.deleteTimeouts();
     const playingQueue = await this.queues.getPlayingQueue();
     if (playingQueue) {
       await this.queues.setFinished(playingQueue);
@@ -129,9 +131,7 @@ export class QueueEngineService {
     await this.spotify.play(musicSession, queue.music.uri);
     await this.queues.setPlaying(queue);
     const nextQueue: Queue = queue;
-    this.startTimeout(10000, this.FORWARD_MUSIC_RESTART_ENGINE, () =>
-      this.launchEngine(musicSession, nextQueue, true),
-    );
+    await this.scheduleLaunch(10000, musicSession.id, nextQueue.id, true);
   }
 
   // Engines related functions
@@ -160,10 +160,8 @@ export class QueueEngineService {
       playState.currentPlayback,
     );
 
-    this.deleteTimeouts();
-    this.startTimeout(timeoutEndOfSong, this.SONG_END_SCHEDULER_NAME, () =>
-      this.endOfSongEvent(musicSession, queue),
-    );
+    await this.deleteTimeouts();
+    await this.scheduleEndOfSong(timeoutEndOfSong, musicSession.id, queue.id);
   }
 
   // end of song
@@ -186,7 +184,7 @@ export class QueueEngineService {
       return this.stop();
     }
     const nextQueue = await this.queues.pop(musicSession);
-    let backlog: Backlog;
+    let backlog: Backlog | null = null;
     if (nextQueue !== null) {
       await this.spotify.addToQueue(musicSession, nextQueue.music.uri);
       this.logger.log(
@@ -206,12 +204,13 @@ export class QueueEngineService {
     const timeoutBeginNextSong = this.calculateWhenNextSongBegin(
       playState.currentPlayback,
     );
-    this.startTimeout(
+    const idToSchedule = nextQueue ? nextQueue.id : (backlog as Backlog).id;
+    await this.scheduleStartOfSong(
       timeoutBeginNextSong,
-      this.SONG_START_SCHEDULER_NAME,
-      () => this.startOfSongEvent(musicSession, nextQueue ?? backlog),
+      musicSession.id,
+      idToSchedule,
     );
-    this.stopTimeout(this.SONG_END_SCHEDULER_NAME);
+    await this.stopTimeout(this.SONG_END_SCHEDULER_NAME);
   }
 
   // start of song
@@ -237,11 +236,9 @@ export class QueueEngineService {
     const timeoutEndOfSong = this.calculateWhenBeforeCurrentSongFinish(
       playState.currentPlayback,
     );
-    this.startTimeout(timeoutEndOfSong, this.SONG_END_SCHEDULER_NAME, () =>
-      this.endOfSongEvent(musicSession, queue),
-    );
+    await this.scheduleEndOfSong(timeoutEndOfSong, musicSession.id, queue.id);
     this.logger.log(`Start of song : ${queue.music.toString()}`);
-    this.stopTimeout(this.SONG_START_SCHEDULER_NAME);
+    await this.stopTimeout(this.SONG_START_SCHEDULER_NAME);
   }
 
   private async getPlayState(musicSession: MusicSession) {
@@ -266,22 +263,100 @@ export class QueueEngineService {
 
   // Time related functions
 
-  private startTimeout(timeout: number, name: string, func: () => void) {
-    if (this.schedulerRegistry.doesExist('timeout', name)) return;
-    const timeoutFunction = setTimeout(func, timeout);
-    this.schedulerRegistry.addTimeout(name, timeoutFunction);
+  private async deleteTimeouts() {
+    await Promise.all([
+      this.stopTimeout(this.SONG_END_SCHEDULER_NAME),
+      this.stopTimeout(this.SONG_START_SCHEDULER_NAME),
+      this.stopTimeout(this.FORWARD_MUSIC_RESTART_ENGINE),
+    ]);
   }
 
-  private deleteTimeouts() {
-    this.stopTimeout(this.SONG_END_SCHEDULER_NAME);
-    this.stopTimeout(this.SONG_START_SCHEDULER_NAME);
-    this.stopTimeout(this.FORWARD_MUSIC_RESTART_ENGINE);
+  private async stopTimeout(name: string) {
+    const job = await this.engineQueue.getJob(name);
+    if (job) await job.remove();
   }
 
-  private stopTimeout(name: string) {
-    if (this.schedulerRegistry.doesExist('timeout', name)) {
-      this.schedulerRegistry.deleteTimeout(name);
+  private async scheduleLaunch(
+    delayMs: number,
+    musicSessionId: number,
+    queueId: number,
+    forwarded: boolean,
+  ) {
+    await this.stopTimeout(this.FORWARD_MUSIC_RESTART_ENGINE);
+    await this.engineQueue.add(
+      'engine.launch',
+      { musicSessionId, queueId, forwarded },
+      { jobId: this.FORWARD_MUSIC_RESTART_ENGINE, delay: delayMs },
+    );
+  }
+
+  private async scheduleEndOfSong(
+    delayMs: number,
+    musicSessionId: number,
+    queueId: number,
+  ) {
+    await this.stopTimeout(this.SONG_END_SCHEDULER_NAME);
+    await this.engineQueue.add(
+      'engine.endOfSong',
+      { musicSessionId, queueId },
+      { jobId: this.SONG_END_SCHEDULER_NAME, delay: delayMs },
+    );
+  }
+
+  private async scheduleStartOfSong(
+    delayMs: number,
+    musicSessionId: number,
+    queueId: number,
+  ) {
+    await this.stopTimeout(this.SONG_START_SCHEDULER_NAME);
+    await this.engineQueue.add(
+      'engine.startOfSong',
+      { musicSessionId, queueId },
+      { jobId: this.SONG_START_SCHEDULER_NAME, delay: delayMs },
+    );
+  }
+
+  // Methods invoked by BullMQ processors
+  async launchEngineByIds(
+    musicSessionId: number,
+    queueId: number,
+    forwarded = false,
+  ) {
+    const musicSession = await this.sessions.findOne(musicSessionId);
+    if (!musicSession) return;
+    const queue = await this.queues.getQueue(queueId);
+    if (!queue) return;
+    await this.launchEngine(musicSession, queue, forwarded);
+  }
+
+  async endOfSongByIds(musicSessionId: number, queueId: number) {
+    const musicSession = await this.sessions.findOne(musicSessionId);
+    if (!musicSession) return;
+    const queue = await this.queues.getQueue(queueId);
+    if (!queue) return;
+    await this.endOfSongEvent(musicSession, queue);
+  }
+
+  async startOfSongByIds(musicSessionId: number, queueOrBacklogId: number) {
+    const musicSession = await this.sessions.findOne(musicSessionId);
+    if (!musicSession) return;
+    // try queue first, then backlog
+    const queue = await this.queues.getQueue(queueOrBacklogId);
+    if (queue) {
+      await this.startOfSongEvent(musicSession, queue);
+      return;
     }
+    const backlog = await this.backlog['backlog'].findOne({
+      where: { id: queueOrBacklogId },
+      relations: ['music', 'music_session'],
+    });
+    if (backlog) {
+      await this.startOfSongEvent(musicSession, backlog);
+    }
+  }
+
+  async forwardCheckByIds(musicSessionId: number, queueId: number) {
+    await this.launchEngineByIds(musicSessionId, queueId, true);
   }
 
   private calculateWhenNextSongBegin(currentMusic: CurrentPlaybackResponse) {

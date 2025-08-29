@@ -1,14 +1,17 @@
 import { HttpService } from '@nestjs/axios';
+import { InjectQueue } from '@nestjs/bullmq';
 import type { OnModuleInit } from '@nestjs/common';
 import {
   Inject,
   Injectable,
   Logger,
+  Optional,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { Queue as BullQueue } from 'bullmq';
 import type { Cache } from 'cache-manager';
 import { env } from 'process';
 import { catchError, firstValueFrom, map, of, pipe, retry, tap } from 'rxjs';
@@ -61,6 +64,9 @@ export class SpotifyApiService implements OnModuleInit {
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly sessions: MusicSessionService,
     @Inject('CACHE_MANAGER') private readonly cache: Cache,
+    @Optional()
+    @InjectQueue('spotify-token')
+    private readonly tokenQueue?: BullQueue,
   ) {}
 
   private readonly logger = new Logger('SpotifyAPI');
@@ -78,7 +84,7 @@ export class SpotifyApiService implements OnModuleInit {
       const account = await session.spotify_account;
       if (!account) continue;
       await this.renewToken(account);
-      this.startTokenRenewInterval(account);
+      await this.startTokenRenewInterval(account);
     }
   }
 
@@ -133,7 +139,7 @@ export class SpotifyApiService implements OnModuleInit {
     };
 
     await this.spotifyAccount.save(account);
-    this.startTokenRenewInterval(account);
+    await this.startTokenRenewInterval(account);
   }
 
   async getPlaybackState(
@@ -390,32 +396,25 @@ export class SpotifyApiService implements OnModuleInit {
     await this.spotifyAccount.save(renewedAccount);
   }
 
-  private startTokenRenewInterval(account: SpotifyAccount) {
-    if (
-      this.schedulerRegistry.doesExist(
-        'interval',
-        SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME,
-      )
-    ) {
-      return;
-    }
-    const callback = () => {
-      this.renewToken(account);
-    };
-
-    const interval = setInterval(
-      callback,
-      SpotifyApiService.INTERVAL_RENEW_TOKEN_TIME,
-    );
-    this.schedulerRegistry.addInterval(
-      SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME,
-      interval,
+  private async startTokenRenewInterval(account: SpotifyAccount) {
+    // schedule a delayed job, and on completion re-schedule itself
+    await this.stopTokenRenewInterval();
+    if (!this.tokenQueue) return;
+    await this.tokenQueue.add(
+      'token.renew',
+      { accountId: account.id },
+      {
+        jobId: SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME,
+        delay: SpotifyApiService.INTERVAL_RENEW_TOKEN_TIME,
+      },
     );
   }
 
-  private stopTokenRenewInterval() {
-    this.schedulerRegistry.deleteInterval(
+  private async stopTokenRenewInterval() {
+    if (!this.tokenQueue) return;
+    const job = await this.tokenQueue.getJob(
       SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME,
     );
+    if (job) await job.remove();
   }
 }

@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bullmq';
 import {
   Logger,
   Module,
@@ -7,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { CoreModule } from './core/core.module';
+import { JobsModule } from './jobs/jobs.module';
 import { MusicSessionModule } from './music-session/music-session.module';
 import { MusicModule } from './music/music.module';
 import { UsersModule } from './users/users.module';
@@ -29,7 +31,16 @@ if (isProd) {
 }
 
 @Module({
-  imports: modules,
+  imports: [
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_HOST || '127.0.0.1',
+        port: Number(process.env.REDIS_PORT || 6379),
+      },
+    }),
+    JobsModule,
+    ...modules,
+  ],
   controllers: [],
 })
 export class AppModule {}
