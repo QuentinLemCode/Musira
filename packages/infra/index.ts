@@ -18,8 +18,12 @@ const dbVersion =
   config.get('dbVersion') ?? process.env.DB_VERSION ?? 'MYSQL_8_0';
 const dbName = config.get('dbName') ?? process.env.DB_NAME ?? 'musira';
 const dbUser = config.get('dbUser') ?? process.env.DB_USER ?? 'musira';
+const apexDomain =
+  config.get('apexDomain') ?? process.env.APEX_DOMAIN ?? 'musira.fr';
 const caproverDomain =
-  config.get('caproverDomain') ?? process.env.CAPROVER_DOMAIN ?? ''; // e.g. captain.example.com
+  config.get('caproverDomain') ??
+  process.env.CAPROVER_DOMAIN ??
+  `captain.${apexDomain}`; // e.g. captain.example.com
 const caproverEmail =
   config.get('caproverEmail') ?? process.env.CAPROVER_EMAIL ?? '';
 const caproverAdminPassword =
@@ -32,8 +36,6 @@ const caproverAdminPassword =
 const backendApp = config.get('backendApp') ?? process.env.BACKEND_APP ?? '';
 const cloudflareZone =
   config.get('cloudflareZone') ?? process.env.CLOUDFLARE_ZONE ?? '';
-const apexDomain =
-  config.get('apexDomain') ?? process.env.APEX_DOMAIN ?? 'musira.fr';
 
 // Random password for DB user
 const dbPassword = new random.RandomPassword('dbPassword', {

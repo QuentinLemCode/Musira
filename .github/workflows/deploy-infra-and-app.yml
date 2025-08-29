@@ -2,30 +2,6 @@ name: Deploy infra and apps (GCP + CapRover + Cloudflare)
 
 on:
   workflow_dispatch:
-    inputs:
-      stack:
-        description: Pulumi stack name
-        required: true
-        default: dev
-      caprover_domain:
-        description: CapRover root domain (e.g. captain.example.com)
-        required: true
-      machine_type:
-        description: GCE machine type
-        required: false
-        default: e2-medium
-      db_tier:
-        description: Cloud SQL tier
-        required: false
-        default: db-f1-micro
-      db_name:
-        description: Database name
-        required: false
-        default: musira
-      db_user:
-        description: Database user
-        required: false
-        default: musira
 
 jobs:
   deploy:
@@ -62,7 +38,7 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Setup Pulumi
-        uses: pulumi/setup-pulumi@v3
+        uses: pulumi/setup-pulumi@v2
 
       - name: Configure Pulumi CLI
         env:
@@ -74,41 +50,30 @@ jobs:
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
         run: |
-          pulumi stack select ${{ inputs.stack }} || pulumi stack init ${{ inputs.stack }}
+          pulumi stack select dev || pulumi stack init dev
 
       - name: Set Pulumi configs
         working-directory: packages/infra
         run: |
-          pulumi config set gcp:project ${{ secrets.GCP_PROJECT_ID }} --stack ${{ inputs.stack }} --non-interactive
-          pulumi config set gcp:region ${{ secrets.GCP_REGION }} --stack ${{ inputs.stack }} --non-interactive
-          pulumi config set gcp:zone ${{ secrets.GCP_ZONE }} --stack ${{ inputs.stack }} --non-interactive
-          pulumi config set infra:caproverDomain ${{ inputs.caprover_domain }} --stack ${{ inputs.stack }} --non-interactive
-          pulumi config set infra:machineType ${{ inputs.machine_type }} --stack ${{ inputs.stack }} --non-interactive
-          pulumi config set infra:dbTier ${{ inputs.db_tier }} --stack ${{ inputs.stack }} --non-interactive
-          pulumi config set infra:dbName ${{ inputs.db_name }} --stack ${{ inputs.stack }} --non-interactive
-          pulumi config set infra:dbUser ${{ inputs.db_user }} --stack ${{ inputs.stack }} --non-interactive
-          pulumi config set infra:cloudflareZone ${{ secrets.CF_ZONE_ID }} --stack ${{ inputs.stack }} --non-interactive
-          pulumi config set infra:apexDomain ${{ secrets.APEX_DOMAIN }} --stack ${{ inputs.stack }} --non-interactive
+          pulumi config set gcp:project ${{ secrets.GCP_PROJECT_ID }} --stack dev --non-interactive
+          pulumi config set gcp:region ${{ secrets.GCP_REGION }} --stack dev --non-interactive
+          pulumi config set gcp:zone ${{ secrets.GCP_ZONE }} --stack dev --non-interactive
+          pulumi config set infra:cloudflareZone ${{ secrets.CF_ZONE_ID }} --stack dev --non-interactive
 
       - name: Pulumi up (provision infra)
         working-directory: packages/infra
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           PULUMI_CONFIG_PASSPHRASE: ''
-          MACHINE_TYPE: ${{ inputs.machine_type }}
-          DB_TIER: ${{ inputs.db_tier }}
-          DB_NAME: ${{ inputs.db_name }}
-          DB_USER: ${{ inputs.db_user }}
-          CAPROVER_DOMAIN: ${{ inputs.caprover_domain }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-        run: pulumi up --yes --skip-preview --stack ${{ inputs.stack }}
+        run: pulumi up --yes --skip-preview --stack dev
 
       - name: Read Pulumi outputs
         id: read_outputs
         working-directory: packages/infra
         run: |
-          OUT=$(pulumi stack output --json --stack ${{ inputs.stack }})
+          OUT=$(pulumi stack output --json --stack dev)
           echo "out=$OUT" >> $GITHUB_OUTPUT
 
       - name: Parse outputs
@@ -129,7 +94,7 @@ jobs:
 
       - name: Deploy backend to CapRover (password auth)
         env:
-          CAPROVER_SERVER: https://${{ inputs.caprover_domain }}
+          CAPROVER_SERVER: https://captain.${{ secrets.APEX_DOMAIN }}
           CAPROVER_ADMIN_PASSWORD: ${{ secrets.CAPROVER_ADMIN_PASSWORD }}
           BACKEND_APP: ${{ secrets.BACKEND_APP }}
           BACKEND_IMAGE: ${{ secrets.BACKEND_IMAGE }}
