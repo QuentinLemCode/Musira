@@ -6,7 +6,7 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import type { Queue as BullQueue } from 'bullmq';
-import { MUSIC_ENGINE_QUEUE } from '../../../jobs/jobs.module';
+import { MUSIC_ENGINE_QUEUE } from '../../../jobs/queues.constants';
 import type { MusicSession } from '../../../music-session/entities/music-session.entity';
 import { MusicSessionService } from '../../../music-session/music-session.service';
 import type { User } from '../../../users/user.entity';

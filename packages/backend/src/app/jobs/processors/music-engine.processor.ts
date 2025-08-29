@@ -2,7 +2,7 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import type { Job } from 'bullmq';
 import { QueueEngineService } from '../../music/queue/queue-engine/queue-engine.service';
-import { MUSIC_ENGINE_QUEUE } from '../jobs.module';
+import { MUSIC_ENGINE_QUEUE } from '../queues.constants';
 
 type MusicEngineJobName =
   | 'engine.launch'

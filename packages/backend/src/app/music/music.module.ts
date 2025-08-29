@@ -1,6 +1,8 @@
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoreModule } from '../core/core.module';
+import { MUSIC_ENGINE_QUEUE } from '../jobs/queues.constants';
 import { MusicSessionModule } from '../music-session/music-session.module';
 import { BacklogController } from './backlog/backlog.controller';
 import { Backlog } from './backlog/backlog.entity';
@@ -20,6 +22,7 @@ import { SpotifyModule } from './spotify/spotify.module';
     TypeOrmModule.forFeature([Music, Queue, Backlog]),
     CoreModule,
     MusicSessionModule,
+    BullModule.registerQueue({ name: MUSIC_ENGINE_QUEUE }),
   ],
   controllers: [
     MusicController,
@@ -28,5 +31,6 @@ import { SpotifyModule } from './spotify/spotify.module';
     SpotifyLoginController,
   ],
   providers: [QueueService, QueueEngineService, BacklogService],
+  exports: [QueueEngineService],
 })
 export class MusicModule {}

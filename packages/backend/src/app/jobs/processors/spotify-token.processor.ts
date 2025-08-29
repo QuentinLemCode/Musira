@@ -5,7 +5,7 @@ import type { Job } from 'bullmq';
 import { Repository } from 'typeorm';
 import { SpotifyAccount } from '../../music/spotify/spotify-account.entity';
 import { SpotifyApiService } from '../../music/spotify/spotify-api/spotify-api.service';
-import { SPOTIFY_TOKEN_QUEUE } from '../jobs.module';
+import { SPOTIFY_TOKEN_QUEUE } from '../queues.constants';
 
 type SpotifyTokenJobName = 'token.renew';
 

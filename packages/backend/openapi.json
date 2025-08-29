@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api/session/{publicCode}/music/search": {
+    "/session/{publicCode}/music/search": {
       "get": {
         "operationId": "MusicController_search",
         "parameters": [
@@ -43,10 +43,12 @@
           }
         ],
         "summary": "Search music on Spotify for this session",
-        "tags": ["Music"]
+        "tags": [
+          "Music"
+        ]
       }
     },
-    "/api/session/{publicCode}/music/start": {
+    "/session/{publicCode}/music/start": {
       "get": {
         "operationId": "MusicController_start",
         "parameters": [
@@ -76,10 +78,12 @@
             "bearer": []
           }
         ],
-        "tags": ["Music"]
+        "tags": [
+          "Music"
+        ]
       }
     },
-    "/api/session/{publicCode}/music/stop": {
+    "/session/{publicCode}/music/stop": {
       "get": {
         "operationId": "MusicController_stop",
         "parameters": [
@@ -109,10 +113,12 @@
             "bearer": []
           }
         ],
-        "tags": ["Music"]
+        "tags": [
+          "Music"
+        ]
       }
     },
-    "/api/session/{publicCode}/music": {
+    "/session/{publicCode}/music": {
       "get": {
         "operationId": "MusicController_currentState",
         "parameters": [
@@ -142,10 +148,12 @@
             "bearer": []
           }
         ],
-        "tags": ["Music"]
+        "tags": [
+          "Music"
+        ]
       }
     },
-    "/api/session/{publicCode}/queue": {
+    "/session/{publicCode}/queue": {
       "get": {
         "operationId": "QueueController_getQueue",
         "parameters": [
@@ -176,7 +184,9 @@
           }
         ],
         "summary": "Get queue and nominated backlog for a session",
-        "tags": ["Queue"]
+        "tags": [
+          "Queue"
+        ]
       },
       "post": {
         "operationId": "QueueController_pushToQueue",
@@ -218,10 +228,12 @@
           }
         ],
         "summary": "Push a music to the queue",
-        "tags": ["Queue"]
+        "tags": [
+          "Queue"
+        ]
       }
     },
-    "/api/session/{publicCode}/queue/{id}": {
+    "/session/{publicCode}/queue/{id}": {
       "delete": {
         "operationId": "QueueController_deleteFromQueue",
         "parameters": [
@@ -253,10 +265,12 @@
           }
         ],
         "summary": "Delete a music from the queue",
-        "tags": ["Queue"]
+        "tags": [
+          "Queue"
+        ]
       }
     },
-    "/api/session/{publicCode}/queue/{id}/forward": {
+    "/session/{publicCode}/queue/{id}/forward": {
       "post": {
         "operationId": "QueueController_forwardQueue",
         "parameters": [
@@ -295,10 +309,12 @@
           }
         ],
         "summary": "Forward a queued music (move up)",
-        "tags": ["Queue"]
+        "tags": [
+          "Queue"
+        ]
       }
     },
-    "/api/session/{publicCode}/backlog": {
+    "/session/{publicCode}/backlog": {
       "post": {
         "operationId": "BacklogController_pushToBacklog",
         "parameters": [
@@ -342,7 +358,9 @@
           }
         ],
         "summary": "Push a music to backlog",
-        "tags": ["Backlog"]
+        "tags": [
+          "Backlog"
+        ]
       },
       "get": {
         "operationId": "BacklogController_getBackLog",
@@ -377,10 +395,12 @@
           }
         ],
         "summary": "Get backlog for session",
-        "tags": ["Backlog"]
+        "tags": [
+          "Backlog"
+        ]
       }
     },
-    "/api/session/{publicCode}/backlog/{id}": {
+    "/session/{publicCode}/backlog/{id}": {
       "delete": {
         "operationId": "BacklogController_deleteBacklog",
         "parameters": [
@@ -412,10 +432,12 @@
           }
         ],
         "summary": "Delete a backlog item",
-        "tags": ["Backlog"]
+        "tags": [
+          "Backlog"
+        ]
       }
     },
-    "/api/session/{publicCode}/backlog/import": {
+    "/session/{publicCode}/backlog/import": {
       "post": {
         "operationId": "BacklogController_import",
         "parameters": [
@@ -460,10 +482,12 @@
           }
         ],
         "summary": "Import a Spotify playlist into backlog",
-        "tags": ["Backlog"]
+        "tags": [
+          "Backlog"
+        ]
       }
     },
-    "/api/spotify/{publicCode}/spotify-login": {
+    "/spotify/{publicCode}/spotify-login": {
       "get": {
         "operationId": "SpotifyLoginController_spotifyLogin",
         "parameters": [
@@ -494,10 +518,12 @@
           }
         ],
         "summary": "Get Spotify login URL for this session",
-        "tags": ["Spotify"]
+        "tags": [
+          "Spotify"
+        ]
       }
     },
-    "/api/spotify/register-player": {
+    "/spotify/register-player": {
       "post": {
         "operationId": "SpotifyLoginController_spotifyAuthentication",
         "parameters": [],
@@ -526,10 +552,12 @@
           }
         ],
         "summary": "Register a Spotify player for the session",
-        "tags": ["Spotify"]
+        "tags": [
+          "Spotify"
+        ]
       }
     },
-    "/api/spotify/{publicCode}/logout-player": {
+    "/spotify/{publicCode}/logout-player": {
       "post": {
         "operationId": "SpotifyLoginController_spotifyLogout",
         "parameters": [
@@ -553,10 +581,12 @@
           }
         ],
         "summary": "Logout Spotify player for this session",
-        "tags": ["Spotify"]
+        "tags": [
+          "Spotify"
+        ]
       }
     },
-    "/api/health": {
+    "/health": {
       "get": {
         "operationId": "HealthController_get",
         "parameters": [],
@@ -565,10 +595,12 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
-    "/api/music-session": {
+    "/music-session": {
       "post": {
         "operationId": "MusicSessionController_create",
         "parameters": [],
@@ -583,7 +615,9 @@
           }
         ],
         "summary": "Create a new music session",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       },
       "get": {
         "operationId": "MusicSessionController_findAll",
@@ -599,10 +633,12 @@
           }
         ],
         "summary": "List all music sessions (admin only)",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       }
     },
-    "/api/music-session/{publicCode}": {
+    "/music-session/{publicCode}": {
       "get": {
         "operationId": "MusicSessionController_findOne",
         "parameters": [
@@ -626,7 +662,9 @@
           }
         ],
         "summary": "Get a session by public code",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       },
       "patch": {
         "operationId": "MusicSessionController_update",
@@ -651,7 +689,9 @@
           }
         ],
         "summary": "Update a session (creator only)",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       },
       "delete": {
         "operationId": "MusicSessionController_remove",
@@ -676,10 +716,12 @@
           }
         ],
         "summary": "Delete a session (admin or creator)",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       }
     },
-    "/api/music-session/history/me": {
+    "/music-session/history/me": {
       "get": {
         "operationId": "MusicSessionController_getMyHistory",
         "parameters": [],
@@ -694,10 +736,12 @@
           }
         ],
         "summary": "Get current user session history",
-        "tags": ["Music Sessions"]
+        "tags": [
+          "Music Sessions"
+        ]
       }
     },
-    "/api/session/{publicCode}/settings": {
+    "/session/{publicCode}/settings": {
       "put": {
         "operationId": "SettingsController_setSettings",
         "parameters": [
@@ -735,7 +779,9 @@
           }
         ],
         "summary": "Update session settings",
-        "tags": ["Settings"]
+        "tags": [
+          "Settings"
+        ]
       },
       "get": {
         "operationId": "SettingsController_getSettings",
@@ -774,10 +820,12 @@
           }
         ],
         "summary": "Get session settings",
-        "tags": ["Settings"]
+        "tags": [
+          "Settings"
+        ]
       }
     },
-    "/api/users": {
+    "/users": {
       "get": {
         "operationId": "UsersController_getAll",
         "parameters": [],
@@ -792,7 +840,9 @@
           }
         ],
         "summary": "List all users (admin only)",
-        "tags": ["Users"]
+        "tags": [
+          "Users"
+        ]
       },
       "delete": {
         "operationId": "UsersController_deleteSelf",
@@ -808,10 +858,12 @@
           }
         ],
         "summary": "Delete self (non-admin only)",
-        "tags": ["Users"]
+        "tags": [
+          "Users"
+        ]
       }
     },
-    "/api/users/{id}": {
+    "/users/{id}": {
       "delete": {
         "operationId": "UsersController_deleteById",
         "parameters": [
@@ -835,10 +887,12 @@
           }
         ],
         "summary": "Delete a user by id (admin only)",
-        "tags": ["Users"]
+        "tags": [
+          "Users"
+        ]
       }
     },
-    "/api/auth/email/login": {
+    "/auth/email/login": {
       "post": {
         "operationId": "LoginController_login",
         "parameters": [],
@@ -847,10 +901,12 @@
             "description": ""
           }
         },
-        "tags": ["Login"]
+        "tags": [
+          "Login"
+        ]
       }
     },
-    "/api/auth/oauth/login": {
+    "/auth/oauth/login": {
       "post": {
         "operationId": "OauthController_login",
         "parameters": [],
@@ -859,10 +915,12 @@
             "description": ""
           }
         },
-        "tags": ["Oauth"]
+        "tags": [
+          "Oauth"
+        ]
       }
     },
-    "/api/auth/logout": {
+    "/auth/logout": {
       "post": {
         "operationId": "LogoutController_logout",
         "parameters": [],
@@ -871,10 +929,12 @@
             "description": ""
           }
         },
-        "tags": ["Logout"]
+        "tags": [
+          "Logout"
+        ]
       }
     },
-    "/api/auth/email/register": {
+    "/auth/email/register": {
       "post": {
         "operationId": "RegisterController_create",
         "parameters": [],
@@ -883,10 +943,12 @@
             "description": ""
           }
         },
-        "tags": ["Register"]
+        "tags": [
+          "Register"
+        ]
       }
     },
-    "/api/auth/email/unlock/{id}": {
+    "/auth/email/unlock/{id}": {
       "post": {
         "operationId": "UnlockController_unlock",
         "parameters": [
@@ -904,10 +966,12 @@
             "description": ""
           }
         },
-        "tags": ["Unlock"]
+        "tags": [
+          "Unlock"
+        ]
       }
     },
-    "/api/auth/me": {
+    "/auth/me": {
       "get": {
         "operationId": "AuthController_getMe",
         "parameters": [],
@@ -921,10 +985,12 @@
             "bearer": []
           }
         ],
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       }
     },
-    "/api/auth/intent": {
+    "/auth/intent": {
       "post": {
         "operationId": "AuthController_setIntent",
         "parameters": [],
@@ -938,7 +1004,9 @@
             "bearer": []
           }
         ],
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       },
       "get": {
         "operationId": "AuthController_getAndClearIntent",
@@ -953,7 +1021,9 @@
             "bearer": []
           }
         ],
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       }
     }
   },
@@ -998,7 +1068,13 @@
             "type": "number"
           }
         },
-        "required": ["artist", "title", "album", "uri", "duration"]
+        "required": [
+          "artist",
+          "title",
+          "album",
+          "uri",
+          "duration"
+        ]
       },
       "UserLightDto": {
         "type": "object",
@@ -1010,7 +1086,10 @@
             "type": "string"
           }
         },
-        "required": ["id", "name"]
+        "required": [
+          "id",
+          "name"
+        ]
       },
       "QueueDto": {
         "type": "object",
@@ -1020,7 +1099,12 @@
           },
           "status": {
             "type": "number",
-            "enum": [0, 1, 2, 3],
+            "enum": [
+              0,
+              1,
+              2,
+              3
+            ],
             "description": "0=PENDING, 1=PLAYING, 2=FINISHED, 3=CANCELLED"
           },
           "music": {
@@ -1033,7 +1117,13 @@
             "type": "number"
           }
         },
-        "required": ["id", "status", "music", "user", "forward_votes"]
+        "required": [
+          "id",
+          "status",
+          "music",
+          "user",
+          "forward_votes"
+        ]
       },
       "CurrentMusicDto": {
         "type": "object",
@@ -1063,7 +1153,10 @@
             "nullable": true
           }
         },
-        "required": ["isSpotifyAccountRegistered", "engineStarted"]
+        "required": [
+          "isSpotifyAccountRegistered",
+          "engineStarted"
+        ]
       },
       "BacklogDto": {
         "type": "object",
@@ -1075,7 +1168,10 @@
             "$ref": "#/components/schemas/MusicDto"
           }
         },
-        "required": ["id", "music"]
+        "required": [
+          "id",
+          "music"
+        ]
       },
       "QueueResponseDto": {
         "type": "object",
@@ -1095,7 +1191,10 @@
             ]
           }
         },
-        "required": ["queue", "backlog"]
+        "required": [
+          "queue",
+          "backlog"
+        ]
       },
       "Music": {
         "type": "object",
@@ -1126,7 +1225,13 @@
             "type": "number"
           }
         },
-        "required": ["id", "music", "created_at", "updated_at", "play_count"]
+        "required": [
+          "id",
+          "music",
+          "created_at",
+          "updated_at",
+          "play_count"
+        ]
       },
       "ImportResultDto": {
         "type": "object",
@@ -1135,7 +1240,9 @@
             "type": "number"
           }
         },
-        "required": ["added"]
+        "required": [
+          "added"
+        ]
       }
     }
   }
