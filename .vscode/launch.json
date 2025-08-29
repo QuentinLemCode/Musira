@@ -11,12 +11,20 @@
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
     },
+
+    {
+      "name": "Attach to Frontend",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
     {
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",
-      "url": "https://localhost:4200",
-      "webRoot": "${workspaceFolder}"
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/packages/musira"
     }
   ]
 }

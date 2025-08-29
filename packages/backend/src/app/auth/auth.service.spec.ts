@@ -1,0 +1,106 @@
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EmailUser } from '../users/user.email.entity';
+import { UserRole } from '../users/user.entity';
+import { UsersService } from '../users/users.service';
+import { AuthService } from './auth.service';
+
+describe('AuthService', () => {
+  let service: AuthService;
+  let usersService: UsersService;
+  let jwtService: JwtService;
+  let mockFastifyReply: any;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        {
+          provide: UsersService,
+          useValue: {
+            emailLogin: jest.fn(),
+          },
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
+
+    service = module.get<AuthService>(AuthService);
+    usersService = module.get<UsersService>(UsersService);
+    jwtService = module.get<JwtService>(JwtService);
+    mockFastifyReply = {
+      clearCookie: jest.fn(),
+      setCookie: jest.fn(),
+    };
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('login', () => {
+    it('should log in user and set cookie', () => {
+      const mockUser: EmailUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: 'hashed_password', // Replace with actual hashed password
+        name: 'Test User',
+        role: UserRole.USER,
+      } as EmailUser;
+      const mockAccessToken = 'mock_access_token';
+      jest.spyOn(usersService, 'emailLogin').mockResolvedValue(mockUser);
+      jest.spyOn(jwtService, 'sign').mockReturnValue(mockAccessToken);
+
+      const result = service.login(mockUser, mockFastifyReply);
+      expect(mockFastifyReply.setCookie).toHaveBeenCalledWith(
+        'access_token',
+        expect.any(String),
+        {
+          httpOnly: true,
+          path: '/',
+          maxAge: 60 * 60 * 24 * 30,
+          secure: true,
+          sameSite: 'strict',
+        },
+      );
+      expect(result).toEqual({ success: true });
+    });
+  });
+
+  describe('logout', () => {
+    it('should clear cookie', () => {
+      service.logout(mockFastifyReply);
+      expect(mockFastifyReply.clearCookie).toHaveBeenCalledWith(
+        'access_token',
+        {
+          httpOnly: true,
+          path: '/',
+          secure: true,
+          sameSite: 'strict',
+        },
+      );
+    });
+  });
+
+  describe('validateUser', () => {
+    it('should validate the user', async () => {
+      const email = 'test@example.com';
+      const password = 'password123';
+      const mockUser: EmailUser = {
+        id: 1,
+        email,
+        password: 'hashed_password', // Replace with actual hashed password
+        name: 'Test User',
+        role: UserRole.USER,
+      } as EmailUser;
+      jest.spyOn(usersService, 'emailLogin').mockResolvedValue(mockUser);
+      const result = await service.validateUser(email, password);
+      expect(result).toEqual(mockUser);
+    });
+  });
+});

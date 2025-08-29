@@ -1,0 +1,3 @@
+name: musira-infra
+runtime: nodejs
+description: GCP infra for Musira - Compute Instance (CapRover), Cloud SQL MySQL, firewalling & outputs

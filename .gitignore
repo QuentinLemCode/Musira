@@ -4,6 +4,8 @@
 /dist
 /tmp
 /out-tsc
+/packages/*/dist
+tsconfig.tsbuildinfo
 
 # dependencies
 node_modules
@@ -49,3 +51,9 @@ apps/musira-e2e/cypress/downloads
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# SSL certificates
+/certs
+
+# OpenAPI generated clients
+packages/frontend/src/generated/

@@ -1,0 +1,164 @@
+name: Deploy infra and apps (GCP + CapRover + Cloudflare)
+
+on:
+  workflow_dispatch:
+    inputs:
+      stack:
+        description: Pulumi stack name
+        required: true
+        default: dev
+      caprover_domain:
+        description: CapRover root domain (e.g. captain.example.com)
+        required: true
+      machine_type:
+        description: GCE machine type
+        required: false
+        default: e2-medium
+      db_tier:
+        description: Cloud SQL tier
+        required: false
+        default: db-f1-micro
+      db_name:
+        description: Database name
+        required: false
+        default: musira
+      db_user:
+        description: Database user
+        required: false
+        default: musira
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+
+      - name: Install root deps
+        run: npm i --ignore-scripts
+
+      - name: Install infra deps
+        working-directory: packages/infra
+        run: npm i --ignore-scripts
+
+      - name: Set up gcloud auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Setup Pulumi
+        uses: pulumi/setup-pulumi@v3
+
+      - name: Configure Pulumi CLI
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+        run: echo "Pulumi configured"
+
+      - name: Select or init Pulumi stack
+        working-directory: packages/infra
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+        run: |
+          pulumi stack select ${{ inputs.stack }} || pulumi stack init ${{ inputs.stack }}
+
+      - name: Set Pulumi configs
+        working-directory: packages/infra
+        run: |
+          pulumi config set gcp:project ${{ secrets.GCP_PROJECT_ID }} --stack ${{ inputs.stack }} --non-interactive
+          pulumi config set gcp:region ${{ secrets.GCP_REGION }} --stack ${{ inputs.stack }} --non-interactive
+          pulumi config set gcp:zone ${{ secrets.GCP_ZONE }} --stack ${{ inputs.stack }} --non-interactive
+          pulumi config set infra:caproverDomain ${{ inputs.caprover_domain }} --stack ${{ inputs.stack }} --non-interactive
+          pulumi config set infra:machineType ${{ inputs.machine_type }} --stack ${{ inputs.stack }} --non-interactive
+          pulumi config set infra:dbTier ${{ inputs.db_tier }} --stack ${{ inputs.stack }} --non-interactive
+          pulumi config set infra:dbName ${{ inputs.db_name }} --stack ${{ inputs.stack }} --non-interactive
+          pulumi config set infra:dbUser ${{ inputs.db_user }} --stack ${{ inputs.stack }} --non-interactive
+          pulumi config set infra:cloudflareZone ${{ secrets.CF_ZONE_ID }} --stack ${{ inputs.stack }} --non-interactive
+          pulumi config set infra:apexDomain ${{ secrets.APEX_DOMAIN }} --stack ${{ inputs.stack }} --non-interactive
+
+      - name: Pulumi up (provision infra)
+        working-directory: packages/infra
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          PULUMI_CONFIG_PASSPHRASE: ''
+          MACHINE_TYPE: ${{ inputs.machine_type }}
+          DB_TIER: ${{ inputs.db_tier }}
+          DB_NAME: ${{ inputs.db_name }}
+          DB_USER: ${{ inputs.db_user }}
+          CAPROVER_DOMAIN: ${{ inputs.caprover_domain }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: pulumi up --yes --skip-preview --stack ${{ inputs.stack }}
+
+      - name: Read Pulumi outputs
+        id: read_outputs
+        working-directory: packages/infra
+        run: |
+          OUT=$(pulumi stack output --json --stack ${{ inputs.stack }})
+          echo "out=$OUT" >> $GITHUB_OUTPUT
+
+      - name: Parse outputs
+        id: parse
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          echo '${{ steps.read_outputs.outputs.out }}' | jq -r '.' > outputs.json
+          echo "INSTANCE_IP=$(cat outputs.json | jq -r '.instanceIp')" >> $GITHUB_ENV
+          echo "CAPROVER_DASHBOARD=$(cat outputs.json | jq -r '.caproverDashboard')" >> $GITHUB_ENV
+          echo "DB_CONNECTION_NAME=$(cat outputs.json | jq -r '.cloudSqlConnectionName')" >> $GITHUB_ENV
+          echo "DB_NAME=$(cat outputs.json | jq -r '.cloudSqlDb')" >> $GITHUB_ENV
+          echo "DB_USER=$(cat outputs.json | jq -r '.cloudSqlUser')" >> $GITHUB_ENV
+          echo "DB_PASSWORD=$(cat outputs.json | jq -r '.cloudSqlPassword')" >> $GITHUB_ENV
+          echo "DB_PUBLIC_IP=$(cat outputs.json | jq -r '.cloudSqlPublicIp')" >> $GITHUB_ENV
+
+      - name: Install CapRover CLI
+        run: npm i -g caprover
+
+      - name: Deploy backend to CapRover (password auth)
+        env:
+          CAPROVER_SERVER: https://${{ inputs.caprover_domain }}
+          CAPROVER_ADMIN_PASSWORD: ${{ secrets.CAPROVER_ADMIN_PASSWORD }}
+          BACKEND_APP: ${{ secrets.BACKEND_APP }}
+          BACKEND_IMAGE: ${{ secrets.BACKEND_IMAGE }}
+        run: |
+          caprover deploy \
+            --caproverUrl=${CAPROVER_SERVER} \
+            --caproverPassword=${CAPROVER_ADMIN_PASSWORD} \
+            --appName=${BACKEND_APP} \
+            --imageName=${BACKEND_IMAGE}
+
+      - name: Deploy frontend to Cloudflare (wrangler)
+        working-directory: packages/frontend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          NODE_ENV: production
+          API_ORIGIN: ${{ secrets.BACKEND_ORIGIN }}
+        run: |
+          npm i --ignore-scripts
+          npm run build
+          npx wrangler deploy --var API_ORIGIN=${{ secrets.BACKEND_ORIGIN }}
+
+      - name: Bind musira.fr and www to Worker (custom domains)
+        working-directory: packages/frontend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          # Add apex domain (idempotent)
+          npx wrangler domains add ${{ secrets.APEX_DOMAIN }} || true
+          # Add www subdomain (idempotent)
+          npx wrangler domains add www.${{ secrets.APEX_DOMAIN }} || true
