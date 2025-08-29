@@ -274,7 +274,7 @@ export class AuthenticationService {
   private redirectUrl(provider: OAuthProviderType) {
     // During SSR, window is not available; return a placeholder that won't be used server-side
     if (!isPlatformBrowser(this.platformId)) {
-      return `https://localhost/oauth/callback/${provider}`;
+      return `https://musira.fr/oauth/callback/${provider}`;
     }
     return `https://${window.location.host}/oauth/callback/${provider}`;
   }
