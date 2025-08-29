@@ -226,7 +226,6 @@ export const cloudSqlPublicIp = sqlInstance.ipAddresses.apply(
 
 // Cloudflare DNS records (optional)
 let apiRecord: any | undefined;
-let appRecord: any | undefined;
 let captainRecord: any | undefined;
 if (cloudflareZone) {
   // api.musira.fr -> VM IP
@@ -239,15 +238,7 @@ if (cloudflareZone) {
     proxied: false,
   });
 
-  // musira.fr (apex) – normally Cloudflare proxied to Workers/Pages (leave proxied true/false per need)
-  appRecord = new cf.Record('app-dns', {
-    zoneId: cloudflareZone,
-    name: `${apexDomain}`,
-    type: 'A',
-    value: '192.0.2.1', // placeholder if using Pages custom domain; override as needed
-    ttl: 300,
-    proxied: true,
-  });
+  // Note: Apex and www custom domains will be attached to the Worker via wrangler in CI.
 
   // captain.musira.fr -> VM IP (CapRover admin)
   captainRecord = new cf.Record('captain-dns', {

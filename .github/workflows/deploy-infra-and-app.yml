@@ -151,3 +151,14 @@ jobs:
           npm i --ignore-scripts
           npm run build
           npx wrangler deploy --var API_ORIGIN=${{ secrets.BACKEND_ORIGIN }}
+
+      - name: Bind musira.fr and www to Worker (custom domains)
+        working-directory: packages/frontend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          # Add apex domain (idempotent)
+          npx wrangler domains add ${{ secrets.APEX_DOMAIN }} || true
+          # Add www subdomain (idempotent)
+          npx wrangler domains add www.${{ secrets.APEX_DOMAIN }} || true
