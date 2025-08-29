@@ -4,7 +4,7 @@ This Pulumi project provisions:
 
 - A static external IP and a Compute Engine VM (Debian 12)
 - Docker + CapRover automatically installed via startup script
-- A Cloud SQL MySQL instance and database
+- MySQL 8 and Redis 7 deployed as CapRover apps with persistent volumes
 - Firewall rules for SSH, HTTP, HTTPS and CapRover admin port (3000)
 
 ## Prerequisites (one-time)
@@ -14,8 +14,8 @@ This Pulumi project provisions:
 - Set your GCP project, region and zone:
   - gcloud auth login
   - gcloud config set project <YOUR_PROJECT_ID>
-  - gcloud config set compute/region europe-west1
-  - gcloud config set compute/zone europe-west1-b
+  - gcloud config set compute/region europe-west9 # Paris
+  - gcloud config set compute/zone europe-west9-b # Paris
 - Ensure your user has permissions to create Compute and SQL resources.
 
 ## Configure and deploy
@@ -29,10 +29,9 @@ npx pulumi stack select dev
 
 # Set config values (optional overrides)
 pulumi config set gcp:project <YOUR_PROJECT_ID>
-pulumi config set gcp:region europe-west1
-pulumi config set gcp:zone europe-west1-b
-pulumi config set infra:machineType e2-medium
-pulumi config set infra:dbTier db-f1-micro
+pulumi config set gcp:region europe-west9
+pulumi config set gcp:zone europe-west9-b
+pulumi config set infra:machineType e2-standard-4
 pulumi config set infra:caproverDomain captain.example.com
 
 # Deploy
@@ -43,21 +42,19 @@ When done, Pulumi will output:
 
 - instanceIp: VM external IP
 - caproverDashboard: CapRover admin URL (http://IP:3000)
-- Cloud SQL credentials (user/password/db)
+- MySQL/Redis connection details (hostnames and generated credentials)
 
 ## Manual actions required
 
 1. Create a DNS A record for your CapRover domain (e.g. captain.example.com) pointing to instanceIp.
 2. Visit http://<instanceIp>:3000 (or your domain once DNS propagates) to finish CapRover setup (set admin password, enable HTTPS, etc.).
 3. In CapRover dashboard:
-   - Create an app for the backend (e.g. musira-backend).
-   - Provide your image from GHCR or build via CapRover. Set env vars for DB connection using the Cloud SQL instance public IP, user and password. Consider using Cloud SQL Auth Proxy container if you prefer not to allow public access.
-   - Add a persistent volume if needed.
-   - Set ORIGIN to your frontend URL (Cloudflare Pages/Workers). Set COOKIE_SECURE=true in production.
-4. For Cloud SQL networking/security hardening:
-   - Restrict authorized networks to CapRover VM IP only (already configured). Update as needed.
-   - Consider Cloud SQL Auth Proxy for encrypted connections.
-5. Frontend deployment (Cloudflare):
+   - The Pulumi script pre-creates MySQL (`musira-mysql`) and Redis (`musira-redis`) with persistent storage.
+   - Create an app for the backend (e.g. `musira-backend`) or set `infra:backendApp` so it is created automatically.
+   - Provide your image from GHCR or build via CapRover. The script sets env vars on the backend app: `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME`. Use `srv-captain--musira-mysql` as host.
+   - For Redis, host is `srv-captain--musira-redis` and password is exported by Pulumi output.
+   - Set `ORIGIN` to your frontend URL (Cloudflare Pages/Workers). Set `COOKIE_SECURE=true` in production.
+4. Frontend deployment (Cloudflare):
    - Build the frontend package: npm --workspace @musira/frontend run build
    - Use wrangler deploy from packages/frontend (script already present).
    - Frontend now calls the absolute API URL from environment.\*.ts (no worker proxy).
@@ -77,8 +74,11 @@ npm run destroy
   - captain.<apex> A record to the VM IP (not proxied)
   - apex record is left as a placeholder if using Pages/Workers; update per your setup
 
-## Notes
+## Notes & Backup Strategy
 
-- The current setup authorizes the VM IP to access Cloud SQL directly. For production, prefer private IP and/or Cloud SQL Auth Proxy.
 - CapRover initially exposes port 3000; once HTTPS is enabled inside CapRover, use your domain over 443.
 - Ensure GHCR/registry access for CapRover if you pull private images.
+- Backups:
+  - MySQL: run a job/container with `mysqldump --single-transaction` against `srv-captain--musira-mysql` and upload to object storage (e.g., GCS bucket). Schedule with a cron container (CapRover app) using a service account key.
+  - Redis: persistence is enabled (AOF every second). Optionally, run a job to copy `/data/appendonly.aof` (and `dump.rdb` if enabled) from the Redis volume to object storage.
+  - CapRover config: back up `/captain/data/` directory from the VM for app configs and certificates. You can snapshot the VM disk or rsync this path regularly.
