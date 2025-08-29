@@ -65,7 +65,7 @@ const sa = new gcp.serviceaccount.Account('vm-sa', {
 
 // Cloud SQL instance
 const sqlInstance = new gcp.sql.DatabaseInstance('mysql', {
-  databaseVersion: dbVersion as any,
+  databaseVersion: dbVersion,
   region,
   settings: {
     tier: dbTier,
