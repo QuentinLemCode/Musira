@@ -7,38 +7,50 @@ import * as cf from '@pulumi/cloudflare';
 const config = new pulumi.Config();
 const project =
   gcp.config.project ?? pulumi.output(gcp.organizations.getProject()).projectId;
-const region = gcp.config.region ?? 'europe-west1';
-const zone = gcp.config.zone ?? 'europe-west1-b';
+// Move infrastructure to Paris (europe-west9)
+const region = gcp.config.region ?? 'europe-west9';
+const zone = gcp.config.zone ?? 'europe-west9-b';
 
 // Infra config
 const machineType =
-  config.get('machineType') ?? process.env.MACHINE_TYPE ?? 'e2-medium';
-const dbTier = config.get('dbTier') ?? process.env.DB_TIER ?? 'db-f1-micro';
-const dbVersion =
-  config.get('dbVersion') ?? process.env.DB_VERSION ?? 'MYSQL_8_0';
+  config.get('machineType') ?? process.env.MACHINE_TYPE ?? 'e2-standard-4';
+// Database config for CapRover MySQL one-click (no Cloud SQL anymore)
 const dbName = config.get('dbName') ?? process.env.DB_NAME ?? 'musira';
 const dbUser = config.get('dbUser') ?? process.env.DB_USER ?? 'musira';
+const enableRedis = config.getBoolean('enableRedis') ?? true;
+const apexDomain =
+  config.get('apexDomain') ?? process.env.APEX_DOMAIN ?? 'musira.fr';
 const caproverDomain =
-  config.get('caproverDomain') ?? process.env.CAPROVER_DOMAIN ?? ''; // e.g. captain.example.com
+  config.get('caproverDomain') ??
+  process.env.CAPROVER_DOMAIN ??
+  `captain.${apexDomain}`; // e.g. captain.example.com
 const caproverEmail =
   config.get('caproverEmail') ?? process.env.CAPROVER_EMAIL ?? '';
 const caproverAdminPassword =
-  (config.getSecret('caproverAdminPassword') as
-    | pulumi.Output<string>
-    | undefined) ??
-  (process.env.CAPROVER_ADMIN_PASSWORD
-    ? pulumi.secret(process.env.CAPROVER_ADMIN_PASSWORD)
-    : pulumi.secret(''));
+  config.getSecret('caproverAdminPassword') ??
+  pulumi.secret(process.env.CAPROVER_ADMIN_PASSWORD);
+if (!caproverAdminPassword) {
+  throw new Error('CAPROVER_ADMIN_PASSWORD is required');
+}
 const backendApp = config.get('backendApp') ?? process.env.BACKEND_APP ?? '';
-const enableRedis = config.getBoolean('enableRedis') ?? true;
+const mysqlApp =
+  config.get('mysqlApp') ?? process.env.MYSQL_APP ?? 'musira-mysql';
+const redisApp =
+  config.get('redisApp') ?? process.env.REDIS_APP ?? 'musira-redis';
 const cloudflareZone =
   config.get('cloudflareZone') ?? process.env.CLOUDFLARE_ZONE ?? '';
-const apexDomain =
-  config.get('apexDomain') ?? process.env.APEX_DOMAIN ?? 'musira.fr';
 
-// Random password for DB user
+// Random password for DB user and root, and Redis
 const dbPassword = new random.RandomPassword('dbPassword', {
   length: 20,
+  special: false,
+}).result;
+const dbRootPassword = new random.RandomPassword('dbRootPassword', {
+  length: 24,
+  special: false,
+}).result;
+const redisPassword = new random.RandomPassword('redisPassword', {
+  length: 24,
   special: false,
 }).result;
 
@@ -64,38 +76,7 @@ const sa = new gcp.serviceaccount.Account('vm-sa', {
 
 // Allow SA to pull images from GHCR if needed in future (placeholder; configure as needed)
 
-// Cloud SQL instance
-const sqlInstance = new gcp.sql.DatabaseInstance('mysql', {
-  databaseVersion: dbVersion,
-  region,
-  settings: {
-    tier: dbTier,
-    ipConfiguration: {
-      ipv4Enabled: true,
-      // Authorize the VM external IP to access the DB
-      authorizedNetworks: [
-        {
-          name: 'vm-access',
-          value: vmIp.address,
-        },
-      ],
-    },
-    activationPolicy: 'ALWAYS',
-    availabilityType: 'ZONAL',
-    backupConfiguration: { enabled: true },
-  },
-});
-
-const sqlDb = new gcp.sql.Database('db', {
-  instance: sqlInstance.name,
-  name: dbName,
-});
-
-const sqlUser = new gcp.sql.User('dbuser', {
-  instance: sqlInstance.name,
-  name: dbUser,
-  password: dbPassword,
-});
+// Cloud SQL removed; MySQL & Redis will be provisioned as CapRover apps on the VM
 
 // Instance startup script: install Docker and CapRover
 const startupScript = pulumi.interpolate`#!/bin/bash
@@ -125,9 +106,13 @@ apt-get install -y nodejs npm expect || true
 # Install CapRover CLI
 npm i -g caprover
 
-# Start CapRover server container
-docker run -e MAIN_NODE_IP_ADDRESS=$(curl -s http://checkip.amazonaws.com) \
+# Start CapRover server container (accept terms, mount docker socket and data dir)
+mkdir -p /captain
+docker run -e ACCEPTED_TERMS=true \
+  -e MAIN_NODE_IP_ADDRESS=$(curl -s http://checkip.amazonaws.com) \
   -e CAPROVER_ROOT_DOMAIN=${caproverDomain} \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /captain:/captain \
   -p 80:80 -p 443:443 -p 3000:3000 \
   --cap-add=NET_ADMIN --restart=always -d caprover/caprover
 
@@ -173,11 +158,95 @@ else
   echo "Skipping CapRover serversetup/login (missing CAPROVER_* values)"
 fi
 
-# Optionally pre-create backend app
+# Create MySQL and Redis apps on CapRover (if names provided / defaults)
+MYSQL_APP_NAME="${mysqlApp}"
+REDIS_APP_NAME="${redisApp}"
 BACKEND_APP_NAME="${backendApp}"
-if [ -n "$BACKEND_APP_NAME" ]; then
-  echo "Creating CapRover app $BACKEND_APP_NAME (if not exists)"
-  caprover apps create -a "$BACKEND_APP_NAME" || true
+
+create_or_skip_app() {
+  local APP_NAME="$1"
+  if [ -z "$APP_NAME" ]; then
+    return 0
+  fi
+  echo "Creating CapRover app $APP_NAME (if not exists)"
+  caprover apps create -a "$APP_NAME" || true
+}
+
+create_or_skip_app "$MYSQL_APP_NAME"
+create_or_skip_app "$REDIS_APP_NAME"
+create_or_skip_app "$BACKEND_APP_NAME"
+
+# Configure MySQL app image, envs, and persistent directory (via CapRover API)
+if [ -n "$MYSQL_APP_NAME" ]; then
+  echo "Configuring MySQL app $MYSQL_APP_NAME"
+  cat > /root/\${MYSQL_APP_NAME}-definition.json << JSONEOF
+{
+  "appName": "\${MYSQL_APP_NAME}",
+  "appDefinition": {
+    "schemaVersion": 2,
+    "imageName": "mysql:8.0",
+    "notExposeAsWebApp": true,
+    "instanceCount": 1,
+    "containerHttpPort": 0,
+    "ports": [{"containerPort": 3306, "protocol": "tcp"}],
+    "envVars": [
+      {"key":"MYSQL_DATABASE","value":"${dbName}"},
+      {"key":"MYSQL_USER","value":"${dbUser}"},
+      {"key":"MYSQL_PASSWORD","value":"${dbPassword}"},
+      {"key":"MYSQL_ROOT_PASSWORD","value":"${dbRootPassword}"}
+    ],
+    "volumes": [
+      {"containerPath":"/var/lib/mysql","volumeName":"\${MYSQL_APP_NAME}-data"}
+    ],
+    "restartPolicy": "always"
+  }
+}
+JSONEOF
+  # Update definition (best-effort)
+  caprover api --method POST --path /api/v2/apps/appDefinitions/update --dataFile /root/\${MYSQL_APP_NAME}-definition.json || true
+fi
+
+# Configure Redis app image, password, and persistence
+if [ -n "$REDIS_APP_NAME" ]; then
+  echo "Configuring Redis app $REDIS_APP_NAME"
+  cat > /root/\${REDIS_APP_NAME}-definition.json << JSONEOF
+{
+  "appName": "\${REDIS_APP_NAME}",
+  "appDefinition": {
+    "schemaVersion": 2,
+    "imageName": "redis:7-alpine",
+    "notExposeAsWebApp": true,
+    "instanceCount": 1,
+    "containerHttpPort": 0,
+    "ports": [{"containerPort": 6379, "protocol": "tcp"}],
+    "envVars": [
+      {"key":"REDIS_PASSWORD","value":"${redisPassword}"}
+    ],
+    "cmd": ["sh","-c","redis-server --appendonly yes --appendfsync everysec --requirepass ${redisPassword}"],
+    "volumes": [
+      {"containerPath":"/data","volumeName":"\${REDIS_APP_NAME}-data"}
+    ],
+    "restartPolicy": "always"
+  }
+}
+JSONEOF
+  caprover api --method POST --path /api/v2/apps/appDefinitions/update --dataFile /root/\${REDIS_APP_NAME}-definition.json || true
+fi
+
+# Configure backend app environment variables to connect to MySQL (if backend app provided)
+if [ -n "$BACKEND_APP_NAME" ] && [ -n "$MYSQL_APP_NAME" ]; then
+  echo "Setting backend env vars for DB connection"
+  caprover api --method POST --path /api/v2/apps/envVars/set --data '{
+    "appName": "'"$BACKEND_APP_NAME"'",
+    "envVars": [
+      {"key":"DATABASE_HOST","value":"srv-captain--'"$MYSQL_APP_NAME"'"},
+      {"key":"DATABASE_PORT","value":"3306"},
+      {"key":"DATABASE_USER","value":"'"$dbUser"'"},
+      {"key":"DATABASE_PASSWORD","value":"'"$dbPassword"'"},
+      {"key":"DATABASE_NAME","value":"'"$dbName"'"}
+    ],
+    "removeOthers": false
+  }' || true
 fi
 `;
 
@@ -188,7 +257,7 @@ const vm = new gcp.compute.Instance('musira-vm', {
   bootDisk: {
     initializeParams: {
       image: 'debian-cloud/debian-12',
-      size: 20,
+      size: 50,
       type: 'pd-balanced',
     },
   },
@@ -206,7 +275,7 @@ const vm = new gcp.compute.Instance('musira-vm', {
     email: sa.email,
     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
   },
-  metadataStartupScript: startupScript,
+  // metadataStartupScript: startupScript,
   tags: ['musira', 'caprover'],
 });
 
@@ -215,13 +284,15 @@ export const instanceIp = vm.networkInterfaces.apply(
 );
 export const instanceUrl = pulumi.interpolate`http://${instanceIp}`;
 export const caproverDashboard = pulumi.interpolate`http://${instanceIp}:3000`;
-export const cloudSqlConnectionName = sqlInstance.connectionName;
-export const cloudSqlDb = sqlDb.name;
-export const cloudSqlUser = sqlUser.name;
-export const cloudSqlPassword = dbPassword;
-export const cloudSqlPublicIp = sqlInstance.ipAddresses.apply(
-  (ips) => ips?.[0]?.ipAddress ?? '',
-);
+export const databaseHost = pulumi.interpolate`srv-captain--${mysqlApp}`;
+export const databasePort = 3306;
+export const databaseName = dbName;
+export const databaseUser = dbUser;
+export const databasePassword = dbPassword;
+export const databaseRootPassword = dbRootPassword;
+export const redisHost = pulumi.interpolate`srv-captain--${redisApp}`;
+export const redisPort = 6379;
+export const redisPasswordOut = redisPassword;
 
 // Optional: provision a Redis instance (Compute Engine + Docker) for BullMQ
 let redisIp: pulumi.Output<string> | undefined;

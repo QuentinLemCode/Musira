@@ -4,7 +4,7 @@ This Pulumi project provisions:
 
 - A static external IP and a Compute Engine VM (Debian 12)
 - Docker + CapRover automatically installed via startup script
-- A Cloud SQL MySQL instance and database
+- MySQL 8 and Redis 7 deployed as CapRover apps with persistent volumes
 - Firewall rules for SSH, HTTP, HTTPS and CapRover admin port (3000)
 
 ## Prerequisites (one-time)
@@ -14,9 +14,9 @@ This Pulumi project provisions:
 - Set your GCP project, region and zone:
   - gcloud auth login
   - gcloud config set project <YOUR_PROJECT_ID>
-  - gcloud config set compute/region europe-west1
-  - gcloud config set compute/zone europe-west1-b
-- Ensure your user has permissions to create Compute and SQL resources.
+  - gcloud config set compute/region europe-west9 # Paris
+  - gcloud config set compute/zone europe-west9-b # Paris
+- Ensure your user has permissions to create Compute resources. If you plan to let Pulumi create DNS records on Cloudflare, have your Zone ID and an API token with DNS edit permissions.
 
 ## Configure and deploy
 
@@ -24,16 +24,26 @@ From this directory:
 
 ```
 npm i
-npx pulumi stack init dev   # if not created yet
-npx pulumi stack select dev
+pulumi login --local
+pulumi stack init main   # if not created yet
+pulumi stack select main
 
-# Set config values (optional overrides)
+# Set config values
 pulumi config set gcp:project <YOUR_PROJECT_ID>
-pulumi config set gcp:region europe-west1
-pulumi config set gcp:zone europe-west1-b
-pulumi config set infra:machineType e2-medium
-pulumi config set infra:dbTier db-f1-micro
-pulumi config set infra:caproverDomain captain.example.com
+pulumi config set gcp:region europe-west9
+pulumi config set gcp:zone europe-west9-b
+pulumi config set machineType e2-standard-4
+pulumi config set apexDomain example.com
+pulumi config set caproverDomain captain.example.com
+# Optional for headless CapRover setup on first boot
+pulumi config set caproverEmail you@example.com
+pulumi config set --secret caproverAdminPassword <STRONG_PASSWORD>
+# Optional app names (these are the defaults)
+pulumi config set backendApp musira-backend
+pulumi config set mysqlApp musira-mysql
+pulumi config set redisApp musira-redis
+# Optional: enable Cloudflare DNS automation
+pulumi config set cloudflareZone <CLOUDFLARE_ZONE_ID>
 
 # Deploy
 npm run up
@@ -43,21 +53,19 @@ When done, Pulumi will output:
 
 - instanceIp: VM external IP
 - caproverDashboard: CapRover admin URL (http://IP:3000)
-- Cloud SQL credentials (user/password/db)
+- MySQL/Redis connection details (hostnames and generated credentials)
 
 ## Manual actions required
 
-1. Create a DNS A record for your CapRover domain (e.g. captain.example.com) pointing to instanceIp.
+1. Create a DNS A record for your CapRover domain (e.g. captain.example.com) pointing to instanceIp (if you didn't set `cloudflareZone`).
 2. Visit http://<instanceIp>:3000 (or your domain once DNS propagates) to finish CapRover setup (set admin password, enable HTTPS, etc.).
 3. In CapRover dashboard:
-   - Create an app for the backend (e.g. musira-backend).
-   - Provide your image from GHCR or build via CapRover. Set env vars for DB connection using the Cloud SQL instance public IP, user and password. Consider using Cloud SQL Auth Proxy container if you prefer not to allow public access.
-   - Add a persistent volume if needed.
-   - Set ORIGIN to your frontend URL (Cloudflare Pages/Workers). Set COOKIE_SECURE=true in production.
-4. For Cloud SQL networking/security hardening:
-   - Restrict authorized networks to CapRover VM IP only (already configured). Update as needed.
-   - Consider Cloud SQL Auth Proxy for encrypted connections.
-5. Frontend deployment (Cloudflare):
+   - The Pulumi script pre-creates MySQL (`musira-mysql`) and Redis (`musira-redis`) with persistent storage.
+   - Create an app for the backend (e.g. `musira-backend`) or set `backendApp` so it is created automatically.
+   - Provide your image from GHCR or build via CapRover. The script sets env vars on the backend app: `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME`. Use `srv-captain--musira-mysql` (or `srv-captain--<mysqlApp>`) as host.
+   - For Redis, host is `srv-captain--musira-redis` and password is exported by Pulumi output.
+   - Set `ORIGIN` to your frontend URL (Cloudflare Pages/Workers). Set `COOKIE_SECURE=true` in production.
+4. Frontend deployment (Cloudflare):
    - Build the frontend package: npm --workspace @musira/frontend run build
    - Use wrangler deploy from packages/frontend (script already present).
    - Frontend now calls the absolute API URL from environment.\*.ts (no worker proxy).
@@ -72,13 +80,16 @@ npm run destroy
 
 - Create a zone for your apex domain (e.g. musira.fr) in Cloudflare and delegate your registrar to Cloudflare nameservers.
 - Configure GitHub secrets for the infra workflow: CF_API_TOKEN (DNS edit), CF_ACCOUNT_ID, CF_ZONE_ID, APEX_DOMAIN (e.g. musira.fr).
-- Pulumi can create:
+- When `cloudflareZone` is set in Pulumi config, Pulumi will create:
   - api.<apex> A record to the VM IP (not proxied)
   - captain.<apex> A record to the VM IP (not proxied)
   - apex record is left as a placeholder if using Pages/Workers; update per your setup
 
-## Notes
+## Notes & Backup Strategy
 
-- The current setup authorizes the VM IP to access Cloud SQL directly. For production, prefer private IP and/or Cloud SQL Auth Proxy.
 - CapRover initially exposes port 3000; once HTTPS is enabled inside CapRover, use your domain over 443.
 - Ensure GHCR/registry access for CapRover if you pull private images.
+- Backups:
+  - MySQL: run a job/container with `mysqldump --single-transaction` against `srv-captain--musira-mysql` and upload to object storage (e.g., GCS bucket). Schedule with a cron container (CapRover app) using a service account key.
+  - Redis: persistence is enabled (AOF every second). Optionally, run a job to copy `/data/appendonly.aof` (and `dump.rdb` if enabled) from the Redis volume to object storage.
+  - CapRover config: back up `/captain/data/` directory from the VM for app configs and certificates. You can snapshot the VM disk or rsync this path regularly.

@@ -8,8 +8,8 @@
     "preview": "pulumi preview",
     "destroy": "pulumi destroy",
     "refresh": "pulumi refresh",
-    "stack:init": "pulumi stack init dev || true",
-    "stack:select": "pulumi stack select dev",
+    "stack:init": "pulumi stack init main || true",
+    "stack:select": "pulumi stack select main",
     "config:sample": "pulumi config set infra:dbTier db-f1-micro && pulumi config set infra:machineType e2-medium"
   },
   "dependencies": {

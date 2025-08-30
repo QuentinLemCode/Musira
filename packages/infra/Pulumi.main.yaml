@@ -1,0 +1,11 @@
+encryptionsalt: v1:15ZVK1urEfg=:v1:va9AfN35XzqMNZet:y8Q/JlffBvM1rEPrSFHKEE3nFVr85A==
+config:
+  gcp:project: musiraproject
+  gcp:region: europe-west9
+  gcp:zone: europe-west9-b
+  musira-infra:machineType: e2-standard-4
+  musira-infra:apexDomain: musira.fr
+  musira-infra:caproverDomain: captain.musira.fr
+  musira-infra:caproverEmail: admin@musira.fr
+  musira-infra:caproverAdminPassword:
+    secure: v1:VV8V8mYqh5tQ7wjz:UFUCxNso5+Z8D5ZkwjCsWyg3euBperxtU0UySM16SQPtzRbv/uCs4A==
