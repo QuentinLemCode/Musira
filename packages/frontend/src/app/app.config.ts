@@ -13,6 +13,7 @@ import {
 } from '@angular/router';
 
 import { provideClientHydration } from '@angular/platform-browser';
+import { environment } from '../environments/environment';
 import { provideApi } from '../generated/provide-api';
 import { routes } from './app.routes';
 import { AuthenticationService } from './authentication/authentication.service';
@@ -70,9 +71,11 @@ export const appConfig: ApplicationConfig = {
       provide: TitleStrategy,
       useFactory: () => new MusiraTitleStrategy(inject(Title)),
     },
-    // Generated API paths in openapi.json already include '/api/...'
-    // so we keep basePath empty to avoid double '/api//api' in requests
-    provideApi({ basePath: '', withCredentials: true }),
+    // Generated API paths include '/api/...'; use absolute backend basePath (no trailing slash)
+    provideApi({
+      basePath: environment.serverUrl.replace(/\/+$/, ''),
+      withCredentials: true,
+    }),
     {
       provide: APP_INITIALIZER,
       multi: true,

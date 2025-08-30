@@ -40,12 +40,15 @@ async function bootstrap() {
     .get('/openapi.json', (_req: any, reply: any) => {
       reply.send(document);
     });
-  if (env.ORIGIN) {
-    app.enableCors({
-      origin: env.ORIGIN.split(',').map((s) => s.trim()),
-      credentials: true,
-    });
-  }
+  // Enable CORS for configured origins (comma-separated), default to frontend domain
+  const defaultOrigins = ['https://musira.fr', 'https://www.musira.fr'];
+  const origins = env.ORIGIN
+    ? env.ORIGIN.split(',').map((s) => s.trim())
+    : defaultOrigins;
+  app.enableCors({
+    origin: origins,
+    credentials: true,
+  });
 
   // const fastifyInstance = app.getHttpAdapter().getInstance();
   // fastifyInstance

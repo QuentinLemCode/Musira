@@ -7,6 +7,7 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class WithCredentialsInterceptor implements HttpInterceptor {
@@ -14,7 +15,8 @@ export class WithCredentialsInterceptor implements HttpInterceptor {
     req: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    if (req.url.startsWith('/api')) {
+    const apiBase = environment.serverUrl.replace(/\/+$/, '');
+    if (req.url.startsWith('/api') || req.url.startsWith(apiBase)) {
       req = req.clone({
         withCredentials: true,
       });
