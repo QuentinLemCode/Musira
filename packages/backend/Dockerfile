@@ -4,16 +4,7 @@ ENV TZ=Europe/Paris
 WORKDIR /app
 
 # ----------------------------------------
-# Install production dependencies (for runtime)
-# ----------------------------------------
-FROM base AS deps
-RUN apk add --no-cache --virtual .build-deps python3 make g++
-COPY package*.json ./
-RUN npm ci --omit=dev \
-  && apk del .build-deps
-
-# ----------------------------------------
-# Install all dependencies and build (dev + prod)
+# Install all dependencies and build (dev + prod), then prune to prod
 # ----------------------------------------
 FROM base AS build
 RUN apk add --no-cache --virtual .build-deps python3 make g++
@@ -22,6 +13,7 @@ RUN npm ci
 COPY tsconfig*.json nest-cli.json ./
 COPY src ./src
 RUN npm run build \
+  && npm prune --omit=dev \
   && apk del .build-deps
 
 # ----------------------------------------
@@ -37,7 +29,7 @@ WORKDIR /app
 RUN apk add --no-cache dumb-init
 
 # Copy only what is needed to run
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 
 USER node
