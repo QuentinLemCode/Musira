@@ -26,7 +26,9 @@ const caproverDomain =
   `captain.${apexDomain}`; // e.g. captain.example.com
 const caproverEmail =
   config.get('caproverEmail') ?? process.env.CAPROVER_EMAIL ?? '';
-const caproverAdminPassword = config.getSecret('caproverAdminPassword') ?? pulumi.secret(process.env.CAPROVER_ADMIN_PASSWORD);
+const caproverAdminPassword =
+  config.getSecret('caproverAdminPassword') ??
+  pulumi.secret(process.env.CAPROVER_ADMIN_PASSWORD);
 if (!caproverAdminPassword) {
   throw new Error('CAPROVER_ADMIN_PASSWORD is required');
 }
