@@ -1,10 +1,11 @@
-name: Deploy infra and apps (GCP + CapRover + Cloudflare)
+name: (disabled) Deploy infra and apps (GCP + CapRover + Cloudflare)
 
 on:
   workflow_dispatch:
 
 jobs:
   deploy:
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: read

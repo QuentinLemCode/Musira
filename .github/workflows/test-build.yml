@@ -91,7 +91,7 @@ jobs:
           cache: 'npm'
           node-version-file: '.nvmrc'
       - run: npm i --ignore-scripts
-      - run: npm run build:prod
+      - run: npm run build:backend
       - run: echo "NODE_ENV=production" >> $GITHUB_ENV
       - run: npm prune --omit=dev
       - name: Set up QEMU
