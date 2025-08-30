@@ -93,7 +93,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: arm,arm64
+          platforms: arm64
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
@@ -122,7 +122,7 @@ jobs:
           context: packages/backend
           file: packages/backend/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm/v8,linux/arm64
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Set image URL output
