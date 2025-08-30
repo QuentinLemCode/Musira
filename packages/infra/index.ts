@@ -17,6 +17,7 @@ const machineType =
 // Database config for CapRover MySQL one-click (no Cloud SQL anymore)
 const dbName = config.get('dbName') ?? process.env.DB_NAME ?? 'musira';
 const dbUser = config.get('dbUser') ?? process.env.DB_USER ?? 'musira';
+const enableRedis = config.getBoolean('enableRedis') ?? true;
 const apexDomain =
   config.get('apexDomain') ?? process.env.APEX_DOMAIN ?? 'musira.fr';
 const caproverDomain =
@@ -290,6 +291,58 @@ export const databaseRootPassword = dbRootPassword;
 export const redisHost = pulumi.interpolate`srv-captain--${redisApp}`;
 export const redisPort = 6379;
 export const redisPasswordOut = redisPassword;
+
+// Optional: provision a Redis instance (Compute Engine + Docker) for BullMQ
+let redisIp: pulumi.Output<string> | undefined;
+if (enableRedis) {
+  const redisVmIp = new gcp.compute.Address('redis-ip', {
+    addressType: 'EXTERNAL',
+    region,
+  });
+  const redisFirewall = new gcp.compute.Firewall('redis-firewall', {
+    network: 'default',
+    allows: [{ protocol: 'tcp', ports: ['6379'] }],
+    direction: 'INGRESS',
+    sourceRanges: ['0.0.0.0/0'],
+  });
+  const redisVm = new gcp.compute.Instance(
+    'redis-vm',
+    {
+      machineType: 'e2-micro',
+      zone,
+      bootDisk: {
+        initializeParams: {
+          image: 'debian-cloud/debian-12',
+          size: 10,
+          type: 'pd-balanced',
+        },
+      },
+      networkInterfaces: [
+        {
+          network: 'default',
+          accessConfigs: [
+            {
+              natIp: redisVmIp.address,
+            },
+          ],
+        },
+      ],
+      metadataStartupScript: `#!/bin/bash
+set -eux
+apt-get update && apt-get install -y docker.io
+systemctl enable docker && systemctl start docker
+docker run -d --name redis -p 6379:6379 --restart=always redis:7-alpine
+`,
+      tags: ['redis'],
+    },
+    { dependsOn: [redisFirewall] },
+  );
+  redisIp = redisVm.networkInterfaces.apply(
+    (nics) => nics?.[0]?.accessConfigs?.[0]?.natIp ?? '',
+  );
+}
+
+export const redisPublicIp = redisIp ?? pulumi.output('');
 
 // Notes for wiring: you must configure DNS for caproverDomain to point to instanceIp.
 
