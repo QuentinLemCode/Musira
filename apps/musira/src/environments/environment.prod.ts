@@ -4,7 +4,7 @@ export const environment: Environment = {
   production: true,
   serverUrl: '/api/',
   googleClientId:
-    '315266048563-u7ap28p393uegvd0m8al1gbjjepoaub6.apps.googleusercontent.com',
+ '457105191031-2h4ebd67152dheadkcqpb8k990252etk.apps.googleusercontent.com',
   facebookClientId: '1003579960707915',
   spotifyClientId: '',
   microsoftClientId: '7182f84e-672a-4177-9bcb-62971ab33df0',
