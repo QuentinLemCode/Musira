@@ -25,13 +25,10 @@ const caproverDomain =
   `captain.${apexDomain}`; // e.g. captain.example.com
 const caproverEmail =
   config.get('caproverEmail') ?? process.env.CAPROVER_EMAIL ?? '';
-const caproverAdminPassword =
-  (config.getSecret('caproverAdminPassword') as
-    | pulumi.Output<string>
-    | undefined) ??
-  (process.env.CAPROVER_ADMIN_PASSWORD
-    ? pulumi.secret(process.env.CAPROVER_ADMIN_PASSWORD)
-    : pulumi.secret(''));
+const caproverAdminPassword = config.getSecret('caproverAdminPassword') ?? pulumi.secret(process.env.CAPROVER_ADMIN_PASSWORD);
+if (!caproverAdminPassword) {
+  throw new Error('CAPROVER_ADMIN_PASSWORD is required');
+}
 const backendApp = config.get('backendApp') ?? process.env.BACKEND_APP ?? '';
 const mysqlApp =
   config.get('mysqlApp') ?? process.env.MYSQL_APP ?? 'musira-mysql';
@@ -106,9 +103,13 @@ apt-get install -y nodejs npm expect || true
 # Install CapRover CLI
 npm i -g caprover
 
-# Start CapRover server container
-docker run -e MAIN_NODE_IP_ADDRESS=$(curl -s http://checkip.amazonaws.com) \
+# Start CapRover server container (accept terms, mount docker socket and data dir)
+mkdir -p /captain
+docker run -e ACCEPTED_TERMS=true \
+  -e MAIN_NODE_IP_ADDRESS=$(curl -s http://checkip.amazonaws.com) \
   -e CAPROVER_ROOT_DOMAIN=${caproverDomain} \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /captain:/captain \
   -p 80:80 -p 443:443 -p 3000:3000 \
   --cap-add=NET_ADMIN --restart=always -d caprover/caprover
 
