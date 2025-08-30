@@ -82,18 +82,12 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'build') }}
     needs: test
     runs-on: ubuntu-latest
+    outputs:
+      IMAGE_URL: ${{ steps.image.outputs.image_url }}
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          cache: 'npm'
-          node-version-file: '.nvmrc'
-      - run: npm i --ignore-scripts
-      - run: npm run build:backend
-      - run: echo "NODE_ENV=production" >> $GITHUB_ENV
-      - run: npm prune --omit=dev
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -111,7 +105,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/musira
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/backend
           tags: |
             type=schedule
             type=ref,event=branch
@@ -120,22 +114,30 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha
-      - name: Build and push
+      - name: Build and push backend image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./Dockerfile
+          context: packages/backend
+          file: packages/backend/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm/v8,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v4
+      - name: Set image URL output
+        id: image
+        run: echo "image_url=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/backend:${{ github.sha }}" >> $GITHUB_OUTPUT
+  deploy:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Image to CapRrover
+        uses: caprover/deploy-from-github@v1.1.2
         with:
-          if-no-files-found: error
-          name: prod
-          path: |
-            dist/
+          server: '${{ secrets.CAPROVER_SERVER }}'
+          app: '${{ secrets.APP_NAME }}'
+          token: '${{ secrets.APP_TOKEN }}'
+          image: ${{ needs.build.outputs.IMAGE_URL }}
   automerge:
     runs-on: ubuntu-latest
     if: github.event.pull_request.user.login == 'dependabot[bot]'
