@@ -6,6 +6,7 @@
     "start": "npm run build && wrangler dev",
     "start:dev": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --no-watch --no-progress --browsers=ChromeHeadless",
     "test:watch": "ng test",

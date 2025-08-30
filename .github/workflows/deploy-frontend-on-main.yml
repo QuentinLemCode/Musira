@@ -32,7 +32,7 @@ jobs:
       - run: npm run api:generate
 
       - name: Build frontend
-        run: npm run build:frontend
+        run: npm run build:frontend:prod
 
       - name: Deploy with Wrangler
         uses: cloudflare/wrangler-action@v3
