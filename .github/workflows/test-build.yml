@@ -88,6 +88,8 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+      - name: Prepare image repository (lowercase)
+        run: echo "IMAGE_REPO=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -105,7 +107,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/backend
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/backend
           tags: |
             type=schedule
             type=ref,event=branch
@@ -125,7 +127,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
       - name: Set image URL output
         id: image
-        run: echo "image_url=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/backend:${{ github.sha }}" >> $GITHUB_OUTPUT
+        run: echo "image_url=${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/backend:${{ github.sha }}" >> $GITHUB_OUTPUT
   deploy:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs: build
