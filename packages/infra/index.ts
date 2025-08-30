@@ -272,7 +272,7 @@ const vm = new gcp.compute.Instance('musira-vm', {
     email: sa.email,
     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
   },
-  metadataStartupScript: startupScript,
+  // metadataStartupScript: startupScript,
   tags: ['musira', 'caprover'],
 });
 
