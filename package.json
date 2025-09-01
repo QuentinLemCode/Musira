@@ -79,7 +79,7 @@
     "@playwright/test": "^1.45.2",
     "@nestjs/cli": "^10.4.2",
     "@nestjs/schematics": "10.1.2",
-    "@nestjs/testing": "10.3.10",
+    "@nestjs/testing": "11.1.6",
     "@nx/angular": "18.0.1",
     "@nx/eslint": "18.0.1",
     "@nx/eslint-plugin": "18.0.1",
