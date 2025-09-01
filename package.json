@@ -38,7 +38,7 @@
     "@nestjs/platform-fastify": "^10.3.10",
     "@nestjs/schedule": "^4.0.1",
     "@nestjs/serve-static": "^4.0.2",
-    "@nestjs/typeorm": "^10.0.2",
+    "@nestjs/typeorm": "^11.0.0",
     "axios": "1.7.2",
     "cache-manager": "^5.7.3",
     "cookie-parser": "^1.4.6",
