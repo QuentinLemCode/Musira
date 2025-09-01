@@ -43,7 +43,7 @@
     "cache-manager": "^5.7.3",
     "cookie-parser": "^1.4.6",
     "fastify": "^4.28.1",
-    "mysql2": "^3.10.3",
+    "mysql2": "^3.14.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
