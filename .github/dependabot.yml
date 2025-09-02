@@ -12,6 +12,9 @@ updates:
       interval: 'daily'
     labels:
       - dependencies
+    ignore:
+      - dependency-type: development
+        package-name: '@musira/client'
   - package-ecosystem: 'npm' # See documentation for possible values
     directory: '/packages/backend' # Location of package manifests
     open-pull-requests-limit: 10
@@ -26,6 +29,9 @@ updates:
       interval: 'daily'
     labels:
       - dependencies
+    ignore:
+      - dependency-type: development
+        package-name: '@musira/client'
   - package-ecosystem: 'npm' # See documentation for possible values
     directory: '/packages/infra' # Location of package manifests
     open-pull-requests-limit: 10
