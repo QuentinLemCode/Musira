@@ -58,7 +58,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.8.2",
+    "typescript": "~5.9.2",
     "wrangler": "^4.28.1",
     "xhr2": "^0.2.1",
     "zone.js": "^0.14.10"
