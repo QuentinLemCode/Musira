@@ -39,7 +39,7 @@
     "@nestjs/typeorm": "^11.0.0",
     "axios": "^1.7.7",
     "bullmq": "^5.58.3",
-    "cache-manager": "^6.4.0",
+    "cache-manager": "^7.2.0",
     "cookie-parser": "^1.4.7",
     "ioredis": "^5.7.0",
     "mysql2": "^3.12.0",
