@@ -28,7 +28,7 @@
   "private": true,
   "dependencies": {
     "@angular/common": "^20.1.0",
-    "@angular/compiler": "^21.0.0",
+    "@angular/compiler": "^22.0.0",
     "@angular/core": "^20.1.0",
     "@angular/forms": "^20.1.0",
     "@angular/platform-browser": "^20.1.0",
