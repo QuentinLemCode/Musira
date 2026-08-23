@@ -21,6 +21,7 @@ export default [
       '**/node_modules/**',
       '**/dist/**',
       '**/.angular/**',
+      '**/.wrangler/**',
       'playwright-report/**',
       'test-results/**',
       '**/*.d.ts',

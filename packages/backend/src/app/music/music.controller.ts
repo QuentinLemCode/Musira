@@ -122,7 +122,8 @@ export class MusicController {
       return {
         isSpotifyAccountRegistered,
         engineStarted,
-        message: message || 'Your Spotify session has expired. Please log in again.',
+        message:
+          message || 'Your Spotify session has expired. Please log in again.',
       };
     }
     const queue = await this.queue.get(musicSession);

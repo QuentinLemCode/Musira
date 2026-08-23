@@ -31,7 +31,9 @@ import { SpotifyLoginComponent } from '../spotify-login/spotify-login.component'
           <li>
             ❌ Non connecté à Spotify
             @if (musicStatus.message) {
-              <div class="text-sm text-gray-500 mt-1">{{ musicStatus.message }}</div>
+              <div class="text-sm text-gray-500 mt-1">
+                {{ musicStatus.message }}
+              </div>
             }
             <ul>
               <li>
