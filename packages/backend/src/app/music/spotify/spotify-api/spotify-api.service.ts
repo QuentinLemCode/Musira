@@ -376,36 +376,57 @@ export class SpotifyApiService implements OnModuleInit {
       grant_type: 'refresh_token',
     };
 
-    const response = await firstValueFrom(
-      this.http
-        .post<SpotifyRefreshToken>(
-          'https://accounts.spotify.com/api/token',
-          querystring(form),
-          {
-            headers: {
-              Authorization:
-                'Basic ' +
-                Buffer.from(
-                  env.SPOTIFY_CLIENT_ID + ':' + env.SPOTIFY_CLIENT_KEY,
-                ).toString('base64'),
-              ...this.formUrlContentTypeHeader,
+    try {
+      const response = await firstValueFrom(
+        this.http
+          .post<SpotifyRefreshToken>(
+            'https://accounts.spotify.com/api/token',
+            querystring(form),
+            {
+              headers: {
+                Authorization:
+                  'Basic ' +
+                  Buffer.from(
+                    env.SPOTIFY_CLIENT_ID + ':' + env.SPOTIFY_CLIENT_KEY,
+                  ).toString('base64'),
+                ...this.formUrlContentTypeHeader,
+              },
             },
-          },
-        )
-        .pipe(this.pipeResponse()),
-    );
-    if (response.status === 'error') {
-      return;
-    }
+          )
+          .pipe(this.pipeResponse()),
+      );
 
-    this.logger.log('Token renewed successfully ! Saving it to database ...');
-    const renewedAccount: SpotifyAccount = {
-      ...account,
-      ...response.data,
-      music_session: account.music_session,
-      expires_at: Date.now() + (response.data.expires_in - 10) * 1000,
-    };
-    await this.spotifyAccount.save(renewedAccount);
+      if (response.status === 'error') {
+        this.logger.error(
+          `Token renewal failed for session ${musicSession.id}. User must re-login to Spotify.`,
+        );
+        await this.handleTokenRenewalFailure(account);
+        return;
+      }
+
+      this.logger.log('Token renewed successfully ! Saving it to database ...');
+      const renewedAccount: SpotifyAccount = {
+        ...account,
+        ...response.data,
+        music_session: account.music_session,
+        expires_at: Date.now() + (response.data.expires_in - 10) * 1000,
+      };
+      await this.spotifyAccount.save(renewedAccount);
+    } catch (err) {
+      this.logError(err);
+      this.logger.error(
+        `Token renewal failed for session ${musicSession.id}. User must re-login to Spotify.`,
+      );
+      await this.handleTokenRenewalFailure(account);
+    }
+  }
+
+  private async handleTokenRenewalFailure(account: SpotifyAccount) {
+    const musicSession = account.music_session;
+    this.logger.warn(
+      `Invalid Spotify refresh token for session ${musicSession.id}. Unregistering player.`,
+    );
+    await this.unregisterPlayer(musicSession);
   }
 
   private async startTokenRenewInterval(account: SpotifyAccount) {
