@@ -13,12 +13,7 @@ export type SpotifyShowCategory = Show;
 export type SpotifyEpisodeCategory = Episode;
 
 export type SpotifyCategoryID =
-  | Album
-  | Artist
-  | Playlist
-  | Track
-  | Show
-  | Episode;
+  Album | Artist | Playlist | Track | Show | Episode;
 
 type SpotifyID = string;
 
