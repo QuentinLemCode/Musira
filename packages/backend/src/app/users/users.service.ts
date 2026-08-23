@@ -13,6 +13,8 @@ import { EmailUser } from './user.email.entity';
 import { User } from './user.entity';
 import { OAuthUser } from './user.oauth.entity';
 
+export const MAX_LOGIN_TRIES = 3;
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -152,27 +154,24 @@ export class UsersService {
     if (!user) {
       return null;
     }
+    if (user.locked) {
+      this.LOGGER.warn(`Locked account attempted to log in: ${email}`);
+      return null;
+    }
     if (!user.password || hashPassword(password, user.salt) !== user.password) {
       user.loginTries += 1;
+      if (user.loginTries >= MAX_LOGIN_TRIES) {
+        user.locked = true;
+        this.LOGGER.warn(
+          `Account locked after ${user.loginTries} failed attempts: ${email}`,
+        );
+      }
       await this.emailUsers.save(user);
       return null;
     }
     user.loginTries = 0;
     await this.emailUsers.save(user);
     return user;
-  }
-
-  addLoginTry(user: EmailUser) {
-    user.loginTries += 1;
-    if (user.loginTries >= 3) {
-      user.locked = true;
-    }
-    return this.users.save(user);
-  }
-
-  resetLoginTry(user: EmailUser) {
-    user.loginTries = 0;
-    return this.users.save(user);
   }
 
   async generateRefreshUUID(id: number) {
