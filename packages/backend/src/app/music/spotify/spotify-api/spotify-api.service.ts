@@ -351,9 +351,21 @@ export class SpotifyApiService implements OnModuleInit {
     const message = [err?.message, err?.response?.data?.error?.message]
       .filter((a) => !!a)
       .join(' - ');
+    const getCircularReplacer = () => {
+      const seen = new WeakSet();
+      return (key: string, value: unknown) => {
+        if (typeof value === 'object' && value !== null) {
+          if (seen.has(value)) {
+            return '[Circular]';
+          }
+          seen.add(value);
+        }
+        return value;
+      };
+    };
     this.logger.error(`${message}
-    ${JSON.stringify(err)}
-    ${JSON.stringify(err.response)}`);
+    ${JSON.stringify(err, getCircularReplacer())}
+    ${JSON.stringify(err.response, getCircularReplacer())}`);
   }
 
   private async renewToken(account: SpotifyAccount) {
