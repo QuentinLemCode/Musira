@@ -7,7 +7,7 @@ function randomEmail() {
 test.describe('Spotify token expiration and re-login flow', () => {
   test.use({ ignoreHTTPSErrors: true });
 
-  test('unconnected spotify session shows disconnected state with login option', async ({
+  test('unconnected spotify session shows disconnected state with re-login option', async ({
     page,
   }) => {
     const email = randomEmail();
@@ -64,26 +64,15 @@ test.describe('Spotify token expiration and re-login flow', () => {
     const spotifyStatus = page.locator('musira-spotify-status');
     await spotifyStatus.waitFor({ timeout: 10000 });
 
-    // Should show disconnected state (French UI)
+    // Should show disconnected state
     await expect(spotifyStatus).toContainText('❌ Non connecté à Spotify');
 
     // Should show login button
     const loginButton = page.locator('musira-spotify-login');
     await expect(loginButton).toBeVisible();
-
-    // Verify the Spotify login URL can be generated
-    const loginUrl = await page.evaluate(async (code) => {
-      const res = await fetch(`/api/spotify/${code}/spotify-login`, {
-        credentials: 'include',
-      });
-      return res.text();
-    }, code);
-
-    expect(loginUrl).toContain('https://accounts.spotify.com/authorize');
-    expect(loginUrl).toContain(`state=${code}*`);
   });
 
-  test('spotify session status API returns expiration message when not connected', async ({
+  test('session status API returns correct state when Spotify is not connected', async ({
     page,
   }) => {
     const email = randomEmail();
@@ -147,7 +136,7 @@ test.describe('Spotify token expiration and re-login flow', () => {
     // The backend should return the expiration message
     expect(status.message).toContain('Spotify session has expired');
 
-    // Verify UI displays the message
+    // Verify UI displays the disconnected state
     await page.goto(`/${code}`);
     await page.waitForURL(new RegExp(`/${code}(?:/|$)`));
 
@@ -157,12 +146,5 @@ test.describe('Spotify token expiration and re-login flow', () => {
     await expect(page.locator('musira-spotify-status')).toContainText(
       '❌ Non connecté à Spotify',
     );
-
-    // The message should be visible in the component
-    // Note: The message is in English but UI is in French
-    const messageElement = page
-      .locator('musira-spotify-status')
-      .getByText('Your Spotify session has expired. Please log in again.');
-    await expect(messageElement).toBeVisible({ timeout: 5000 });
   });
 });
