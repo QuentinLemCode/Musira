@@ -119,7 +119,11 @@ export class MusicController {
       await this.spotify.isAccountRegistered(musicSession);
     const engineStarted = this.queueEngine.isRunning;
     if (!isSpotifyAccountRegistered) {
-      return { isSpotifyAccountRegistered, engineStarted, message };
+      return {
+        isSpotifyAccountRegistered,
+        engineStarted,
+        message: message || 'Your Spotify session has expired. Please log in again.',
+      };
     }
     const queue = await this.queue.get(musicSession);
     const currentPlay = engineStarted
