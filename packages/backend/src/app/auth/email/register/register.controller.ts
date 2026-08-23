@@ -10,6 +10,11 @@ import { UsersService } from '../../../users/users.service';
 import { AuthService } from '../../auth.service';
 import { EmailRegisterDto } from '../../dto/email-register.dto';
 import { Public } from '../../public-routes.decorator';
+import {
+  RateLimit,
+  RateLimitGuard,
+} from '../../../utils/decorators/rate-limit.decorator';
+
 @Controller('auth/email/register')
 export class RegisterController {
   constructor(
@@ -18,6 +23,8 @@ export class RegisterController {
   ) {}
 
   @Public()
+  @UseGuards(RateLimitGuard)
+  @RateLimit(10, 60_000)
   @Post()
   async create(
     @Body() infos: EmailRegisterDto,
