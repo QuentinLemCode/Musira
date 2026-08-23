@@ -1,10 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { createHmac } from 'crypto';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { hashPassword } from '../utils/hash';
 import { EmailUser } from './user.email.entity';
 import { User } from './user.entity';
 import { OAuthUser } from './user.oauth.entity';
 import { MAX_LOGIN_TRIES, UsersService } from './users.service';
+
+const createLegacyHash = (password: string, salt: string) =>
+  createHmac('sha256', salt).update(password).digest('base64');
 
 // Mocking Repositories
 const mockRepository = {
@@ -113,7 +117,7 @@ describe('UsersService', () => {
     it('should increment loginTries on failed password', async () => {
       const user = new EmailUser();
       user.salt = 'salt';
-      user.password = hashPassword('correct', 'salt');
+      user.password = await hashPassword('correct');
       user.loginTries = 0;
       user.locked = false;
       mockRepository.findOneBy.mockResolvedValue(user);
@@ -129,7 +133,7 @@ describe('UsersService', () => {
     it('should lock the account after MAX_LOGIN_TRIES failures', async () => {
       const user = new EmailUser();
       user.salt = 'salt';
-      user.password = hashPassword('correct', 'salt');
+      user.password = await hashPassword('correct');
       user.loginTries = MAX_LOGIN_TRIES - 1;
       user.locked = false;
       mockRepository.findOneBy.mockResolvedValue(user);
@@ -141,10 +145,27 @@ describe('UsersService', () => {
       expect(user.locked).toBe(true);
     });
 
+    it('should re-hash a valid legacy HMAC password with argon2 on login', async () => {
+      const user = new EmailUser();
+      user.salt = 'legacy-salt';
+      user.password = createLegacyHash('correct', 'legacy-salt');
+      user.loginTries = 0;
+      user.locked = false;
+      mockRepository.findOneBy.mockResolvedValue(user);
+
+      const result = await service.emailLogin({
+        email: 'john@example.com',
+        password: 'correct',
+      });
+
+      expect(result).toBe(user);
+      expect(user.password).toMatch(/^\$argon2/);
+    });
+
     it('should reset loginTries on successful login', async () => {
       const user = new EmailUser();
       user.salt = 'salt';
-      user.password = hashPassword('correct', 'salt');
+      user.password = await hashPassword('correct');
       user.loginTries = 2;
       user.locked = false;
       mockRepository.findOneBy.mockResolvedValue(user);

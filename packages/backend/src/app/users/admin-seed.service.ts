@@ -1,9 +1,8 @@
 import type { OnApplicationBootstrap } from '@nestjs/common';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { randomBytes } from 'crypto';
 import { Repository } from 'typeorm';
-import { hashPassword } from '../utils/hash';
+import { generateSalt, hashPassword } from '../utils/hash';
 import { EmailUser } from './user.email.entity';
 import { UserRole } from './user.entity';
 
@@ -26,8 +25,8 @@ export class AdminSeedService implements OnApplicationBootstrap {
         return;
       }
       admin = this.users.create();
-      admin.salt = randomBytes(16).toString('base64');
-      admin.password = hashPassword(password, admin.salt);
+      admin.salt = generateSalt();
+      admin.password = await hashPassword(password);
       admin.name = 'admin';
       admin.role = UserRole.ADMIN;
       admin.email = email;
