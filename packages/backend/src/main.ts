@@ -1,5 +1,5 @@
 import fastifyCookie from '@fastify/cookie';
-import type { LoggerService, LogLevel } from '@nestjs/common';
+import { LoggerService, LogLevel, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -21,6 +21,13 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({ logger: true }),
     { logger: getLogger() },
+  );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: false,
+      transform: true,
+    }),
   );
   const config = new DocumentBuilder()
     .setTitle('Musira API')

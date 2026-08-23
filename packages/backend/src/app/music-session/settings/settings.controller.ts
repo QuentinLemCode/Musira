@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
+import { Body, Get, Put, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -9,12 +9,8 @@ import {
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { MusicSession } from '../entities/music-session.entity';
+import { SettingsQueryDto } from './settings.dto';
 import { SettingsService } from './settings.service';
-
-export interface SettingsQuery {
-  maxVotes: number;
-  maxQueuableSongPerUser: number;
-}
 
 @ApiTags('Settings')
 @ApiBearerAuth()
@@ -36,8 +32,8 @@ export class SettingsController {
   })
   async setSettings(
     @MusicSessionParam() musicSession: MusicSession,
-    @Body() voteSettings: SettingsQuery,
-  ): Promise<SettingsQuery> {
+    @Body() voteSettings: SettingsQueryDto,
+  ): Promise<SettingsQueryDto> {
     await this.settings.setMaxVotes(musicSession, voteSettings.maxVotes);
     await this.settings.setMaxQueuableSongPerUser(
       musicSession,
@@ -63,7 +59,7 @@ export class SettingsController {
   })
   async getSettings(
     @MusicSessionParam() musicSession: MusicSession,
-  ): Promise<SettingsQuery> {
+  ): Promise<SettingsQueryDto> {
     const settings = await musicSession.settings;
     return {
       maxVotes: settings.maxVotes,

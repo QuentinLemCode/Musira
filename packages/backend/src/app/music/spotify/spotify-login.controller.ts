@@ -24,7 +24,7 @@ import { MusicSessionService } from '../../music-session/music-session.service';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { isResponseError } from '../../utils/type-guards';
-import type { SpotifyOAuthDTO } from '../music.interface';
+import { SpotifyOAuthDto } from './dto/spotify-oauth.dto';
 import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
 import { SpotifyApiService } from './spotify-api/spotify-api.service';
 
@@ -80,7 +80,7 @@ export class SpotifyLoginController {
     },
   })
   async spotifyAuthentication(
-    @Body() spotifyOAuth: SpotifyOAuthDTO,
+    @Body() spotifyOAuth: SpotifyOAuthDto,
     @Request() req: { user: JwtUser },
   ) {
     const [publicCode, state] = spotifyOAuth.state.split('*');
