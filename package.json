@@ -35,6 +35,9 @@
     "url": "https://github.com/QuentinLemCode/musira/issues"
   },
   "homepage": "https://github.com/QuentinLemCode/musira#readme",
+  "engines": {
+    "node": ">=26.7.0"
+  },
   "workspaces": [
     "packages/backend",
     "packages/frontend",
