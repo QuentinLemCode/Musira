@@ -59,8 +59,14 @@ async function bootstrap() {
   //     this.send('');
   //   });
 
+  if (!env.COOKIE_SECRET) {
+    throw new Error(
+      'COOKIE_SECRET environment variable is required. Refusing to start with an insecure default.',
+    );
+  }
+
   await app.register(fastifyCookie, {
-    secret: env.COOKIE_SECRET || 'defaultSecret',
+    secret: env.COOKIE_SECRET,
   });
   await app.listen(env.PORT || 3020, '0.0.0.0');
 }
