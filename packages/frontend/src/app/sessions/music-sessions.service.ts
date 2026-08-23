@@ -120,9 +120,9 @@ export class MusicSessionsService {
 
   public refreshSessionHistory() {
     this.http
-      .get<
-        { access_date: string; musicSession: MusicSessionDto }[]
-      >(this.endpoint + '/history/me')
+      .get<{ access_date: string; musicSession: MusicSessionDto }[]>(
+        this.endpoint + '/history/me',
+      )
       .subscribe({
         next: (entries) => {
           this.history.set(

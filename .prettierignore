@@ -1,9 +1,10 @@
 # Add files here to ignore them from prettier formatting
-
+package*.json
 .angular
 .git
 /dist
 /coverage
 node_modules
-frontend/src/generated
-frontend/.wrangler
+**/generated
+**/.wrangler
+.vscode

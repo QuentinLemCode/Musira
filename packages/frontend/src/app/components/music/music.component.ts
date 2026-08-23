@@ -23,9 +23,7 @@ export interface MusicComponentConfiguration {
 }
 
 type AllIconDefinition =
-  | IconDefinition
-  | IconDefinitionSolid
-  | IconDefinitionRegular;
+  IconDefinition | IconDefinitionSolid | IconDefinitionRegular;
 
 export interface IconUpdateStatus {
   updateLoading: (loading: boolean) => void;

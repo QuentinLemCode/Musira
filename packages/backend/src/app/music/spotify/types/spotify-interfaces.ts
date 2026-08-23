@@ -607,7 +607,8 @@ export interface EpisodeSearchResponse {
  * https://developer.spotify.com/web-api/search-item/
  */
 export interface SearchResponse
-  extends Partial<ArtistSearchResponse>,
+  extends
+    Partial<ArtistSearchResponse>,
     Partial<AlbumSearchResponse>,
     Partial<TrackSearchResponse>,
     Partial<PlaylistSearchResponse>,
@@ -811,8 +812,7 @@ export interface UserDevicesResponse {
 }
 
 export interface CurrentPlaybackResponse
-  extends CurrentlyPlayingObject,
-    PlaybackObject {}
+  extends CurrentlyPlayingObject, PlaybackObject {}
 
 type CurrentlyPlayingResponse = CurrentlyPlayingObject;
 
@@ -1672,12 +1672,7 @@ export type SpotifyShowCategory = Show;
 export type SpotifyEpisodeCategory = Episode;
 
 export type SpotifyCategoryID =
-  | Album
-  | Artist
-  | Playlist
-  | Track
-  | Show
-  | Episode;
+  Album | Artist | Playlist | Track | Show | Episode;
 
 type SpotifyID = string;
 

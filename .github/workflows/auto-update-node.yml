@@ -40,7 +40,7 @@ jobs:
         if: steps.compare-versions.outputs.update == 'true'
         run: |
           LATEST_VERSION=${{ steps.latest-node-version.outputs.version }}
-          
+
           if grep -q '"engines"' package.json; then
             sed -i "s/\"node\": \".*\"/\"node\": \">=${LATEST_VERSION#v}\"/g" package.json
           else
