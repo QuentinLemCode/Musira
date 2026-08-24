@@ -53,25 +53,34 @@ jobs:
         run: npm --workspace @musira/frontend run test
 
       # Install Playwright browsers and system dependencies.
-      # cdn.playwright.dev occasionally stalls mid-download; each attempt is
-      # capped at 10 minutes so a stalled download is retried instead of
-      # hanging the job for hours.
+      # cdn.playwright.dev occasionally stalls mid-download on runners;
+      # installing browsers one-by-one with capped attempts means a stalled
+      # download is retried instead of hanging the job for hours.
       - name: Install Playwright Browsers
         timeout-minutes: 45
-        env:
-          # Prevent apt/needrestart prompts from hanging on newer runner images
-          DEBIAN_FRONTEND: noninteractive
-          NEEDRESTART_MODE: a
         run: |
-          for attempt in 1 2 3; do
-            if timeout -k 10 600 npx playwright install --with-deps; then
-              exit 0
-            fi
-            echo "::warning::Playwright browser install attempt $attempt failed or stalled, retrying"
-            sleep 15
-          done
-          echo "All Playwright install attempts failed"
-          exit 1
+          set -e
+          export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a
+
+          install_with_retry() {
+            local browser="$1"
+            local attempt
+            for attempt in 1 2 3; do
+              echo "Installing $browser (attempt $attempt)"
+              if timeout -k 10 420 npx playwright install "$browser"; then
+                return 0
+              fi
+              echo "::warning::Install of $browser failed or stalled (attempt $attempt), retrying"
+              sleep 10
+            done
+            echo "All attempts to install $browser failed"
+            return 1
+          }
+
+          npx playwright install-deps chromium firefox webkit
+          install_with_retry chromium
+          install_with_retry firefox
+          install_with_retry webkit
 
       # Generate local SSL certs for Angular HTTPS dev server
       - name: Generate SSL certificates
