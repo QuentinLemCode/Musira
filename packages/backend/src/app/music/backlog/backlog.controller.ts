@@ -25,7 +25,7 @@ import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { UserRole } from '../../users/user.entity';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { FullBacklogDto, ImportResultDto } from '../dto/backlog.dto';
-import { Music } from '../music.entity';
+import { MusicDto } from '../dto/music.dto';
 import { BacklogService } from './backlog.service';
 
 @ApiTags('Backlog')
@@ -40,7 +40,7 @@ export class BacklogController {
   @ApiOperation({ summary: 'Push a music to backlog' })
   @ApiCreatedResponse({ type: FullBacklogDto, isArray: true })
   pushToBacklog(
-    @Body() music: Music,
+    @Body() music: MusicDto,
     @MusicSessionParam() musicSession: MusicSession,
   ) {
     return this.backlog.push(musicSession, music);

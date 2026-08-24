@@ -79,11 +79,7 @@ export class QueueService {
     const publicCode = this.session.currentSession()?.code;
     if (!publicCode) return of(void 0);
     return this.apiQueue
-      .queueControllerPushToQueue(
-        publicCode,
-        music as unknown as object,
-        'body',
-      )
+      .queueControllerPushToQueue(publicCode, music, 'body')
       .pipe(
         tap(() => {
           this.loadQueue();
@@ -129,11 +125,7 @@ export class QueueService {
     const publicCode = this.session.currentSession()?.code;
     if (!publicCode) return of(void 0);
     return this.apiBacklog
-      .backlogControllerPushToBacklog(
-        publicCode,
-        music as unknown as object,
-        'body',
-      )
+      .backlogControllerPushToBacklog(publicCode, music, 'body')
       .pipe(map(() => void 0));
   }
 
