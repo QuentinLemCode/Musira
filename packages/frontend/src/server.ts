@@ -12,7 +12,8 @@ export const reqHandler = createRequestHandler(async (req) => {
 
   // Serve favicon from /public for common crawlers/browsers expectation at /favicon.ico
   if (url.pathname === '/favicon.ico') {
-    return Response.redirect('/public/favicon.ico', 301);
+    // Response.redirect requires an absolute URL per the Fetch spec
+    return Response.redirect(new URL('/public/favicon.ico', url.origin).toString(), 301);
   }
 
   // Serve robots.txt at the root for SEO
@@ -49,8 +50,13 @@ export const reqHandler = createRequestHandler(async (req) => {
     });
   }
 
-  // Proxy API calls to local backend when running with Wrangler (same-origin cookies)
+  // Proxy API calls to the local backend when running with Wrangler in
+  // development (same-origin cookies). Never proxy in production: the
+  // loopback target only exists on a developer machine.
   if (url.pathname.startsWith('/api')) {
+    if (process.env['NODE_ENV'] === 'production') {
+      return new Response('Not found', { status: 404 });
+    }
     const backendOrigin = 'http://127.0.0.1:3020';
     const upstream = new URL(backendOrigin);
     // Rewrite path by stripping the /api prefix
