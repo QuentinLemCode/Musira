@@ -261,14 +261,25 @@ export class AuthenticationService {
   }
 
   private generateState() {
-    return 'state';
+    if (!isPlatformBrowser(this.platformId)) {
+      return '';
+    }
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    const state = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    sessionStorage.setItem('oauth_state', state);
+    return state;
   }
 
   private checkState(state: string) {
-    if (state !== 'state') {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+    const expected = sessionStorage.getItem('oauth_state');
+    sessionStorage.removeItem('oauth_state');
+    if (!state || !expected || state !== expected) {
       throw new Error('Invalid state');
     }
-    return;
   }
 
   private redirectUrl(provider: OAuthProviderType) {
