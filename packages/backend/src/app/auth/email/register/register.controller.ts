@@ -4,6 +4,7 @@ import {
   Controller,
   Post,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
 import { UsersService } from '../../../users/users.service';

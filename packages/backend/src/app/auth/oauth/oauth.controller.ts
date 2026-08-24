@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Res, UseGuards } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
 import { OAuthLoginDto } from '../dto/oauth-login.dto';
 import { AuthService } from '../auth.service';
@@ -6,7 +6,7 @@ import { Public } from '../public-routes.decorator';
 import {
   RateLimit,
   RateLimitGuard,
-} from '../../../utils/decorators/rate-limit.decorator';
+} from '../../utils/decorators/rate-limit.decorator';
 import { OAuthService } from './oauth.service';
 
 @Controller('auth/oauth')
