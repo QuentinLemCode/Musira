@@ -131,7 +131,9 @@ export class OAuthService {
     }
     const microsoftUser: MicrosoftUser = await microsoftUserRequest.json();
 
-    this.logger.log(JSON.stringify(microsoftUser));
+    this.logger.log(
+      `Authenticated Microsoft user ${microsoftUser.id} via OAuth`,
+    );
 
     return this.users.OAuthLogin(
       microsoftUser.mail,

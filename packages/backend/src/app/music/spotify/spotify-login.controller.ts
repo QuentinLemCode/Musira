@@ -47,7 +47,7 @@ export class SpotifyLoginController {
     const uuid = randomUUID();
     this.sessions.setSpotifyAuthUuid(musicSession, uuid);
     const scope =
-      'user-modify-playback-state user-read-playback-state user-read-currently-playing user-read-recently-played user-read-playback-state';
+      'user-modify-playback-state user-read-playback-state user-read-currently-playing user-read-recently-played';
 
     const url = new URL('https://accounts.spotify.com/authorize');
     const client_id = process.env.SPOTIFY_CLIENT_ID;
@@ -102,11 +102,15 @@ export class SpotifyLoginController {
       if (isResponseError(error) && error?.response?.status === 400) {
         throw new BadRequestException({
           spotifyMessage: error.response.data.error,
-          isSpotifyAccountRegistered:
-            this.spotify.isAccountRegistered(musicSession),
+          isSpotifyAccountRegistered: await this.spotify.isAccountRegistered(
+            musicSession,
+          ),
           message: 'Authentification Spotify invalide ou déjà utilisé',
         });
       }
+      throw new ServiceUnavailableException(
+        'Could not register the Spotify player, please try again later',
+      );
     }
     return { connected: true, publicCode: musicSession.publicCode };
   }

@@ -101,8 +101,8 @@ export class SpotifyApiService implements OnModuleInit {
   async unregisterPlayer(musicSession: MusicSession) {
     const currentAccount = await musicSession.spotify_account;
     if (!currentAccount) return;
-    this.spotifyAccount.remove(currentAccount);
-    this.stopTokenRenewInterval();
+    await this.spotifyAccount.remove(currentAccount);
+    await this.stopTokenRenewInterval();
   }
 
   async registerPlayer(musicSession: MusicSession, code: string) {
@@ -146,7 +146,7 @@ export class SpotifyApiService implements OnModuleInit {
     musicSession: MusicSession,
     noCache = false,
   ): Promise<APIResult<PlaybackState | void>> {
-    if (!this.isAccountRegistered) {
+    if (!(await this.isAccountRegistered(musicSession))) {
       return this.success({
         registered: false,
       });
@@ -199,7 +199,7 @@ export class SpotifyApiService implements OnModuleInit {
   }
 
   async skipToNext(musicSession: MusicSession) {
-    if (!this.isAccountRegistered) {
+    if (!(await this.isAccountRegistered(musicSession))) {
       return this.error('unregistered');
     }
     return firstValueFrom(
@@ -220,7 +220,7 @@ export class SpotifyApiService implements OnModuleInit {
     musicSession: MusicSession,
     uri: SpotifyURI<SpotifyTrackCategory>,
   ): Promise<APIResult> {
-    if (!this.isAccountRegistered) {
+    if (!(await this.isAccountRegistered(musicSession))) {
       return this.error('unregistered');
     }
     return firstValueFrom(
@@ -244,7 +244,7 @@ export class SpotifyApiService implements OnModuleInit {
     musicSession: MusicSession,
     uri: SpotifyURI<SpotifyTrackCategory>,
   ): Promise<APIResult> {
-    if (!this.isAccountRegistered) {
+    if (!(await this.isAccountRegistered(musicSession))) {
       return this.error('unregistered');
     }
     return firstValueFrom(
