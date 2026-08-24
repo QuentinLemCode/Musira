@@ -45,9 +45,8 @@ export class BacklogService implements OnModuleInit {
   }
 
   async pop(musicSession: MusicSession) {
-    const backlog =
-      this.nextInBacklog.get(musicSession.id) ||
-      (await this.nominateFromBacklog(musicSession));
+    const cached = this.nextInBacklog.get(musicSession.id);
+    const backlog = cached ?? (await this.nominateFromBacklog(musicSession));
     if (!backlog) {
       return null;
     }
@@ -66,11 +65,18 @@ export class BacklogService implements OnModuleInit {
     backlog.music = music;
     backlog.music_session = musicSession;
     await this.backlog.save(backlog);
-    return this.backlog.find();
+    return this.get(musicSession);
   }
 
   delete(id: string | number) {
     return this.backlog.delete({ id: +id });
+  }
+
+  findForEngine(id: number) {
+    return this.backlog.findOne({
+      where: { id },
+      relations: ['music', 'music_session'],
+    });
   }
 
   async getNominatedBacklog(musicSession: MusicSession) {
@@ -95,27 +101,37 @@ export class BacklogService implements OnModuleInit {
       });
 
     let count = 0;
+    let skipped = 0;
 
-    await Promise.all(
-      playlist.data.tracks.items.map((item) => {
-        if (!item.track) return Promise.resolve();
-        if (!item.track.artists[0]) return Promise.resolve();
-        if (!item.track.album.images[0]) return Promise.resolve();
-        if (!item.track.is_playable) return Promise.resolve();
-        const music: Music = {
-          album: item.track.album.name,
-          artist: item.track.artists[0].name,
-          cover: item.track.album.images[0].url,
-          duration: item.track.duration_ms,
-          uri: item.track.uri,
-          title: item.track.name,
-          queue: [],
-        };
-        count += 1;
-        return this.push(musicSession, music);
-      }),
-    );
-    return { added: count };
+    for (const item of playlist.data.tracks.items) {
+      if (!item.track) continue;
+      if (!item.track.artists[0]) continue;
+      if (!item.track.album.images[0]) continue;
+      if (!item.track.is_playable) continue;
+      const music: Music = {
+        album: item.track.album.name,
+        artist: item.track.artists[0].name,
+        cover: item.track.album.images[0].url,
+        duration: item.track.duration_ms,
+        uri: item.track.uri,
+        title: item.track.name,
+        queue: [],
+      };
+      const alreadyInBacklog = await this.findInBacklog(
+        musicSession,
+        music.uri,
+      );
+      if (alreadyInBacklog) {
+        skipped += 1;
+        continue;
+      }
+      const backlog = new Backlog();
+      backlog.music = music;
+      backlog.music_session = musicSession;
+      await this.backlog.save(backlog);
+      count += 1;
+    }
+    return { added: count, skipped };
   }
 
   private findInBacklog(musicSession: MusicSession, uri: string) {

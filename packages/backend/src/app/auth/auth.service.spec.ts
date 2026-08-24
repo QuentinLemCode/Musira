@@ -63,7 +63,7 @@ describe('AuthService', () => {
         {
           httpOnly: true,
           path: '/',
-          maxAge: 60 * 60 * 24 * 30,
+          maxAge: 60 * 60 * 24 * 7,
           secure: true,
           sameSite: 'strict',
         },

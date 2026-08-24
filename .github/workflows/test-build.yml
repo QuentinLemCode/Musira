@@ -38,6 +38,12 @@ jobs:
       - name: Launch database
         run: docker compose -f docker-compose.test.yml up -d
       - run: npm run openapi
+        env:
+          # Throwaway credentials: this step only boots the app to emit the
+          # OpenAPI document, it never serves traffic.
+          JWT_SECRET: ci-only-openapi-secret
+          COOKIE_SECRET: ci-only-openapi-secret
+          DEFAULT_ADMIN_PASSWORD: ci-only-openapi-password
       - run: npm run api:generate
       - run: npm run build:frontend
       # Run backend unit tests (Jest)
@@ -46,9 +52,35 @@ jobs:
       - name: Run unit tests (frontend)
         run: npm --workspace @musira/frontend run test
 
-      # Install Playwright browsers and system dependencies
+      # Install Playwright browsers and system dependencies.
+      # cdn.playwright.dev occasionally stalls mid-download on runners;
+      # installing browsers one-by-one with capped attempts means a stalled
+      # download is retried instead of hanging the job for hours.
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        timeout-minutes: 45
+        run: |
+          set -e
+          export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a
+
+          install_with_retry() {
+            local browser="$1"
+            local attempt
+            for attempt in 1 2 3; do
+              echo "Installing $browser (attempt $attempt)"
+              if timeout -k 10 420 npx playwright install "$browser"; then
+                return 0
+              fi
+              echo "::warning::Install of $browser failed or stalled (attempt $attempt), retrying"
+              sleep 10
+            done
+            echo "All attempts to install $browser failed"
+            return 1
+          }
+
+          npx playwright install-deps chromium firefox webkit
+          install_with_retry chromium
+          install_with_retry firefox
+          install_with_retry webkit
 
       # Generate local SSL certs for Angular HTTPS dev server
       - name: Generate SSL certificates
@@ -56,6 +88,10 @@ jobs:
 
       # Start backend and frontend and wait for readiness
       - name: Start application (backend + frontend)
+        env:
+          # Throwaway credentials for the E2E environment only
+          JWT_SECRET: ci-only-e2e-secret
+          COOKIE_SECRET: ci-only-e2e-secret
         run: |
           export COOKIE_SECURE=false
           npm run start:backend &

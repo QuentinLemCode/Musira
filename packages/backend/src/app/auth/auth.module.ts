@@ -28,7 +28,7 @@ import { jwtSecret } from './secret';
       },
       secret: jwtSecret,
       signOptions: {
-        expiresIn: '30d',
+        expiresIn: '7d',
         algorithm: 'HS256',
         issuer: 'musira',
         audience: 'musira',

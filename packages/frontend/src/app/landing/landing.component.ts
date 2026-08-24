@@ -331,7 +331,8 @@ import { MusicSessionsService } from './..//sessions/music-sessions.service';
           <h2 class="mt-16 mb-8">Historique des sessions</h2>
           <div class="grid">
             @for (session of sessionHistory; track session.musicSession.code) {
-              <a
+              <button
+                type="button"
                 class="history-card"
                 (click)="joinSessionWithCode(session.musicSession.code)"
               >
@@ -345,7 +346,7 @@ import { MusicSessionsService } from './..//sessions/music-sessions.service';
                 <div class="code">
                   #{{ formatCode(session.musicSession.code) }}
                 </div>
-              </a>
+              </button>
             }
           </div>
         </section>

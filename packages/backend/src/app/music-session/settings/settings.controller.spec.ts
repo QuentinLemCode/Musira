@@ -4,7 +4,8 @@ import { JwtGuard } from '../../auth/jwt.guard';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSessionPipe } from '../../utils/pipes/music-session.pipe';
 import { MusicSession } from '../entities/music-session.entity';
-import { SettingsController, SettingsQuery } from './settings.controller';
+import { SettingsQueryDto } from './settings.dto';
+import { SettingsController } from './settings.controller';
 import { Settings } from './settings.entity';
 import { SettingsService } from './settings.service';
 
@@ -40,7 +41,7 @@ describe('SettingsController', () => {
   describe('setSettings', () => {
     it('should set and return settings', async () => {
       const musicSession = new MusicSession();
-      const settingsQuery: SettingsQuery = {
+      const settingsQuery: SettingsQueryDto = {
         maxVotes: 10,
         maxQueuableSongPerUser: 5,
       };
@@ -73,7 +74,7 @@ describe('SettingsController', () => {
   describe('getSettings', () => {
     it('should return settings', async () => {
       const musicSession = new MusicSession();
-      const settingsQuery: SettingsQuery = {
+      const settingsQuery: SettingsQueryDto = {
         maxVotes: 10,
         maxQueuableSongPerUser: 5,
       };

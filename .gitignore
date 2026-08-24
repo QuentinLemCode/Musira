@@ -57,3 +57,7 @@ apps/musira-e2e/cypress/downloads
 
 # OpenAPI generated clients
 packages/frontend/src/generated/
+
+# Local SSL certificates
+/localhost-key.pem
+/localhost.pem

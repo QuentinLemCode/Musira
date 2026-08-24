@@ -205,7 +205,7 @@ export class MusicSessionController {
     }
     if (
       user.role !== UserRole.ADMIN &&
-      !this.users.isCreatorOfSession(user.email, code)
+      !(await this.users.isCreatorOfSession(user.email, code))
     ) {
       throw new ForbiddenException({
         cause: 'not-creator',

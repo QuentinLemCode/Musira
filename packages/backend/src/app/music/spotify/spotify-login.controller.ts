@@ -24,7 +24,7 @@ import { MusicSessionService } from '../../music-session/music-session.service';
 import { SessionCreatorGuard } from '../../users/session-creator.guard';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { isResponseError } from '../../utils/type-guards';
-import type { SpotifyOAuthDTO } from '../music.interface';
+import { SpotifyOAuthDto } from './dto/spotify-oauth.dto';
 import { QueueEngineService } from '../queue/queue-engine/queue-engine.service';
 import { SpotifyApiService } from './spotify-api/spotify-api.service';
 
@@ -47,7 +47,7 @@ export class SpotifyLoginController {
     const uuid = randomUUID();
     this.sessions.setSpotifyAuthUuid(musicSession, uuid);
     const scope =
-      'user-modify-playback-state user-read-playback-state user-read-currently-playing user-read-recently-played user-read-playback-state';
+      'user-modify-playback-state user-read-playback-state user-read-currently-playing user-read-recently-played';
 
     const url = new URL('https://accounts.spotify.com/authorize');
     const client_id = process.env.SPOTIFY_CLIENT_ID;
@@ -80,7 +80,7 @@ export class SpotifyLoginController {
     },
   })
   async spotifyAuthentication(
-    @Body() spotifyOAuth: SpotifyOAuthDTO,
+    @Body() spotifyOAuth: SpotifyOAuthDto,
     @Request() req: { user: JwtUser },
   ) {
     const [publicCode, state] = spotifyOAuth.state.split('*');
@@ -103,10 +103,13 @@ export class SpotifyLoginController {
         throw new BadRequestException({
           spotifyMessage: error.response.data.error,
           isSpotifyAccountRegistered:
-            this.spotify.isAccountRegistered(musicSession),
+            await this.spotify.isAccountRegistered(musicSession),
           message: 'Authentification Spotify invalide ou déjà utilisé',
         });
       }
+      throw new ServiceUnavailableException(
+        'Could not register the Spotify player, please try again later',
+      );
     }
     return { connected: true, publicCode: musicSession.publicCode };
   }
@@ -117,6 +120,6 @@ export class SpotifyLoginController {
   @ApiParam({ name: 'publicCode', type: Number })
   async spotifyLogout(@MusicSessionParam() musicSession: MusicSession) {
     await this.spotify.unregisterPlayer(musicSession);
-    this.queueEngine.stop();
+    this.queueEngine.stop(musicSession);
   }
 }

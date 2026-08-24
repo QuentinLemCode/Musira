@@ -1,8 +1,12 @@
-import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Res, UseGuards } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
+import { OAuthLoginDto } from '../dto/oauth-login.dto';
 import { AuthService } from '../auth.service';
 import { Public } from '../public-routes.decorator';
-import type { OAuthProviderType } from '../types';
+import {
+  RateLimit,
+  RateLimitGuard,
+} from '../../utils/decorators/rate-limit.decorator';
 import { OAuthService } from './oauth.service';
 
 @Controller('auth/oauth')
@@ -11,13 +15,14 @@ export class OauthController {
   @Inject(AuthService) private readonly auth: AuthService;
 
   @Public()
+  @UseGuards(RateLimitGuard)
+  @RateLimit(10, 60_000)
   @Post('login')
   async login(
-    @Body('provider') provider: OAuthProviderType,
-    @Body('code') code: string,
+    @Body() loginDto: OAuthLoginDto,
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
-    const user = await this.oauth.login(provider, code);
+    const user = await this.oauth.login(loginDto.provider, loginDto.code);
     return this.auth.login(user, res);
   }
 }

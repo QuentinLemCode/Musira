@@ -1,18 +1,32 @@
-import { Controller, Post, Request, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Request,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
 import type { EmailUser } from '../../../users/user.email.entity';
+import { EmailLoginDto } from '../../dto/email-login.dto';
 import { AuthService } from '../../auth.service';
-import { LocalAuthGuard } from '../../local-auth.guard';
 import { Public } from '../../public-routes.decorator';
+import { LocalAuthGuard } from '../../local-auth.guard';
+import {
+  RateLimit,
+  RateLimitGuard,
+} from '../../../utils/decorators/rate-limit.decorator';
 
 @Controller('auth/email/login')
 export class LoginController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(RateLimitGuard, LocalAuthGuard)
+  @RateLimit(10, 60_000)
   @Post()
   login(
+    @Body() _login: EmailLoginDto,
     @Request() req: { user: EmailUser },
     @Res({ passthrough: true }) res: FastifyReply,
   ) {

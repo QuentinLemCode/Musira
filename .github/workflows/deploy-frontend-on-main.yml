@@ -29,6 +29,12 @@ jobs:
       - name: Launch database
         run: docker compose -f docker-compose.test.yml up -d
       - run: npm run openapi
+        env:
+          # Throwaway credentials: this step only boots the app to emit the
+          # OpenAPI document, it never serves traffic.
+          JWT_SECRET: ci-only-openapi-secret
+          COOKIE_SECRET: ci-only-openapi-secret
+          DEFAULT_ADMIN_PASSWORD: ci-only-openapi-password
       - run: npm run api:generate
 
       - name: Build frontend

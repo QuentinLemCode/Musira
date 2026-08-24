@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FastifyReply } from 'fastify';
 import { OAuthUser } from '../../users/user.oauth.entity';
 import { AuthService } from '../auth.service';
+import { OAuthLoginDto } from '../dto/oauth-login.dto';
 import { OauthController } from './oauth.controller';
 import { OAuthService } from './oauth.service';
 
@@ -50,7 +51,7 @@ describe('OauthController', () => {
         .mockResolvedValue(mockUser as OAuthUser);
       jest.spyOn(authService, 'login');
 
-      await controller.login(provider, code, mockRes);
+      await controller.login({ provider, code } as OAuthLoginDto, mockRes);
 
       expect(oauthService.login).toHaveBeenCalledWith(provider, code);
       expect(authService.login).toHaveBeenCalledWith(mockUser, mockRes);

@@ -4,12 +4,18 @@ import {
   Controller,
   Post,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
 import { UsersService } from '../../../users/users.service';
 import { AuthService } from '../../auth.service';
+import { EmailRegisterDto } from '../../dto/email-register.dto';
 import { Public } from '../../public-routes.decorator';
-import type { EmailRegisterInterface } from '../../types';
+import {
+  RateLimit,
+  RateLimitGuard,
+} from '../../../utils/decorators/rate-limit.decorator';
+
 @Controller('auth/email/register')
 export class RegisterController {
   constructor(
@@ -18,9 +24,11 @@ export class RegisterController {
   ) {}
 
   @Public()
+  @UseGuards(RateLimitGuard)
+  @RateLimit(10, 60_000)
   @Post()
   async create(
-    @Body() infos: EmailRegisterInterface,
+    @Body() infos: EmailRegisterDto,
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
     const user = await this.users.emailRegister(infos);

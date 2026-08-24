@@ -68,7 +68,7 @@ export class MusicController {
   async stop(
     @MusicSessionParam() musicSession: MusicSession,
   ): Promise<CurrentMusic> {
-    this.queueEngine.stop();
+    this.queueEngine.stop(musicSession);
     return this.generateState(musicSession);
   }
 
@@ -117,7 +117,7 @@ export class MusicController {
   ): Promise<CurrentMusic> {
     const isSpotifyAccountRegistered =
       await this.spotify.isAccountRegistered(musicSession);
-    const engineStarted = this.queueEngine.isRunning;
+    const engineStarted = this.queueEngine.isRunning(musicSession);
     if (!isSpotifyAccountRegistered) {
       return {
         isSpotifyAccountRegistered,

@@ -46,7 +46,7 @@ export class AuthService {
       secure: secureCookies,
       sameSite: 'strict',
       path: '/',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
+      maxAge: 60 * 60 * 24 * 7, // 7 days, matches the JWT expiration
     });
 
     return { success: true };

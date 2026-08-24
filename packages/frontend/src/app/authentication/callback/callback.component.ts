@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, type OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthenticationService } from '../authentication.service';
 function isOAuthProvider(value: unknown): value is string {
   return (
@@ -42,7 +43,7 @@ export class CallbackComponent implements OnInit {
           next: async () => {
             // After OAuth, check backend-stored intent and redirect
             try {
-              const resp = await this.auth.getIntent().toPromise();
+              const resp = await firstValueFrom(this.auth.getIntent());
               if (resp?.intent === 'sessions_creator') {
                 this.router.navigate(['create-session'], { replaceUrl: true });
                 return;

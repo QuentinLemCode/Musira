@@ -27,6 +27,7 @@ import { MusicSessionParam } from '../../utils/decorators/music-session.decorato
 import type { Backlog } from '../backlog/backlog.entity';
 import { BacklogService } from '../backlog/backlog.service';
 import { QueueDto, QueueResponseDto } from '../dto/queue.dto';
+import { MusicDto } from '../dto/music.dto';
 import { Music } from '../music.entity';
 import { QueueEngineService } from './queue-engine/queue-engine.service';
 import type { Queue } from './queue.entity';
@@ -68,7 +69,7 @@ export class QueueController {
   @ApiOperation({ summary: 'Push a music to the queue' })
   @ApiCreatedResponse({ type: QueueDto })
   async pushToQueue(
-    @Body() music: Music,
+    @Body() music: MusicDto,
     @Request() req: { user: JwtUser },
     @MusicSessionParam() musicSession: MusicSession,
   ) {
@@ -90,7 +91,7 @@ export class QueueController {
     }
     return this.queue.push(
       musicSession,
-      music,
+      music as Music,
       user.id,
       user.role === UserRole.ADMIN,
     );

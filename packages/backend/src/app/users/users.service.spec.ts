@@ -1,9 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { createHmac } from 'crypto';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { hashPassword } from '../utils/hash';
 import { EmailUser } from './user.email.entity';
 import { User } from './user.entity';
 import { OAuthUser } from './user.oauth.entity';
-import { UsersService } from './users.service';
+import { MAX_LOGIN_TRIES, UsersService } from './users.service';
+
+const createLegacyHash = (password: string, salt: string) =>
+  createHmac('sha256', salt).update(password).digest('base64');
 
 // Mocking Repositories
 const mockRepository = {
@@ -85,4 +90,94 @@ describe('UsersService', () => {
   });
 
   // Write similar test cases for other methods
+
+  describe('emailLogin', () => {
+    const login = { email: 'john@example.com', password: 'wrong' };
+
+    it('should return null when user does not exist', async () => {
+      mockRepository.findOneBy.mockResolvedValue(null);
+
+      const result = await service.emailLogin(login);
+
+      expect(result).toBeNull();
+      expect(mockRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should return null without checking credentials when account is locked', async () => {
+      const lockedUser = new EmailUser();
+      lockedUser.locked = true;
+      mockRepository.findOneBy.mockResolvedValue(lockedUser);
+
+      const result = await service.emailLogin(login);
+
+      expect(result).toBeNull();
+      expect(mockRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should increment loginTries on failed password', async () => {
+      const user = new EmailUser();
+      user.salt = 'salt';
+      user.password = await hashPassword('correct');
+      user.loginTries = 0;
+      user.locked = false;
+      mockRepository.findOneBy.mockResolvedValue(user);
+
+      const result = await service.emailLogin(login);
+
+      expect(result).toBeNull();
+      expect(user.loginTries).toBe(1);
+      expect(user.locked).toBe(false);
+      expect(mockRepository.save).toHaveBeenCalledWith(user);
+    });
+
+    it('should lock the account after MAX_LOGIN_TRIES failures', async () => {
+      const user = new EmailUser();
+      user.salt = 'salt';
+      user.password = await hashPassword('correct');
+      user.loginTries = MAX_LOGIN_TRIES - 1;
+      user.locked = false;
+      mockRepository.findOneBy.mockResolvedValue(user);
+
+      const result = await service.emailLogin(login);
+
+      expect(result).toBeNull();
+      expect(user.loginTries).toBe(MAX_LOGIN_TRIES);
+      expect(user.locked).toBe(true);
+    });
+
+    it('should re-hash a valid legacy HMAC password with argon2 on login', async () => {
+      const user = new EmailUser();
+      user.salt = 'legacy-salt';
+      user.password = createLegacyHash('correct', 'legacy-salt');
+      user.loginTries = 0;
+      user.locked = false;
+      mockRepository.findOneBy.mockResolvedValue(user);
+
+      const result = await service.emailLogin({
+        email: 'john@example.com',
+        password: 'correct',
+      });
+
+      expect(result).toBe(user);
+      expect(user.password).toMatch(/^\$argon2/);
+    });
+
+    it('should reset loginTries on successful login', async () => {
+      const user = new EmailUser();
+      user.salt = 'salt';
+      user.password = await hashPassword('correct');
+      user.loginTries = 2;
+      user.locked = false;
+      mockRepository.findOneBy.mockResolvedValue(user);
+
+      const result = await service.emailLogin({
+        email: 'john@example.com',
+        password: 'correct',
+      });
+
+      expect(result).toBe(user);
+      expect(user.loginTries).toBe(0);
+      expect(user.locked).toBe(false);
+    });
+  });
 });

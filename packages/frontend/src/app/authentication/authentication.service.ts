@@ -39,20 +39,12 @@ export class AuthenticationService {
   public refreshAuthStatus() {
     // Avoid HTTP calls during SSR/route extraction
     if (!isPlatformBrowser(this.platformId)) return;
-    console.log(
-      'checkAuthStatus() called, current loggedUser state:',
-      this.loggedUser(),
-    );
     this.http
       .get<JwtUser>(this.authEndpoint + '/me', {
         withCredentials: true,
       })
       .subscribe({
         next: (user) => {
-          console.log(
-            'checkAuthStatus success, setting user to logged in:',
-            user,
-          );
           const mapped: UserState = {
             isLoggedIn: true,
             id: user.id,
@@ -63,15 +55,10 @@ export class AuthenticationService {
           this.loggedUser.set(mapped);
         },
         error: (err) => {
-          console.log('checkAuthStatus failed. Error:', err.message);
-          // Ne réinitialiser à false que si c'est une vraie erreur d'authentification
-          // Pas en cas d'erreur SSL ou réseau
+          // Only reset to logged out on real auth errors; keep current
+          // state on network/SSL errors
           if (err.status === 401 || err.status === 403) {
-            console.log('Auth error (401/403), setting user to logged out');
             this.loggedUser.set({ isLoggedIn: false });
-          } else {
-            console.log('Network/SSL error, keeping current auth state');
-            // Garder l'état actuel en cas d'erreur réseau/SSL
           }
         },
       });
@@ -174,7 +161,25 @@ export class AuthenticationService {
         email,
         password,
       })
-      .pipe(tap(() => this.refreshAuthStatus()));
+      .pipe(
+        // Fetch the real user so the auth signal holds actual data instead
+        // of an optimistic placeholder
+        switchMap(() =>
+          this.http.get<JwtUser>(this.authEndpoint + '/me', {
+            withCredentials: true,
+          }),
+        ),
+        tap((user) => {
+          this.loggedUser.set({
+            isLoggedIn: true,
+            id: user.id,
+            admin: user.admin,
+            userId: String(user.id),
+            username: user.name,
+          });
+        }),
+        map(() => void 0),
+      );
   }
 
   emailRegister(email: string, username: string, password: string) {
@@ -188,7 +193,7 @@ export class AuthenticationService {
   }
 
   async logout() {
-    await this.http.post(this.authEndpoint + '/logout', {}).toPromise();
+    await firstValueFrom(this.http.post(this.authEndpoint + '/logout', {}));
     this.loggedUser.set({ isLoggedIn: false });
   }
 
@@ -261,14 +266,27 @@ export class AuthenticationService {
   }
 
   private generateState() {
-    return 'state';
+    if (!isPlatformBrowser(this.platformId)) {
+      return '';
+    }
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    const state = Array.from(bytes, (b) =>
+      b.toString(16).padStart(2, '0'),
+    ).join('');
+    sessionStorage.setItem('oauth_state', state);
+    return state;
   }
 
   private checkState(state: string) {
-    if (state !== 'state') {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+    const expected = sessionStorage.getItem('oauth_state');
+    sessionStorage.removeItem('oauth_state');
+    if (!state || !expected || state !== expected) {
       throw new Error('Invalid state');
     }
-    return;
   }
 
   private redirectUrl(provider: OAuthProviderType) {

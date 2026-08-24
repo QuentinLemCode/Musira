@@ -3,7 +3,7 @@ import { Inject, Injectable, computed } from '@angular/core';
 import type { CurrentMusicDto, MusicDto } from '@musira/client';
 import { MusicService, SpotifyService } from '@musira/client';
 import type { Observable, Subscription } from 'rxjs';
-import { ReplaySubject, combineLatest, timer } from 'rxjs';
+import { EMPTY, ReplaySubject, combineLatest, of, timer } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
@@ -56,13 +56,13 @@ export class MusicApiService {
 
   search(query: string): Observable<MusicDto[]> {
     const publicCode = this.currentPublicCode();
-    if (!publicCode) return new ReplaySubject<MusicDto[]>(1);
+    if (!publicCode) return of([]);
     return this.musicApi.musicControllerSearch(query, publicCode, 'body');
   }
 
   getUrlLogin(): Observable<string> {
     const publicCode = this.currentPublicCode();
-    if (!publicCode) return new ReplaySubject<string>(1);
+    if (!publicCode) return EMPTY;
     const url = `${environment.serverUrl}spotify/${publicCode}/spotify-login`;
     return this.http
       .get(url, { responseType: 'text', withCredentials: true })
@@ -126,7 +126,7 @@ export class MusicApiService {
     if (!publicCode) return;
     this.musicApi.musicControllerCurrentState(publicCode, 'body').subscribe({
       next: (status: CurrentMusicDto) => this.$status.next(status),
-      error: (err) => this.$status.error(err),
+      error: (err) => console.warn('Failed to refresh player status', err),
     });
   }
 }

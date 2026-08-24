@@ -9,7 +9,6 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faGoogle, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
-import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { AuthenticationService } from '../authentication.service';
 enum OAuthProvider {
   GOOGLE = 'google',
@@ -129,10 +128,8 @@ export class LoginComponent {
     @Inject(Router) private readonly router: Router,
   ) {}
 
-  faCircle = faCircleNotch;
   faGoogle = faGoogle;
   faMicrosoft = faMicrosoft;
-  emailLogin = false;
   loading = false;
   submitting = false; // Nouvel état pour éviter les conflits
   form = new FormGroup({
@@ -167,15 +164,6 @@ export class LoginComponent {
       .emailLogin(this.form.value.email, this.form.value.password)
       .subscribe({
         next: () => {
-          console.log('Email login successful, redirecting');
-          // Optimistic set to allow guards to pass while auth state refreshes
-          this.auth.loggedUser.set({
-            isLoggedIn: true,
-            id: 0,
-            userId: '0',
-            username: 'User',
-            admin: false,
-          });
           this.submitting = false;
           this.loading = false;
           this.router.navigate(['/'], { replaceUrl: true });
@@ -184,7 +172,7 @@ export class LoginComponent {
         error: (err) => {
           this.submitting = false;
           this.loading = false;
-          this.error = err.error.message;
+          this.error = err?.error?.message ?? 'Identifiants incorrects';
         },
       });
   }

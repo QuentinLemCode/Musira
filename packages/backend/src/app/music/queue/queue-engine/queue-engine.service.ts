@@ -25,13 +25,10 @@ export interface StartingStatus {
 
 @Injectable()
 export class QueueEngineService {
-  private _isRunning = false;
-  get isRunning() {
-    return this._isRunning;
-  }
+  private readonly runningSessions = new Set<number>();
 
-  private set isRunning(value: boolean) {
-    this._isRunning = value;
+  isRunning(musicSession: MusicSession): boolean {
+    return this.runningSessions.has(musicSession.id);
   }
 
   constructor(
@@ -44,9 +41,24 @@ export class QueueEngineService {
   ) {}
 
   private readonly logger = new Logger('QueueEngine');
-  private readonly SONG_START_SCHEDULER_NAME = 'music-start';
-  private readonly SONG_END_SCHEDULER_NAME = 'music-end';
-  private readonly FORWARD_MUSIC_RESTART_ENGINE = 'forward-restart';
+
+  // Job ids are scoped per session so concurrent sessions don't clobber
+  // each other's scheduled jobs.
+  private jobName(base: string, musicSessionId: number): string {
+    return `${base}:${musicSessionId}`;
+  }
+
+  private songStartJobId(musicSessionId: number) {
+    return this.jobName('music-start', musicSessionId);
+  }
+
+  private songEndJobId(musicSessionId: number) {
+    return this.jobName('music-end', musicSessionId);
+  }
+
+  private forwardRestartJobId(musicSessionId: number) {
+    return this.jobName('forward-restart', musicSessionId);
+  }
 
   private static readonly START_ENGINE_FAIL =
     'No queue found or spotify account not registered : unable to start the engine';
@@ -55,9 +67,9 @@ export class QueueEngineService {
   private static readonly FAIL_NO_DEVICES = 'No device found';
 
   async start(musicSession: MusicSession): Promise<StartingStatus> {
-    await this.refreshPlayingQueue();
+    await this.refreshPlayingQueue(musicSession);
     const queue = await this.queues.pop(musicSession);
-    if (!queue || !this.spotify.isAccountRegistered(musicSession)) {
+    if (!queue || !(await this.spotify.isAccountRegistered(musicSession))) {
       const message = QueueEngineService.START_ENGINE_FAIL;
       this.logger.warn(message);
       return {
@@ -65,9 +77,10 @@ export class QueueEngineService {
         message,
       };
     }
-    this.isRunning = true;
+    this.runningSessions.add(musicSession.id);
     const response = await this.spotify.play(musicSession, queue.music.uri);
     if (response.status === 'error') {
+      this.runningSessions.delete(musicSession.id);
       if (response.cause === 'no-device') {
         return { started: false, message: QueueEngineService.FAIL_NO_DEVICES };
       }
@@ -81,15 +94,15 @@ export class QueueEngineService {
     };
   }
 
-  stop() {
-    this.deleteTimeouts();
-    this.isRunning = false;
+  stop(musicSession: MusicSession) {
+    void this.deleteTimeouts(musicSession);
+    this.runningSessions.delete(musicSession.id);
   }
 
-  async refreshPlayingQueue() {
-    const queue = await this.queues.getPlayingQueue();
+  async refreshPlayingQueue(musicSession: MusicSession) {
+    const queue = await this.queues.getPlayingQueue(musicSession);
     if (!queue) return;
-    this.queues.setFinished(queue);
+    await this.queues.setFinished(queue);
   }
 
   async forward(
@@ -97,7 +110,7 @@ export class QueueEngineService {
     queueOrId: Queue | string | number,
     user: User,
   ) {
-    if (!this.isRunning) {
+    if (!this.isRunning(musicSession)) {
       throw new GoneException({ cause: 'engine-not-running' });
     }
     if (user.role === UserRole.ADMIN) {
@@ -107,7 +120,7 @@ export class QueueEngineService {
     const voteCount = queue.forward_vote_users.length;
     if (voteCount >= (await musicSession.settings).maxVotes) {
       await this.next(musicSession, queue);
-      await this.queues.updatePriority(queue.userId);
+      await this.queues.updatePriority(queue.userId, musicSession.id);
     }
   }
 
@@ -116,15 +129,15 @@ export class QueueEngineService {
       queue = await this.queues.pop(musicSession);
       if (queue === null) {
         this.logger.warn('No queue found, stopping engine');
-        this.stop();
+        this.stop(musicSession);
         return;
       }
     }
     if (!queue.music) {
       queue = await this.queues.getQueue(queue.id);
     }
-    await this.deleteTimeouts();
-    const playingQueue = await this.queues.getPlayingQueue();
+    await this.deleteTimeouts(musicSession);
+    const playingQueue = await this.queues.getPlayingQueue(musicSession);
     if (playingQueue) {
       await this.queues.setFinished(playingQueue);
     }
@@ -148,6 +161,8 @@ export class QueueEngineService {
       this.logger.log(
         `No music playing on Spotify, stopping engine for session ${musicSession.publicCode} ${musicSession.name}`,
       );
+      this.stop(musicSession);
+      return;
     }
 
     if (!forwarded) {
@@ -160,7 +175,7 @@ export class QueueEngineService {
       playState.currentPlayback,
     );
 
-    await this.deleteTimeouts();
+    await this.deleteTimeouts(musicSession);
     await this.scheduleEndOfSong(timeoutEndOfSong, musicSession.id, queue.id);
   }
 
@@ -181,7 +196,7 @@ export class QueueEngineService {
       this.logger.log(
         `End of song : Current playing music (${currentMusic.item?.name}) is not the same as the one in the queue (${queue.music.title}), stopping engine for session ${musicSession.publicCode} ${musicSession.name}`,
       );
-      return this.stop();
+      return this.stop(musicSession);
     }
     const nextQueue = await this.queues.pop(musicSession);
     let backlog: Backlog | null = null;
@@ -194,7 +209,7 @@ export class QueueEngineService {
       );
     } else {
       const poppedBacklog = await this.backlog.pop(musicSession);
-      if (!poppedBacklog) return this.stop();
+      if (!poppedBacklog) return this.stop(musicSession);
       backlog = poppedBacklog;
       this.logger.log(
         `End of song : Retrieve music from backlog for session ${musicSession.publicCode} ${musicSession.name}`,
@@ -210,7 +225,7 @@ export class QueueEngineService {
       musicSession.id,
       idToSchedule,
     );
-    await this.stopTimeout(this.SONG_END_SCHEDULER_NAME);
+    await this.stopTimeout(this.songEndJobId(musicSession.id));
   }
 
   // start of song
@@ -230,7 +245,7 @@ export class QueueEngineService {
         `Start of song : Current playing music is not the same as the one in the queue, stopping engine for session ${musicSession.publicCode} ${musicSession.name}`,
         'Expecting ' + queue.music.toString(),
       );
-      return this.stop();
+      return this.stop(musicSession);
     }
     if (queue instanceof Queue) await this.queues.setPlaying(queue);
     const timeoutEndOfSong = this.calculateWhenBeforeCurrentSongFinish(
@@ -238,7 +253,7 @@ export class QueueEngineService {
     );
     await this.scheduleEndOfSong(timeoutEndOfSong, musicSession.id, queue.id);
     this.logger.log(`Start of song : ${queue.music.toString()}`);
-    await this.stopTimeout(this.SONG_START_SCHEDULER_NAME);
+    await this.stopTimeout(this.songStartJobId(musicSession.id));
   }
 
   private async getPlayState(musicSession: MusicSession) {
@@ -255,7 +270,7 @@ export class QueueEngineService {
         error +
           `, stopping engine for session ${musicSession.publicCode} ${musicSession.name}`,
       );
-      this.stop();
+      this.stop(musicSession);
       return null;
     }
     return playState;
@@ -263,11 +278,12 @@ export class QueueEngineService {
 
   // Time related functions
 
-  private async deleteTimeouts() {
+  private async deleteTimeouts(musicSession: MusicSession) {
+    const sessionId = musicSession.id;
     await Promise.all([
-      this.stopTimeout(this.SONG_END_SCHEDULER_NAME),
-      this.stopTimeout(this.SONG_START_SCHEDULER_NAME),
-      this.stopTimeout(this.FORWARD_MUSIC_RESTART_ENGINE),
+      this.stopTimeout(this.songEndJobId(sessionId)),
+      this.stopTimeout(this.songStartJobId(sessionId)),
+      this.stopTimeout(this.forwardRestartJobId(sessionId)),
     ]);
   }
 
@@ -282,11 +298,14 @@ export class QueueEngineService {
     queueId: number,
     forwarded: boolean,
   ) {
-    await this.stopTimeout(this.FORWARD_MUSIC_RESTART_ENGINE);
+    await this.stopTimeout(this.forwardRestartJobId(musicSessionId));
     await this.engineQueue.add(
       'engine.launch',
       { musicSessionId, queueId, forwarded },
-      { jobId: this.FORWARD_MUSIC_RESTART_ENGINE, delay: delayMs },
+      {
+        jobId: this.forwardRestartJobId(musicSessionId),
+        delay: Math.max(0, delayMs),
+      },
     );
   }
 
@@ -295,11 +314,11 @@ export class QueueEngineService {
     musicSessionId: number,
     queueId: number,
   ) {
-    await this.stopTimeout(this.SONG_END_SCHEDULER_NAME);
+    await this.stopTimeout(this.songEndJobId(musicSessionId));
     await this.engineQueue.add(
       'engine.endOfSong',
       { musicSessionId, queueId },
-      { jobId: this.SONG_END_SCHEDULER_NAME, delay: delayMs },
+      { jobId: this.songEndJobId(musicSessionId), delay: Math.max(0, delayMs) },
     );
   }
 
@@ -308,11 +327,14 @@ export class QueueEngineService {
     musicSessionId: number,
     queueId: number,
   ) {
-    await this.stopTimeout(this.SONG_START_SCHEDULER_NAME);
+    await this.stopTimeout(this.songStartJobId(musicSessionId));
     await this.engineQueue.add(
       'engine.startOfSong',
       { musicSessionId, queueId },
-      { jobId: this.SONG_START_SCHEDULER_NAME, delay: delayMs },
+      {
+        jobId: this.songStartJobId(musicSessionId),
+        delay: Math.max(0, delayMs),
+      },
     );
   }
 
@@ -346,10 +368,7 @@ export class QueueEngineService {
       await this.startOfSongEvent(musicSession, queue);
       return;
     }
-    const backlog = await this.backlog['backlog'].findOne({
-      where: { id: queueOrBacklogId },
-      relations: ['music', 'music_session'],
-    });
+    const backlog = await this.backlog.findForEngine(queueOrBacklogId);
     if (backlog) {
       await this.startOfSongEvent(musicSession, backlog);
     }

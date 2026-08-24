@@ -71,7 +71,7 @@ export class SpotifyApiService implements OnModuleInit {
 
   private readonly logger = new Logger('SpotifyAPI');
 
-  private static readonly INTERVAL_RENEW_TOKEN_TIME = 1000 * 1000; // 800 seconds
+  private static readonly INTERVAL_RENEW_TOKEN_TIME = 1000 * 1000; // ~16.7 minutes; Spotify tokens last 1h
   private static readonly INTERVAL_RENEW_TOKEN_NAME = 'renew-token';
 
   private readonly formUrlContentTypeHeader = {
@@ -101,8 +101,10 @@ export class SpotifyApiService implements OnModuleInit {
   async unregisterPlayer(musicSession: MusicSession) {
     const currentAccount = await musicSession.spotify_account;
     if (!currentAccount) return;
-    this.spotifyAccount.remove(currentAccount);
-    this.stopTokenRenewInterval();
+    await this.spotifyAccount.remove(currentAccount);
+    if (currentAccount.id !== undefined) {
+      await this.stopTokenRenewInterval(currentAccount);
+    }
   }
 
   async registerPlayer(musicSession: MusicSession, code: string) {
@@ -146,15 +148,16 @@ export class SpotifyApiService implements OnModuleInit {
     musicSession: MusicSession,
     noCache = false,
   ): Promise<APIResult<PlaybackState | void>> {
-    if (!this.isAccountRegistered) {
+    if (!(await this.isAccountRegistered(musicSession))) {
       return this.success({
         registered: false,
       });
     }
 
+    const cacheKey = this.playbackCacheKey(musicSession);
     if (!noCache) {
       const playerCache = await this.cache.get<PlaybackStateCache | undefined>(
-        'player',
+        cacheKey,
       );
       if (playerCache) {
         return this.success({
@@ -182,7 +185,7 @@ export class SpotifyApiService implements OnModuleInit {
             const playerCache: PlaybackStateCache = {
               currentPlayback: response.data,
             };
-            await this.cache.set('player', playerCache, 2000);
+            await this.cache.set(cacheKey, playerCache, 2000);
           }),
           map((response) => {
             return this.success({
@@ -199,7 +202,7 @@ export class SpotifyApiService implements OnModuleInit {
   }
 
   async skipToNext(musicSession: MusicSession) {
-    if (!this.isAccountRegistered) {
+    if (!(await this.isAccountRegistered(musicSession))) {
       return this.error('unregistered');
     }
     return firstValueFrom(
@@ -220,7 +223,7 @@ export class SpotifyApiService implements OnModuleInit {
     musicSession: MusicSession,
     uri: SpotifyURI<SpotifyTrackCategory>,
   ): Promise<APIResult> {
-    if (!this.isAccountRegistered) {
+    if (!(await this.isAccountRegistered(musicSession))) {
       return this.error('unregistered');
     }
     return firstValueFrom(
@@ -244,7 +247,7 @@ export class SpotifyApiService implements OnModuleInit {
     musicSession: MusicSession,
     uri: SpotifyURI<SpotifyTrackCategory>,
   ): Promise<APIResult> {
-    if (!this.isAccountRegistered) {
+    if (!(await this.isAccountRegistered(musicSession))) {
       return this.error('unregistered');
     }
     return firstValueFrom(
@@ -283,12 +286,16 @@ export class SpotifyApiService implements OnModuleInit {
               await this.getAuthorizationHeaderForCurrentPlayer(musicSession),
             params: {
               market: 'FR',
-              limit: 400,
+              limit: 100,
             },
           },
         )
         .pipe(this.pipeResponse()),
     );
+  }
+
+  private playbackCacheKey(musicSession: MusicSession) {
+    return `player:${musicSession.id}`;
   }
 
   get redirectUrl() {
@@ -431,23 +438,27 @@ export class SpotifyApiService implements OnModuleInit {
 
   private async startTokenRenewInterval(account: SpotifyAccount) {
     // schedule a delayed job, and on completion re-schedule itself
-    await this.stopTokenRenewInterval();
+    await this.stopTokenRenewInterval(account);
     if (!this.tokenQueue) return;
     await this.tokenQueue.add(
       'token.renew',
       { accountId: account.id },
       {
-        jobId: SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME,
+        jobId: this.renewJobId(account.id),
         delay: SpotifyApiService.INTERVAL_RENEW_TOKEN_TIME,
       },
     );
   }
 
-  private async stopTokenRenewInterval() {
+  // Job ids are scoped per account so concurrent sessions don't clobber
+  // each other's renewal jobs.
+  private renewJobId(accountId: number) {
+    return `${SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME}:${accountId}`;
+  }
+
+  private async stopTokenRenewInterval(account: SpotifyAccount) {
     if (!this.tokenQueue) return;
-    const job = await this.tokenQueue.getJob(
-      SpotifyApiService.INTERVAL_RENEW_TOKEN_NAME,
-    );
+    const job = await this.tokenQueue.getJob(this.renewJobId(account.id));
     if (job) await job.remove();
   }
 }

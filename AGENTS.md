@@ -83,3 +83,53 @@ When adding error handling:
 - Handle circular references in error objects (use replacer functions)
 - Display user-friendly error messages in the frontend
 - Include actionable guidance for users when possible
+
+## Architecture Rules (learned from the 2026 audit — do not regress)
+
+### Security
+
+- **No insecure fallbacks in code.** Required environment variables
+  (`JWT_SECRET`, `COOKIE_SECRET`, `DEFAULT_ADMIN_PASSWORD`, ...) must fail fast
+  at startup instead of falling back to a hardcoded default. Never commit
+  secrets, keys or certificates (`.pem` files are gitignored).
+- **Validate every request body.** Use class-validator DTO classes consumed via
+  the global `ValidationPipe` (`whitelist: true`). Never bind raw entities or
+  untyped interfaces to `@Body()`.
+- **Hash passwords with argon2** (`@node-rs/argon2`, see
+  `packages/backend/src/app/utils/hash.ts`). Legacy HMAC hashes are verified and
+  transparently re-hashed at login — keep that migration path until all users
+  have logged in post-migration.
+- **Authorization must be explicit.** Guarded routes should use
+  `SessionCreatorGuard` / `RolesGuard` rather than inline service calls, and
+  every async authorization check must be awaited.
+- **Public auth endpoints are rate-limited** via the `RateLimit` decorator —
+  apply it to any new endpoint that accepts credentials or OAuth codes.
+
+### Per-session scoping
+
+The app supports multiple concurrent music sessions. Anything keyed globally is
+a bug:
+
+- BullMQ job ids, running-state flags, in-memory caches and playback caches
+  must be scoped per session id (see `queue-engine.service.ts`,
+  `spotify-api.service.ts`).
+- Repository queries for queue/backlog state must filter by session unless the
+  query is intentionally global (admin listings).
+- Do not log PII (full user profiles) — log stable identifiers only.
+
+### Frontend RxJS
+
+- Never call `.error()` on long-lived `ReplaySubject`s: a transient failure
+  would terminally kill the stream for all subscribers. Log/skip and let the
+  next poll retry.
+- Return `EMPTY` / `of(...)` when there is no active session; never return a
+  subject nobody will emit into.
+- Treat values emitted by shared subjects as immutable: copy before mutating.
+
+### Dependency management
+
+- The Docker build runs `npm ci` against the **root** lockfile. After changing
+  any workspace `package.json`, regenerate the root lockfile
+  (`npm install`) in the same commit, otherwise the image build fails.
+- Keep local `node_modules` in sync with the lockfile (`npm ci`); stale nested
+  copies cause phantom type errors that CI does not reproduce.

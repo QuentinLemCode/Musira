@@ -1,5 +1,5 @@
 import fastifyCookie from '@fastify/cookie';
-import type { LoggerService, LogLevel } from '@nestjs/common';
+import { LoggerService, LogLevel, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -21,6 +21,13 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({ logger: true }),
     { logger: getLogger() },
+  );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: false,
+      transform: true,
+    }),
   );
   const config = new DocumentBuilder()
     .setTitle('Musira API')
@@ -59,8 +66,14 @@ async function bootstrap() {
   //     this.send('');
   //   });
 
+  if (!env.COOKIE_SECRET) {
+    throw new Error(
+      'COOKIE_SECRET environment variable is required. Refusing to start with an insecure default.',
+    );
+  }
+
   await app.register(fastifyCookie, {
-    secret: env.COOKIE_SECRET || 'defaultSecret',
+    secret: env.COOKIE_SECRET,
   });
   await app.listen(env.PORT || 3020, '0.0.0.0');
 }

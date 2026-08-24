@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { randomBytes, randomUUID } from 'crypto';
+import { randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
 import type {
   EmailLoginInterface,
@@ -8,10 +8,12 @@ import type {
   OAuthProviderType,
 } from '../auth/types';
 import type { MusicSession } from '../music-session/entities/music-session.entity';
-import { hashPassword } from '../utils/hash';
+import { generateSalt, hashPassword, verifyPassword } from '../utils/hash';
 import { EmailUser } from './user.email.entity';
 import { User } from './user.entity';
 import { OAuthUser } from './user.oauth.entity';
+
+export const MAX_LOGIN_TRIES = 3;
 
 @Injectable()
 export class UsersService {
@@ -134,10 +136,10 @@ export class UsersService {
 
   async emailRegister(registerDTO: EmailRegisterInterface) {
     const user = this.emailUsers.create();
-    user.salt = randomBytes(16).toString('base64');
+    user.salt = generateSalt();
     user.email = registerDTO.email;
     user.name = registerDTO.username;
-    user.password = hashPassword(registerDTO.password, user.salt);
+    user.password = await hashPassword(registerDTO.password);
     try {
       const savedUser = await this.emailUsers.save(user);
       return savedUser;
@@ -152,27 +154,44 @@ export class UsersService {
     if (!user) {
       return null;
     }
-    if (!user.password || hashPassword(password, user.salt) !== user.password) {
+    if (user.locked) {
+      this.LOGGER.warn(`Locked account attempted to log in: ${email}`);
+      return null;
+    }
+    if (!user.password) {
       user.loginTries += 1;
+      if (user.loginTries >= MAX_LOGIN_TRIES) {
+        user.locked = true;
+        this.LOGGER.warn(
+          `Account locked after ${user.loginTries} failed attempts: ${email}`,
+        );
+      }
       await this.emailUsers.save(user);
       return null;
+    }
+    const { valid, needsUpgrade } = await verifyPassword(
+      password,
+      user.password,
+      user.salt,
+    );
+    if (!valid) {
+      user.loginTries += 1;
+      if (user.loginTries >= MAX_LOGIN_TRIES) {
+        user.locked = true;
+        this.LOGGER.warn(
+          `Account locked after ${user.loginTries} failed attempts: ${email}`,
+        );
+      }
+      await this.emailUsers.save(user);
+      return null;
+    }
+    if (needsUpgrade) {
+      // Transparent migration from legacy HMAC hashes to argon2id
+      user.password = await hashPassword(password);
     }
     user.loginTries = 0;
     await this.emailUsers.save(user);
     return user;
-  }
-
-  addLoginTry(user: EmailUser) {
-    user.loginTries += 1;
-    if (user.loginTries >= 3) {
-      user.locked = true;
-    }
-    return this.users.save(user);
-  }
-
-  resetLoginTry(user: EmailUser) {
-    user.loginTries = 0;
-    return this.users.save(user);
   }
 
   async generateRefreshUUID(id: number) {

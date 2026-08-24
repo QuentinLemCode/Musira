@@ -51,7 +51,7 @@ describe('QueueEngineService', () => {
     expect(engineQueue.add).toHaveBeenCalledWith(
       'engine.launch',
       { musicSessionId: 2, queueId: 1, forwarded: false },
-      expect.objectContaining({ jobId: 'forward-restart' }),
+      expect.objectContaining({ jobId: 'forward-restart:2' }),
     );
   });
 });
