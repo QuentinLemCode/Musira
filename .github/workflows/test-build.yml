@@ -22,7 +22,9 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest (24.04) hangs in apt/dpkg during
+    # `playwright install --with-deps` (see 2026-08-24 CI incidents)
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
         with:
