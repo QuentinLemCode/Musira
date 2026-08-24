@@ -22,9 +22,7 @@ permissions:
 
 jobs:
   test:
-    # Pinned: ubuntu-latest (24.04) hangs in apt/dpkg during
-    # `playwright install --with-deps` (see 2026-08-24 CI incidents)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
@@ -54,15 +52,26 @@ jobs:
       - name: Run unit tests (frontend)
         run: npm --workspace @musira/frontend run test
 
-      # Install Playwright browsers and system dependencies
+      # Install Playwright browsers and system dependencies.
+      # cdn.playwright.dev occasionally stalls mid-download; each attempt is
+      # capped at 10 minutes so a stalled download is retried instead of
+      # hanging the job for hours.
       - name: Install Playwright Browsers
-        timeout-minutes: 15
+        timeout-minutes: 45
         env:
           # Prevent apt/needrestart prompts from hanging on newer runner images
           DEBIAN_FRONTEND: noninteractive
           NEEDRESTART_MODE: a
         run: |
-          npx playwright install --with-deps || npx playwright install --with-deps
+          for attempt in 1 2 3; do
+            if timeout -k 10 600 npx playwright install --with-deps; then
+              exit 0
+            fi
+            echo "::warning::Playwright browser install attempt $attempt failed or stalled, retrying"
+            sleep 15
+          done
+          echo "All Playwright install attempts failed"
+          exit 1
 
       # Generate local SSL certs for Angular HTTPS dev server
       - name: Generate SSL certificates
