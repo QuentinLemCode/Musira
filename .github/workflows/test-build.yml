@@ -54,7 +54,13 @@ jobs:
 
       # Install Playwright browsers and system dependencies
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        timeout-minutes: 15
+        env:
+          # Prevent apt/needrestart prompts from hanging on newer runner images
+          DEBIAN_FRONTEND: noninteractive
+          NEEDRESTART_MODE: a
+        run: |
+          npx playwright install --with-deps || npx playwright install --with-deps
 
       # Generate local SSL certs for Angular HTTPS dev server
       - name: Generate SSL certificates
