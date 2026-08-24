@@ -169,17 +169,19 @@ export class QueueComponent {
   }
 
   private loadQueue(queues: QueueDto[]) {
-    const indexPlaying = queues.findIndex(
+    // Copy before splitting: the array is shared with other subscribers
+    // of the queue stream and must not be mutated in place.
+    const copy = [...queues];
+    const indexPlaying = copy.findIndex(
       (q) => q.status === QueueDtoType.StatusEnum.NUMBER_1,
     );
+    let playing: QueueDto | undefined;
     if (indexPlaying !== -1) {
-      const [playing] = queues.splice(indexPlaying, 1);
-      if (playing) {
-        this.playingUser = playing.user.name;
-      }
+      [playing] = copy.splice(indexPlaying, 1);
+      this.playingUser = playing?.user.name ?? '';
     } else {
       this.playingUser = '';
     }
-    this.queues = queues;
+    this.queues = copy;
   }
 }

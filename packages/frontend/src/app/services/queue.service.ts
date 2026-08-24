@@ -13,7 +13,7 @@ import {
 } from '@musira/client';
 import type { Subscription } from 'rxjs';
 import { ReplaySubject, combineLatest, map, of, timer } from 'rxjs';
-import { first, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { MusicSessionsService } from '../sessions/music-sessions.service';
 import { VisibilityService } from './visibility.service';
@@ -103,10 +103,10 @@ export class QueueService {
   getFullBacklog() {
     const publicCode = this.session.currentSession()?.code;
     if (!publicCode) return of([]);
-    if (
-      !this.cacheFullBacklog ||
-      this.cacheFullBacklog.timestamp > Date.now() - 10000
-    ) {
+    const cacheIsFresh =
+      this.cacheFullBacklog &&
+      this.cacheFullBacklog.timestamp > Date.now() - 10000;
+    if (!cacheIsFresh) {
       return this.apiBacklog
         .backlogControllerGetBackLog(publicCode, 'body')
         .pipe(
@@ -118,7 +118,7 @@ export class QueueService {
           }),
         );
     }
-    return of(this.cacheFullBacklog.backlog);
+    return of(this.cacheFullBacklog!.backlog);
   }
 
   public importPlaylist(code: number, spotifyPlaylistId: string) {
@@ -157,14 +157,7 @@ export class QueueService {
       .queueControllerDeleteFromQueue(String(id), publicCode, 'body')
       .pipe(
         tap(() => {
-          this.$queue.pipe(first()).subscribe({
-            next: (queue) => {
-              const index = queue.findIndex((q) => q.id === id);
-              if (index !== -1) {
-                queue.splice(index, 1);
-              }
-            },
-          });
+          this.loadQueue();
         }),
         map(() => void 0),
       );
@@ -193,14 +186,15 @@ export class QueueService {
   private loadQueue() {
     const publicCode = this.session.currentSession()?.code;
     if (!publicCode) return;
+    // Errors are intentionally not forwarded to the subjects: a transient
+    // failure must not terminally kill the streams; the next poll retries.
     this.apiQueue.queueControllerGetQueue(publicCode, 'body').subscribe({
       next: (response: QueueResponseDto) => {
         this.$queue.next(response.queue);
         this.$backlog.next(response.backlog);
       },
       error: (err) => {
-        this.$queue.error(err);
-        this.$backlog.error(err);
+        console.warn('Failed to refresh queue', err);
       },
     });
   }
