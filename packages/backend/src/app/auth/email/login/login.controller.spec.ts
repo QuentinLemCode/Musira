@@ -32,7 +32,7 @@ describe('LoginController', () => {
       email: 'toto',
       id: 1,
     } as unknown as EmailUser;
-    controller.login({ user }, mockFastifyReply);
+    controller.login({ email: user.email, password: 'pw' }, { user }, mockFastifyReply);
     expect(authService.login).toHaveBeenCalled();
   });
 });

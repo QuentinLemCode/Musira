@@ -38,7 +38,7 @@ describe('MusicController', () => {
   const queueEngineService = {
     start: jest.fn(),
     stop: jest.fn(),
-    isRunning: false,
+    isRunning: jest.fn().mockReturnValue(false),
   };
 
   beforeEach(async () => {
@@ -138,7 +138,7 @@ describe('MusicController', () => {
       const musicSession: MusicSession = new MusicSession(); // You may need to create a valid MusicSession instance
       const queueEngineStatus = { message: 'Queue engine started' };
       queueEngineService.start = jest.fn().mockResolvedValue(queueEngineStatus);
-      queueEngineService.isRunning = true;
+      queueEngineService.isRunning = jest.fn().mockReturnValue(true);
 
       const result: CurrentMusic = await musicController.start(musicSession);
 
@@ -157,7 +157,7 @@ describe('MusicController', () => {
     it('should stop the queue engine and return CurrentMusic', async () => {
       const musicSession: MusicSession = new MusicSession(); // You may need to create a valid MusicSession instance
       queueEngineService.stop = jest.fn();
-      queueEngineService.isRunning = false;
+      queueEngineService.isRunning = jest.fn().mockReturnValue(false);
       const result: CurrentMusic = await musicController.stop(musicSession);
 
       expect(result).toEqual({
@@ -167,7 +167,7 @@ describe('MusicController', () => {
         engineStarted: false,
         message: undefined,
       });
-      expect(queueEngineService.stop).toHaveBeenCalled();
+      expect(queueEngineService.stop).toHaveBeenCalledWith(musicSession);
     });
   });
 
