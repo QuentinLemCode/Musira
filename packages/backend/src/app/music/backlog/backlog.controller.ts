@@ -26,6 +26,7 @@ import { UserRole } from '../../users/user.entity';
 import { MusicSessionParam } from '../../utils/decorators/music-session.decorator';
 import { FullBacklogDto, ImportResultDto } from '../dto/backlog.dto';
 import { MusicDto } from '../dto/music.dto';
+import type { Music } from '../music.entity';
 import { BacklogService } from './backlog.service';
 
 @ApiTags('Backlog')
@@ -43,7 +44,9 @@ export class BacklogController {
     @Body() music: MusicDto,
     @MusicSessionParam() musicSession: MusicSession,
   ) {
-    return this.backlog.push(musicSession, music);
+    // MusicDto is validated against the same shape; uri is narrowed to a
+    // Spotify track URI by the DTO regex.
+    return this.backlog.push(musicSession, music as Music);
   }
 
   @UseGuards(SessionCreatorGuard)
