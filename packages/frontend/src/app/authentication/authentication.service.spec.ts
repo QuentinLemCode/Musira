@@ -31,23 +31,29 @@ describe('AuthenticationService', () => {
     expect(userService).toBeTruthy();
   });
 
-  it('should perform email login', () => {
-    const mockResponse = { id: 1, name: 'John Doe' };
+  it('should perform email login and set the real user state', () => {
     const email = 'test@example.com';
     const password = 'password';
 
     userService.emailLogin(email, password).subscribe((response) => {
-      expect(response).toEqual(mockResponse);
+      expect(response).toBeUndefined();
     });
 
     const req = httpMock.expectOne(
       `${userService['authEndpoint']}/email/login`,
     );
     expect(req.request.method).toBe('POST');
-    req.flush(mockResponse);
+    req.flush({ success: true });
 
-    // refreshAuthStatus triggers a GET /auth/me; flush it to avoid open requests
+    // emailLogin now fetches /auth/me to populate the auth signal
     const me = httpMock.expectOne(`${userService['authEndpoint']}/me`);
     me.flush({ id: 1, admin: false, email: '', name: 'John Doe', role: 0 });
+
+    const user = userService.loggedUser();
+    expect(user.isLoggedIn).toBe(true);
+    if (user.isLoggedIn) {
+      expect(user.id).toBe(1);
+      expect(user.username).toBe('John Doe');
+    }
   });
 });

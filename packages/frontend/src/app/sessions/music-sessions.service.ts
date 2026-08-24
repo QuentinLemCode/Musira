@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, computed, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { MusicSessionsService as ApiSessionsService } from '@musira/client';
 import { EMPTY, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -49,8 +49,15 @@ export class MusicSessionsService {
   ) {
     this.router.events.subscribe({
       next: (event) => {
-        if (event.type === 14) {
-          const code = event.snapshot.paramMap.get('sessionId');
+        if (event instanceof NavigationEnd) {
+          // Walk the activated route tree to find the sessionId param
+          let route = this.router.routerState.snapshot.root;
+          let code: string | null = null;
+          while (route) {
+            code = route.paramMap.get('sessionId');
+            if (code) break;
+            route = route.firstChild!;
+          }
           if (!code) {
             this.currentSession.set(null);
           } else {

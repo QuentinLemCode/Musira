@@ -51,10 +51,13 @@ export const reqHandler = createRequestHandler(async (req) => {
   }
 
   // Proxy API calls to the local backend when running with Wrangler in
-  // development (same-origin cookies). Never proxy in production: the
-  // loopback target only exists on a developer machine.
+  // development (same-origin cookies). Only honored on loopback origins so
+  // production deployments never try to reach a local backend.
   if (url.pathname.startsWith('/api')) {
-    if (process.env['NODE_ENV'] === 'production') {
+    const isLoopback = ['localhost', '127.0.0.1', '[::1]'].includes(
+      url.hostname,
+    );
+    if (!isLoopback) {
       return new Response('Not found', { status: 404 });
     }
     const backendOrigin = 'http://127.0.0.1:3020';

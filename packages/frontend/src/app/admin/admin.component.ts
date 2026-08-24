@@ -42,22 +42,12 @@ type MusicSessionDto = {
     <table class="table-auto">
       <thead>
         <tr>
-          Id
-        </tr>
-        <tr>
-          Name
-        </tr>
-        <tr>
-          Code
-        </tr>
-        <tr>
-          Creator
-        </tr>
-        <tr>
-          Linked to spotify
-        </tr>
-        <tr>
-          Actions
+          <th>Id</th>
+          <th>Name</th>
+          <th>Code</th>
+          <th>Creator</th>
+          <th>Linked to spotify</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -171,19 +161,21 @@ export class AdminComponent implements OnInit {
   importPlaylist() {
     const code = parseInt(this.sessionCode(), 10);
     if (
-      this.sessionCode.length !== 9 ||
+      this.sessionCode().length !== 9 ||
       Number.isNaN(code) ||
-      !this.spotifyPlaylistId
+      !this.spotifyPlaylistId().trim()
     ) {
       this.error = 'Invalid session code or playlist id';
       return;
     }
     this.queue.importPlaylist(code, this.spotifyPlaylistId()).subscribe({
       next: (result) => {
-        this.error = JSON.stringify(result);
+        this.error = `Import finished: ${JSON.stringify(result)}`;
       },
       error: (err) => {
-        this.error = JSON.stringify(err);
+        this.error =
+          err?.error?.message ?? 'Failed to import the playlist, try again later';
+        console.error(err);
       },
     });
   }
@@ -193,12 +185,8 @@ export class AdminComponent implements OnInit {
       .delete(id)
       .pipe(mergeMap(() => this.users.getAllUsers()))
       .subscribe({
-        next: () => {
-          this.users.getAllUsers().subscribe({
-            next: (users: any) => {
-              this.usersList = users as UserResponseDTO[];
-            },
-          });
+        next: (users: any) => {
+          this.usersList = users as UserResponseDTO[];
         },
       });
   }

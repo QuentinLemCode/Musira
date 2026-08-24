@@ -25,6 +25,8 @@ export class DashboardComponent implements AfterViewChecked, OnDestroy {
 
   serverUrl: string;
 
+  private renderedCode?: number;
+
   constructor(
     @Inject(DOCUMENT) document: Document,
     @Inject(MusicSessionsService)
@@ -48,13 +50,18 @@ export class DashboardComponent implements AfterViewChecked, OnDestroy {
   }
 
   ngAfterViewChecked(): void {
-    const qr = QRCode(0, 'H');
-    qr.addData('https://' + this.serverUrl + '/' + this.currentSession?.code);
-    qr.make();
+    const code = this.currentSession?.code;
+    // Render the QR image only once per session code instead of on every
+    // change detection cycle
+    if (code === undefined || code === this.renderedCode) return;
     const qrcode = this.qrcode();
     if (!qrcode) {
       throw new Error('QR code element not found');
     }
+    const qr = QRCode(0, 'H');
+    qr.addData('https://' + this.serverUrl + '/' + code);
+    qr.make();
     qrcode.nativeElement.innerHTML = qr.createImgTag();
+    this.renderedCode = code;
   }
 }
