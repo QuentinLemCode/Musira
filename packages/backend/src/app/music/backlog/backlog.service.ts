@@ -73,6 +73,13 @@ export class BacklogService implements OnModuleInit {
     return this.backlog.delete({ id: +id });
   }
 
+  findForEngine(id: number) {
+    return this.backlog.findOne({
+      where: { id },
+      relations: ['music', 'music_session'],
+    });
+  }
+
   async getNominatedBacklog(musicSession: MusicSession) {
     const next = this.nextInBacklog.get(musicSession.id);
     if (!next) {

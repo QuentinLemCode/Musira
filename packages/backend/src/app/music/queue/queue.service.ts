@@ -54,7 +54,7 @@ export class QueueService {
     if (!first) return null;
     first.status = Status.PLAYING;
     await this.queue.save(first);
-    await this.updatePriority(first.userId);
+    await this.updatePriority(first.userId, musicSession.id);
     return first;
   }
 
@@ -79,10 +79,13 @@ export class QueueService {
     if (queueOrId.status !== Status.PENDING) {
       throw new BadRequestException({ cause: 'status' });
     }
+    const sessionId = queueOrId.music_session?.id;
     queueOrId.status = Status.CANCELLED;
     await this.queue.save(queueOrId);
     await this.queue.softRemove(queueOrId);
-    await this.updatePriority(queueOrId.userId);
+    if (sessionId !== undefined) {
+      await this.updatePriority(queueOrId.userId, sessionId);
+    }
     return;
   }
 
@@ -96,11 +99,14 @@ export class QueueService {
     return queue;
   }
 
-  async updatePriority(userId: number) {
+  async updatePriority(userId: number, musicSessionId?: number) {
     const otherQueues = await this.queue.find({
       where: {
         userId: userId,
         status: Raw("'0'"),
+        ...(musicSessionId !== undefined
+          ? { music_session: { id: musicSessionId } }
+          : {}),
       },
       order: {
         priority: 'ASC',
@@ -108,13 +114,10 @@ export class QueueService {
       },
       relations: ['user'],
     });
-    otherQueues.forEach(async (queue, index) => {
+    for (const [index, queue] of otherQueues.entries()) {
       const user = queue.user;
-      if (user.role === UserRole.ADMIN) {
-        queue.priority = 0;
-      }
-      queue.priority = index + 1;
-    });
+      queue.priority = user.role === UserRole.ADMIN ? 0 : index + 1;
+    }
     return this.queue.save(otherQueues);
   }
 
@@ -134,13 +137,18 @@ export class QueueService {
     return queue;
   }
 
-  public async getPlayingQueue(): Promise<Queue | null> {
+  public async getPlayingQueue(
+    musicSession?: MusicSession,
+  ): Promise<Queue | null> {
     const [queue, ...anothers] = await this.queue.find({
-      where: { status: Raw("'1'") },
+      where: {
+        status: Raw("'1'"),
+        ...(musicSession ? { music_session: { id: musicSession.id } } : {}),
+      },
       relations: ['music'],
     });
     if (anothers.length > 0) {
-      this.queue.remove(anothers);
+      await this.queue.remove(anothers);
     }
     return queue || null;
   }

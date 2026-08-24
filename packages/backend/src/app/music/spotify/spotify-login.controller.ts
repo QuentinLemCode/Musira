@@ -121,6 +121,6 @@ export class SpotifyLoginController {
   @ApiParam({ name: 'publicCode', type: Number })
   async spotifyLogout(@MusicSessionParam() musicSession: MusicSession) {
     await this.spotify.unregisterPlayer(musicSession);
-    this.queueEngine.stop();
+    this.queueEngine.stop(musicSession);
   }
 }
