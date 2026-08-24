@@ -4,7 +4,11 @@ import type { FastifyRequest } from 'fastify';
 import { RateLimitGuard } from './rate-limit.decorator';
 
 const createContext = (ip = '1.2.3.4', url = '/auth/email/login') => {
-  const request = { ip, url, routeOptions: { url } } as unknown as FastifyRequest;
+  const request = {
+    ip,
+    url,
+    routeOptions: { url },
+  } as unknown as FastifyRequest;
   const handler = () => undefined;
   return {
     getHandler: () => handler,

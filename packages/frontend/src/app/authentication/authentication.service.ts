@@ -271,7 +271,9 @@ export class AuthenticationService {
     }
     const bytes = new Uint8Array(16);
     crypto.getRandomValues(bytes);
-    const state = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    const state = Array.from(bytes, (b) =>
+      b.toString(16).padStart(2, '0'),
+    ).join('');
     sessionStorage.setItem('oauth_state', state);
     return state;
   }

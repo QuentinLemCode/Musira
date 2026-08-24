@@ -13,7 +13,10 @@ export const reqHandler = createRequestHandler(async (req) => {
   // Serve favicon from /public for common crawlers/browsers expectation at /favicon.ico
   if (url.pathname === '/favicon.ico') {
     // Response.redirect requires an absolute URL per the Fetch spec
-    return Response.redirect(new URL('/public/favicon.ico', url.origin).toString(), 301);
+    return Response.redirect(
+      new URL('/public/favicon.ico', url.origin).toString(),
+      301,
+    );
   }
 
   // Serve robots.txt at the root for SEO

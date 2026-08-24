@@ -46,8 +46,7 @@ export class BacklogService implements OnModuleInit {
 
   async pop(musicSession: MusicSession) {
     const cached = this.nextInBacklog.get(musicSession.id);
-    const backlog =
-      cached ?? (await this.nominateFromBacklog(musicSession));
+    const backlog = cached ?? (await this.nominateFromBacklog(musicSession));
     if (!backlog) {
       return null;
     }

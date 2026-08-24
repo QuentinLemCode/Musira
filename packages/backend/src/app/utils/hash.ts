@@ -27,7 +27,10 @@ export const verifyPassword = async (
   legacySalt: string | null,
 ): Promise<{ valid: boolean; needsUpgrade: boolean }> => {
   if (storedHash.startsWith('$argon2')) {
-    return { valid: await argon2Verify(storedHash, password), needsUpgrade: false };
+    return {
+      valid: await argon2Verify(storedHash, password),
+      needsUpgrade: false,
+    };
   }
   if (!legacySalt) return { valid: false, needsUpgrade: false };
   const valid = legacyVerify(password, storedHash, legacySalt);

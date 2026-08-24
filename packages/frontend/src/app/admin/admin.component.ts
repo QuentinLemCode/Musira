@@ -174,7 +174,8 @@ export class AdminComponent implements OnInit {
       },
       error: (err) => {
         this.error =
-          err?.error?.message ?? 'Failed to import the playlist, try again later';
+          err?.error?.message ??
+          'Failed to import the playlist, try again later';
         console.error(err);
       },
     });

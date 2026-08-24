@@ -102,9 +102,8 @@ export class SpotifyLoginController {
       if (isResponseError(error) && error?.response?.status === 400) {
         throw new BadRequestException({
           spotifyMessage: error.response.data.error,
-          isSpotifyAccountRegistered: await this.spotify.isAccountRegistered(
-            musicSession,
-          ),
+          isSpotifyAccountRegistered:
+            await this.spotify.isAccountRegistered(musicSession),
           message: 'Authentification Spotify invalide ou déjà utilisé',
         });
       }

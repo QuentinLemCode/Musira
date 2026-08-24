@@ -302,7 +302,10 @@ export class QueueEngineService {
     await this.engineQueue.add(
       'engine.launch',
       { musicSessionId, queueId, forwarded },
-      { jobId: this.forwardRestartJobId(musicSessionId), delay: Math.max(0, delayMs) },
+      {
+        jobId: this.forwardRestartJobId(musicSessionId),
+        delay: Math.max(0, delayMs),
+      },
     );
   }
 
@@ -328,7 +331,10 @@ export class QueueEngineService {
     await this.engineQueue.add(
       'engine.startOfSong',
       { musicSessionId, queueId },
-      { jobId: this.songStartJobId(musicSessionId), delay: Math.max(0, delayMs) },
+      {
+        jobId: this.songStartJobId(musicSessionId),
+        delay: Math.max(0, delayMs),
+      },
     );
   }
 
