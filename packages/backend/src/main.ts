@@ -7,6 +7,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { env } from 'process';
+import { buildCorsOptions } from './app/utils/cors';
 import { AppModule } from './app/app.module';
 
 const getLogger = (): LogLevel[] | LoggerService => {
@@ -47,15 +48,10 @@ async function bootstrap() {
     .get('/openapi.json', (_req: any, reply: any) => {
       reply.send(document);
     });
-  // Enable CORS for configured origins (comma-separated), default to frontend domain
-  const defaultOrigins = ['https://musira.fr', 'https://www.musira.fr'];
-  const origins = env.ORIGIN
-    ? env.ORIGIN.split(',').map((s) => s.trim())
-    : defaultOrigins;
-  app.enableCors({
-    origin: origins,
-    credentials: true,
-  });
+  // Enable CORS for configured origins (comma-separated ORIGIN adds to the
+  // defaults). Methods must be explicit: @fastify/cors' default
+  // GET,HEAD,POST breaks preflights for DELETE/PUT endpoints.
+  app.enableCors(buildCorsOptions(env));
 
   // const fastifyInstance = app.getHttpAdapter().getInstance();
   // fastifyInstance
