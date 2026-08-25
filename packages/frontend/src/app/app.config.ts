@@ -1,4 +1,8 @@
-import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import {
   APP_INITIALIZER,
   ApplicationConfig,
