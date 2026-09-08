@@ -1,4 +1,8 @@
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import {
   APP_INITIALIZER,
   ApplicationConfig,
@@ -17,6 +21,7 @@ import { environment } from '../environments/environment';
 import { provideApi } from '../generated/provide-api';
 import { routes } from './app.routes';
 import { AuthenticationService } from './authentication/authentication.service';
+import { withCredentialsInterceptor } from './shared/with-credentials.interceptor';
 class MusiraTitleStrategy extends TitleStrategy {
   constructor(private readonly pageTitle: Title) {
     super();
@@ -62,7 +67,12 @@ class MusiraTitleStrategy extends TitleStrategy {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(withFetch()),
+    // withInterceptorsFromDi is required for the class-based
+    // WithCredentialsInterceptor to run: without it, cross-origin auth calls
+    // (register/login/logout) are sent without credentials and the browser
+    // drops the session cookie from the response.
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
+    withCredentialsInterceptor,
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(),
