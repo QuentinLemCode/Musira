@@ -6,6 +6,7 @@
 /out-tsc
 /packages/*/dist
 tsconfig.tsbuildinfo
+*.tsbuildinfo
 
 # dependencies
 node_modules
