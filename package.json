@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": "true",
   "description": "",
+  "dependencies": {
+    "@fastify/static": "^10.1.3"
+  },
   "scripts": {
     "test": "npm run test --workspaces --if-present --silent",
     "format:check": "npx prettier --check .",
