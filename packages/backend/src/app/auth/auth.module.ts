@@ -19,7 +19,11 @@ import { jwtSecret } from './secret';
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
+    // register() (even with empty options) provides the AuthModuleOptions
+    // token that @nestjs/passport@12's AuthGuard mixin injects. A bare
+    // PassportModule import leaves the token unprovided, which breaks guard
+    // instantiation (swagger deep scans, per-request @UseGuards).
+    PassportModule.register({}),
     JwtModule.register({
       verifyOptions: {
         algorithms: ['HS256'],
