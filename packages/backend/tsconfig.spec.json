@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Tests are transpiled file-by-file (ts-jest isolatedModules, required
+    // because NestJS 12 ships ESM-only dist that the language service cannot
+    // emit outside the project). Declaration emit would demand a rootDir for
+    // every single file, so disable it here; type safety is enforced by
+    // `npm run build` and lint instead.
+    "declaration": false,
+    "incremental": false,
+    // transpileModule validates output layout per file: rootDir must be set
+    // explicitly (covers src/**, test/** and transpiled node_modules alike;
+    // no emit happens, so the value only satisfies the check).
+    "rootDir": "./",
+    "sourceMap": false
+  }
+}

@@ -1,3 +1,4 @@
+import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { FastifyReply } from 'fastify';
 import { EmailUser } from '../../../users/user.email.entity';
@@ -11,6 +12,9 @@ describe('LoginController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      // PassportModule.register provides the AuthModuleOptions token that
+      // passport v12's AuthGuard mixin injects (mirrors AuthModule).
+      imports: [PassportModule.register({})],
       controllers: [LoginController],
       providers: [{ provide: AuthService, useValue: authService }],
     }).compile();

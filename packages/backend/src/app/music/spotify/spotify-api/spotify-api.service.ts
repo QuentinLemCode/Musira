@@ -347,15 +347,21 @@ export class SpotifyApiService implements OnModuleInit {
     };
   }
 
-  private logError(err: {
-    message?: string;
-    response: {
-      data?: {
-        error?: { message: string };
-      };
-    };
-  }) {
-    const message = [err?.message, err?.response?.data?.error?.message]
+  // TS 6 types catch variables as unknown: narrow inside instead of at
+  // the signature so every call site (try/catch, RxJS catchError) compiles.
+  private logError(err: unknown) {
+    const e =
+      typeof err === 'object' && err !== null
+        ? (err as {
+            message?: string;
+            response?: {
+              data?: {
+                error?: { message?: string };
+              };
+            };
+          })
+        : undefined;
+    const message = [e?.message, e?.response?.data?.error?.message]
       .filter((a) => !!a)
       .join(' - ');
     const getCircularReplacer = () => {
@@ -372,7 +378,7 @@ export class SpotifyApiService implements OnModuleInit {
     };
     this.logger.error(`${message}
     ${JSON.stringify(err, getCircularReplacer())}
-    ${JSON.stringify(err.response, getCircularReplacer())}`);
+    ${JSON.stringify(e?.response, getCircularReplacer())}`);
   }
 
   private async renewToken(account: SpotifyAccount) {

@@ -2,6 +2,9 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
+    // Required so ts-jest can transpile NestJS 12's ESM-only dist back to
+    // CJS during tests. No .js files live under src, so builds are unaffected.
+    "allowJs": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -12,6 +15,15 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    // TS 6 deprecates baseUrl/node10 resolution; revisit on TS 7.
+    "ignoreDeprecations": "6.0",
+    // Pin the 'fastify' specifier program-wide to the backend copy so that
+    // @fastify/cookie's module augmentation merges with the same instance
+    // the sources import (npm hoists fastify under packages/backend, which
+    // the cookie typings cannot resolve on their own).
+    "paths": {
+      "fastify": ["./node_modules/fastify"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
